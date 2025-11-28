@@ -11,6 +11,7 @@ import InsightCard from "@/components/dashboard/InsightCard";
 import WhatsAppConnect from "@/components/WhatsAppConnect";
 import PointsDisplay from "@/components/gamification/PointsDisplay";
 import WeeklyChallenge from "@/components/gamification/WeeklyChallenge";
+import RecommendedSchedule from "@/components/dashboard/RecommendedSchedule";
 
 export default function Home() {
   const [user, setUser] = useState(null);
@@ -222,6 +223,12 @@ export default function Home() {
             <PointsDisplay 
               points={achievements?.total_points || 0}
               streak={achievements?.current_streak || 0}
+            />
+
+            {/* Recommended Schedule for Insulin Users */}
+            <RecommendedSchedule 
+              isOnInsulin={profile?.is_on_insulin || false}
+              todayLogs={todayLogs}
             />
 
             {/* Weekly Challenge */}
