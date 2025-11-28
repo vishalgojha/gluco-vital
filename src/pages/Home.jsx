@@ -9,6 +9,8 @@ import LogCard from "@/components/dashboard/LogCard";
 import SugarChart from "@/components/dashboard/SugarChart";
 import InsightCard from "@/components/dashboard/InsightCard";
 import WhatsAppConnect from "@/components/WhatsAppConnect";
+import PointsDisplay from "@/components/gamification/PointsDisplay";
+import WeeklyChallenge from "@/components/gamification/WeeklyChallenge";
 
 export default function Home() {
   const [user, setUser] = useState(null);
@@ -32,6 +34,15 @@ export default function Home() {
     queryFn: () => base44.entities.PatientProfile.filter({ user_email: user?.email }),
     enabled: !!user?.email,
     select: data => data?.[0]
+  });
+
+  const { data: achievements } = useQuery({
+    queryKey: ['user-achievements', user?.email],
+    queryFn: async () => {
+      const results = await base44.entities.UserAchievements.filter({ user_email: user?.email });
+      return results?.[0] || null;
+    },
+    enabled: !!user?.email
   });
 
   const todayLogs = logs.filter(log => isToday(new Date(log.created_date)));
@@ -207,6 +218,17 @@ export default function Home() {
 
           {/* Sidebar */}
           <div className="space-y-6">
+            {/* Points & Streak Mini Display */}
+            <PointsDisplay 
+              points={achievements?.total_points || 0}
+              streak={achievements?.current_streak || 0}
+            />
+
+            {/* Weekly Challenge */}
+            <WeeklyChallenge 
+              progress={achievements?.weekly_challenge_progress || 0}
+            />
+
             <WhatsAppConnect isConnected={profile?.whatsapp_connected} />
 
             {/* Quick Tips */}
