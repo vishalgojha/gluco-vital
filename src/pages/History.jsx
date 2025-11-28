@@ -1,0 +1,248 @@
+import React, { useState, useEffect } from "react";
+import { base44 } from "@/api/base44Client";
+import { useQuery } from "@tanstack/react-query";
+import { format, subDays, startOfDay, endOfDay, isWithinInterval } from "date-fns";
+import { Calendar as CalendarIcon, Filter, Droplet, Heart, Utensils, Pill, Activity, Download } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/components/ui/badge";
+import LogCard from "@/components/dashboard/LogCard";
+import SugarChart from "@/components/dashboard/SugarChart";
+
+export default function History() {
+  const [user, setUser] = useState(null);
+  const [dateRange, setDateRange] = useState({
+    from: subDays(new Date(), 7),
+    to: new Date()
+  });
+  const [logType, setLogType] = useState("all");
+
+  useEffect(() => {
+    base44.auth.me().then(setUser).catch(() => {});
+  }, []);
+
+  const { data: logs = [], isLoading } = useQuery({
+    queryKey: ['health-logs-history', user?.email],
+    queryFn: () => base44.entities.HealthLog.filter(
+      { user_email: user?.email },
+      '-created_date',
+      500
+    ),
+    enabled: !!user?.email
+  });
+
+  const { data: profile } = useQuery({
+    queryKey: ['patient-profile'],
+    queryFn: () => base44.entities.PatientProfile.filter({ user_email: user?.email }),
+    enabled: !!user?.email,
+    select: data => data?.[0]
+  });
+
+  const filteredLogs = logs.filter(log => {
+    const logDate = new Date(log.created_date);
+    const withinDate = isWithinInterval(logDate, {
+      start: startOfDay(dateRange.from),
+      end: endOfDay(dateRange.to)
+    });
+    const matchesType = logType === "all" || log.log_type === logType;
+    return withinDate && matchesType;
+  });
+
+  const logTypes = [
+    { value: "all", label: "All Types", icon: Activity },
+    { value: "sugar", label: "Sugar", icon: Droplet },
+    { value: "blood_pressure", label: "Blood Pressure", icon: Heart },
+    { value: "meal", label: "Meals", icon: Utensils },
+    { value: "medication", label: "Medication", icon: Pill },
+  ];
+
+  const getStats = () => {
+    const sugarLogs = filteredLogs.filter(l => l.log_type === "sugar" && l.numeric_value);
+    const avgSugar = sugarLogs.length > 0 
+      ? Math.round(sugarLogs.reduce((a, b) => a + b.numeric_value, 0) / sugarLogs.length)
+      : null;
+    const maxSugar = sugarLogs.length > 0 
+      ? Math.max(...sugarLogs.map(l => l.numeric_value))
+      : null;
+    const minSugar = sugarLogs.length > 0 
+      ? Math.min(...sugarLogs.map(l => l.numeric_value))
+      : null;
+
+    return { avgSugar, maxSugar, minSugar, totalLogs: filteredLogs.length };
+  };
+
+  const stats = getStats();
+
+  const groupLogsByDate = () => {
+    const grouped = {};
+    filteredLogs.forEach(log => {
+      const dateKey = format(new Date(log.created_date), "yyyy-MM-dd");
+      if (!grouped[dateKey]) {
+        grouped[dateKey] = [];
+      }
+      grouped[dateKey].push(log);
+    });
+    return grouped;
+  };
+
+  const groupedLogs = groupLogsByDate();
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-slate-800">Health History</h1>
+            <p className="text-slate-500 mt-1">View and analyze your health logs</p>
+          </div>
+        </div>
+
+        {/* Filters */}
+        <Card className="border-slate-100 shadow-sm mb-6">
+          <CardContent className="pt-6">
+            <div className="flex flex-wrap gap-4 items-end">
+              <div>
+                <label className="text-sm font-medium text-slate-600 block mb-1.5">Date Range</label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className="w-[260px] justify-start text-left font-normal">
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {dateRange.from && dateRange.to ? (
+                        <>
+                          {format(dateRange.from, "MMM d")} - {format(dateRange.to, "MMM d, yyyy")}
+                        </>
+                      ) : (
+                        <span>Pick a date range</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      initialFocus
+                      mode="range"
+                      defaultMonth={dateRange.from}
+                      selected={dateRange}
+                      onSelect={(range) => range && setDateRange(range)}
+                      numberOfMonths={2}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium text-slate-600 block mb-1.5">Log Type</label>
+                <Select value={logType} onValueChange={setLogType}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {logTypes.map(type => (
+                      <SelectItem key={type.value} value={type.value}>
+                        <div className="flex items-center gap-2">
+                          <type.icon className="w-4 h-4" />
+                          {type.label}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex gap-2 ml-auto">
+                <Button 
+                  variant="outline"
+                  onClick={() => setDateRange({ from: subDays(new Date(), 7), to: new Date() })}
+                >
+                  Last 7 Days
+                </Button>
+                <Button 
+                  variant="outline"
+                  onClick={() => setDateRange({ from: subDays(new Date(), 30), to: new Date() })}
+                >
+                  Last 30 Days
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Stats Summary */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <div className="bg-white rounded-xl p-4 border border-slate-100">
+            <p className="text-sm text-slate-500">Total Logs</p>
+            <p className="text-2xl font-bold text-slate-800">{stats.totalLogs}</p>
+          </div>
+          {stats.avgSugar && (
+            <>
+              <div className="bg-white rounded-xl p-4 border border-slate-100">
+                <p className="text-sm text-slate-500">Avg Sugar</p>
+                <p className="text-2xl font-bold text-blue-600">{stats.avgSugar}</p>
+              </div>
+              <div className="bg-white rounded-xl p-4 border border-slate-100">
+                <p className="text-sm text-slate-500">Highest</p>
+                <p className="text-2xl font-bold text-orange-600">{stats.maxSugar}</p>
+              </div>
+              <div className="bg-white rounded-xl p-4 border border-slate-100">
+                <p className="text-sm text-slate-500">Lowest</p>
+                <p className="text-2xl font-bold text-emerald-600">{stats.minSugar}</p>
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* Sugar Chart */}
+        {(logType === "all" || logType === "sugar") && (
+          <Card className="border-slate-100 shadow-sm mb-6">
+            <CardHeader>
+              <CardTitle className="text-lg">Sugar Trend</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <SugarChart 
+                logs={filteredLogs}
+                targetFasting={profile?.target_sugar_fasting || 100}
+                targetPostMeal={profile?.target_sugar_post_meal || 140}
+              />
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Logs by Date */}
+        {isLoading ? (
+          <div className="space-y-4">
+            {[1, 2, 3].map(i => (
+              <Skeleton key={i} className="h-24 w-full rounded-xl" />
+            ))}
+          </div>
+        ) : Object.keys(groupedLogs).length > 0 ? (
+          <div className="space-y-6">
+            {Object.entries(groupedLogs).map(([date, dayLogs]) => (
+              <div key={date}>
+                <div className="flex items-center gap-3 mb-3">
+                  <Badge variant="outline" className="px-3 py-1 bg-white">
+                    {format(new Date(date), "EEEE, MMMM d")}
+                  </Badge>
+                  <span className="text-xs text-slate-400">{dayLogs.length} logs</span>
+                </div>
+                <div className="space-y-3">
+                  {dayLogs.map(log => (
+                    <LogCard key={log.id} log={log} />
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-16 bg-white rounded-2xl border border-slate-100">
+            <Filter className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+            <p className="text-slate-500">No logs found for the selected filters</p>
+            <p className="text-sm text-slate-400 mt-1">Try adjusting your date range or log type</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

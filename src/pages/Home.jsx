@@ -1,10 +1,247 @@
-// Placeholder file, this should be overridden by the generated code
-
+import React, { useState, useEffect } from "react";
+import { base44 } from "@/api/base44Client";
+import { useQuery } from "@tanstack/react-query";
+import { format, subDays, isToday } from "date-fns";
+import { Droplet, Heart, Utensils, Activity, TrendingUp, Calendar, Sparkles } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import StatCard from "@/components/dashboard/StatCard";
+import LogCard from "@/components/dashboard/LogCard";
+import SugarChart from "@/components/dashboard/SugarChart";
+import InsightCard from "@/components/dashboard/InsightCard";
+import WhatsAppConnect from "@/components/WhatsAppConnect";
 
 export default function Home() {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    base44.auth.me().then(setUser).catch(() => {});
+  }, []);
+
+  const { data: logs = [], isLoading: logsLoading } = useQuery({
+    queryKey: ['health-logs'],
+    queryFn: () => base44.entities.HealthLog.filter(
+      { user_email: user?.email },
+      '-created_date',
+      100
+    ),
+    enabled: !!user?.email
+  });
+
+  const { data: profile } = useQuery({
+    queryKey: ['patient-profile'],
+    queryFn: () => base44.entities.PatientProfile.filter({ user_email: user?.email }),
+    enabled: !!user?.email,
+    select: data => data?.[0]
+  });
+
+  const todayLogs = logs.filter(log => isToday(new Date(log.created_date)));
+  const sugarLogs = logs.filter(log => log.log_type === "sugar" && log.numeric_value);
+  const lastSugar = sugarLogs[0]?.numeric_value;
+  const avgSugar = sugarLogs.length > 0 
+    ? Math.round(sugarLogs.slice(0, 7).reduce((a, b) => a + b.numeric_value, 0) / Math.min(sugarLogs.length, 7))
+    : null;
+
+  const bpLogs = logs.filter(log => log.log_type === "blood_pressure");
+  const lastBP = bpLogs[0]?.value;
+
+  const generateInsights = () => {
+    const insights = [];
+    
+    if (sugarLogs.length >= 5) {
+      const afterDinnerLogs = sugarLogs.filter(l => l.time_of_day === "after_dinner");
+      const otherLogs = sugarLogs.filter(l => l.time_of_day !== "after_dinner");
+      
+      if (afterDinnerLogs.length > 0 && otherLogs.length > 0) {
+        const avgAfterDinner = afterDinnerLogs.reduce((a, b) => a + b.numeric_value, 0) / afterDinnerLogs.length;
+        const avgOther = otherLogs.reduce((a, b) => a + b.numeric_value, 0) / otherLogs.length;
+        
+        if (avgAfterDinner > avgOther * 1.15) {
+          insights.push({
+            type: "warning",
+            title: "Dinner time sugar spikes detected!",
+            description: "Your sugar is consistently highest after dinner compared to other times.",
+            action: "Reduce carbs by 20% at dinner. Try more veggies instead."
+          });
+        }
+      }
+
+      const recentAvg = sugarLogs.slice(0, 5).reduce((a, b) => a + b.numeric_value, 0) / 5;
+      const olderAvg = sugarLogs.slice(5, 10).reduce((a, b) => a + b.numeric_value, 0) / Math.min(sugarLogs.length - 5, 5);
+      
+      if (sugarLogs.length >= 10 && recentAvg < olderAvg * 0.95) {
+        insights.push({
+          type: "improvement",
+          title: "Great progress! 📈",
+          description: "Your sugar levels are improving compared to last week. Keep doing what you're doing!",
+          action: null
+        });
+      }
+    }
+
+    if (todayLogs.length === 0) {
+      insights.push({
+        type: "info",
+        title: "No logs today yet",
+        description: "Start logging to track your health patterns. Just send a message on WhatsApp!",
+        action: "Send 'Sugar 120' on WhatsApp to start"
+      });
+    }
+
+    if (todayLogs.length >= 3) {
+      insights.push({
+        type: "success",
+        title: "Excellent tracking today!",
+        description: `You've logged ${todayLogs.length} entries today. Consistent tracking = better insights.`,
+        action: null
+      });
+    }
+
+    return insights;
+  };
+
+  const insights = generateInsights();
 
   return (
-    <div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-slate-800">
+            {user ? `Hello, ${user.full_name?.split(' ')[0] || 'there'}` : 'Health Buddy'} 👋
+          </h1>
+          <p className="text-slate-500 mt-1">
+            {format(new Date(), "EEEE, MMMM d")} • Your health companion
+          </p>
+        </div>
+
+        <div className="grid lg:grid-cols-3 gap-6">
+          {/* Main Content */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Stats Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <StatCard 
+                icon={Droplet}
+                label="Last Sugar"
+                value={lastSugar ? `${lastSugar}` : "--"}
+                subValue="mg/dL"
+                color="blue"
+              />
+              <StatCard 
+                icon={Heart}
+                label="Last BP"
+                value={lastBP || "--"}
+                color="red"
+              />
+              <StatCard 
+                icon={TrendingUp}
+                label="7-Day Avg Sugar"
+                value={avgSugar || "--"}
+                subValue="mg/dL"
+                color="purple"
+              />
+              <StatCard 
+                icon={Calendar}
+                label="Today's Logs"
+                value={todayLogs.length}
+                color="green"
+              />
+            </div>
+
+            {/* Sugar Chart */}
+            <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h2 className="text-lg font-semibold text-slate-800">Sugar Trend</h2>
+                  <p className="text-sm text-slate-500">Last 14 readings</p>
+                </div>
+                <div className="p-2 bg-blue-50 rounded-lg">
+                  <Activity className="w-5 h-5 text-blue-600" />
+                </div>
+              </div>
+              <SugarChart 
+                logs={logs}
+                targetFasting={profile?.target_sugar_fasting || 100}
+                targetPostMeal={profile?.target_sugar_post_meal || 140}
+              />
+            </div>
+
+            {/* AI Insights */}
+            {insights.length > 0 && (
+              <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-violet-500" />
+                  <h2 className="text-lg font-semibold text-slate-800">AI Insights</h2>
+                </div>
+                <div className="grid md:grid-cols-2 gap-4">
+                  {insights.map((insight, idx) => (
+                    <InsightCard key={idx} {...insight} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Recent Logs */}
+            <div>
+              <h2 className="text-lg font-semibold text-slate-800 mb-4">Recent Activity</h2>
+              {logsLoading ? (
+                <div className="space-y-3">
+                  {[1, 2, 3].map(i => (
+                    <Skeleton key={i} className="h-20 w-full rounded-xl" />
+                  ))}
+                </div>
+              ) : logs.length > 0 ? (
+                <div className="space-y-3">
+                  {logs.slice(0, 10).map(log => (
+                    <LogCard key={log.id} log={log} />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12 bg-white rounded-2xl border border-slate-100">
+                  <Utensils className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                  <p className="text-slate-500">No health logs yet</p>
+                  <p className="text-sm text-slate-400 mt-1">Connect WhatsApp and start logging!</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Sidebar */}
+          <div className="space-y-6">
+            <WhatsAppConnect isConnected={profile?.whatsapp_connected} />
+
+            {/* Quick Tips */}
+            <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
+              <h3 className="font-semibold text-slate-800 mb-4">Quick Tips 💡</h3>
+              <div className="space-y-3 text-sm">
+                <div className="p-3 bg-slate-50 rounded-lg">
+                  <p className="font-medium text-slate-700">Log consistently</p>
+                  <p className="text-slate-500 text-xs mt-1">Same times daily = better patterns</p>
+                </div>
+                <div className="p-3 bg-slate-50 rounded-lg">
+                  <p className="font-medium text-slate-700">Note what you eat</p>
+                  <p className="text-slate-500 text-xs mt-1">Helps identify food triggers</p>
+                </div>
+                <div className="p-3 bg-slate-50 rounded-lg">
+                  <p className="font-medium text-slate-700">Share with doctor</p>
+                  <p className="text-slate-500 text-xs mt-1">Show your trends at checkups</p>
+                </div>
+              </div>
+            </div>
+
+            {/* How to Log */}
+            <div className="bg-gradient-to-br from-violet-50 to-indigo-50 rounded-2xl p-5 border border-violet-100">
+              <h3 className="font-semibold text-slate-800 mb-3">How to Log via WhatsApp</h3>
+              <div className="space-y-2 text-sm text-slate-600">
+                <p>📍 <strong>"Sugar 120"</strong> - log sugar level</p>
+                <p>📍 <strong>"BP 130/80"</strong> - blood pressure</p>
+                <p>📍 <strong>"Khana - roti sabzi"</strong> - meals</p>
+                <p>📍 <strong>"Dawai li"</strong> - medication</p>
+                <p>📍 <strong>"Chakkar aa raha"</strong> - symptoms</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
