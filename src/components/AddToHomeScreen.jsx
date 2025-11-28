@@ -37,8 +37,8 @@ export default function AddToHomeScreen() {
   if (!show) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 p-4 animate-in slide-in-from-bottom duration-300">
-      <div className="max-w-md mx-auto bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+      <div className="w-full max-w-sm bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
         <div className="bg-gradient-to-r from-[#5b9a8b] to-[#7eb8a8] p-4 text-white">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -58,40 +58,40 @@ export default function AddToHomeScreen() {
 
         <div className="p-4">
           {isIOS ? (
-            <div className="space-y-3">
+            <div className="space-y-2">
               <p className="text-sm text-slate-600">To install VitalSpark:</p>
-              <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
-                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <Share className="w-4 h-4 text-blue-600" />
+              <div className="flex items-center gap-3 p-2 bg-slate-50 rounded-lg">
+                <div className="w-7 h-7 bg-blue-100 rounded-lg flex items-center justify-center shrink-0">
+                  <Share className="w-3.5 h-3.5 text-blue-600" />
                 </div>
-                <p className="text-sm text-slate-700">1. Tap the <strong>Share</strong> button below</p>
+                <p className="text-sm text-slate-700">1. Tap <strong>Share</strong> button</p>
               </div>
-              <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
-                <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                  <Plus className="w-4 h-4 text-green-600" />
+              <div className="flex items-center gap-3 p-2 bg-slate-50 rounded-lg">
+                <div className="w-7 h-7 bg-green-100 rounded-lg flex items-center justify-center shrink-0">
+                  <Plus className="w-3.5 h-3.5 text-green-600" />
                 </div>
-                <p className="text-sm text-slate-700">2. Scroll & tap <strong>"Add to Home Screen"</strong></p>
+                <p className="text-sm text-slate-700">2. Tap <strong>"Add to Home Screen"</strong></p>
               </div>
             </div>
           ) : isAndroid ? (
-            <div className="space-y-3">
+            <div className="space-y-2">
               <p className="text-sm text-slate-600">To install VitalSpark:</p>
-              <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
-                <div className="w-8 h-8 bg-slate-200 rounded-lg flex items-center justify-center">
-                  <MoreVertical className="w-4 h-4 text-slate-600" />
+              <div className="flex items-center gap-3 p-2 bg-slate-50 rounded-lg">
+                <div className="w-7 h-7 bg-slate-200 rounded-lg flex items-center justify-center shrink-0">
+                  <MoreVertical className="w-3.5 h-3.5 text-slate-600" />
                 </div>
                 <p className="text-sm text-slate-700">1. Tap <strong>⋮ menu</strong> (top right)</p>
               </div>
-              <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
-                <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                  <Plus className="w-4 h-4 text-green-600" />
+              <div className="flex items-center gap-3 p-2 bg-slate-50 rounded-lg">
+                <div className="w-7 h-7 bg-green-100 rounded-lg flex items-center justify-center shrink-0">
+                  <Plus className="w-3.5 h-3.5 text-green-600" />
                 </div>
                 <p className="text-sm text-slate-700">2. Tap <strong>"Add to Home screen"</strong></p>
               </div>
             </div>
           ) : (
             <p className="text-sm text-slate-600">
-              Add this app to your home screen for quick access to your health dashboard!
+              Add this app to your home screen for quick access!
             </p>
           )}
 
@@ -100,7 +100,7 @@ export default function AddToHomeScreen() {
               variant="ghost" 
               size="sm" 
               onClick={() => dismiss(true)}
-              className="flex-1 text-slate-500"
+              className="flex-1 text-slate-500 text-xs"
             >
               Don't show again
             </Button>
