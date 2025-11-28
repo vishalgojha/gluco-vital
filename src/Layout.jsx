@@ -185,9 +185,11 @@ export default function Layout({ children, currentPageName }) {
                           <span>© 2024 VitalSpark</span>
                         </div>
                       </div>
-                      <p className="text-center text-[10px] text-[#a0b5ae] mt-2">
-                        Disclaimer: VitalSpark is for informational purposes only and does not constitute medical advice. Always consult your healthcare provider.
-                      </p>
+                      <div className="mt-3 p-2 bg-amber-50 border border-amber-200 rounded-lg">
+                        <p className="text-center text-[11px] text-amber-800 font-medium">
+                          ⚠️ IMPORTANT: VitalSpark is NOT a substitute for professional medical advice, diagnosis, or treatment. Never disregard or delay seeking medical advice because of information provided here. Always consult a qualified healthcare provider for any health concerns.
+                        </p>
+                      </div>
                     </div>
                   </footer>
 
