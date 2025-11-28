@@ -12,6 +12,7 @@ import WhatsAppConnect from "@/components/WhatsAppConnect";
 import PointsDisplay from "@/components/gamification/PointsDisplay";
 import WeeklyChallenge from "@/components/gamification/WeeklyChallenge";
 import RecommendedSchedule from "@/components/dashboard/RecommendedSchedule";
+import NurseCoach from "@/components/coaching/NurseCoach";
 
 export default function Home() {
   const [user, setUser] = useState(null);
@@ -191,6 +192,9 @@ export default function Home() {
                 </div>
               </div>
             )}
+
+            {/* Nurse Coach - Detailed Health Coaching */}
+            <NurseCoach logs={logs} profile={profile} achievements={achievements} />
 
             {/* Recent Logs */}
             <div>
