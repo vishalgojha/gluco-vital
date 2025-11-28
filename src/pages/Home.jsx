@@ -234,9 +234,37 @@ export default function Home() {
               <div className="space-y-2 text-sm text-slate-600">
                 <p>📍 <strong>"Sugar 120"</strong> - log sugar level</p>
                 <p>📍 <strong>"BP 130/80"</strong> - blood pressure</p>
-                <p>📍 <strong>"Khana - roti sabzi"</strong> - meals</p>
-                <p>📍 <strong>"Dawai li"</strong> - medication</p>
-                <p>📍 <strong>"Chakkar aa raha"</strong> - symptoms</p>
+                <p>📍 <strong>"Ate rice dal"</strong> - meals</p>
+                <p>📍 <strong>"Took medicine"</strong> - medication</p>
+                <p>📍 <strong>"Feeling dizzy"</strong> - symptoms</p>
+              </div>
+            </div>
+
+            {/* Global Reach */}
+            <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
+              <h3 className="font-semibold text-slate-800 mb-3">🌍 Supports 14 Languages</h3>
+              <p className="text-xs text-slate-500 mb-3">Countries with highest diabetics:</p>
+              <div className="space-y-2 text-xs">
+                <div className="flex justify-between items-center p-2 bg-red-50 rounded-lg">
+                  <span>🇨🇳 China</span>
+                  <span className="font-bold text-red-700">141M</span>
+                </div>
+                <div className="flex justify-between items-center p-2 bg-orange-50 rounded-lg">
+                  <span>🇮🇳 India</span>
+                  <span className="font-bold text-orange-700">77M</span>
+                </div>
+                <div className="flex justify-between items-center p-2 bg-blue-50 rounded-lg">
+                  <span>🇺🇸 USA</span>
+                  <span className="font-bold text-blue-700">32M</span>
+                </div>
+                <div className="flex justify-between items-center p-2 bg-green-50 rounded-lg">
+                  <span>🇵🇰 Pakistan</span>
+                  <span className="font-bold text-green-700">33M</span>
+                </div>
+                <div className="flex justify-between items-center p-2 bg-purple-50 rounded-lg">
+                  <span>🇧🇷 Brazil</span>
+                  <span className="font-bold text-purple-700">17M</span>
+                </div>
               </div>
             </div>
           </div>
