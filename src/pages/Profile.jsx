@@ -7,8 +7,9 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { User, Heart, Target, Globe, Plus, X, Save, Loader2 } from "lucide-react";
+import { User, Heart, Target, Globe, Plus, X, Save, Loader2, Pill } from "lucide-react";
 import { toast } from "sonner";
+import MedicationRemindersList from "@/components/medications/MedicationRemindersList";
 
 export default function Profile() {
   const queryClient = useQueryClient();
@@ -38,6 +39,12 @@ export default function Profile() {
     queryFn: () => base44.entities.PatientProfile.filter({ user_email: user?.email }),
     enabled: !!user?.email,
     select: data => data?.[0]
+  });
+
+  const { data: reminders = [], refetch: refetchReminders } = useQuery({
+    queryKey: ['medication-reminders', user?.email],
+    queryFn: () => base44.entities.MedicationReminder.filter({ user_email: user?.email }),
+    enabled: !!user?.email
   });
 
   useEffect(() => {
@@ -258,6 +265,23 @@ export default function Profile() {
                   ))}
                 </div>
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Medication Reminders */}
+          <Card className="border-slate-100 shadow-sm">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Pill className="w-5 h-5 text-violet-500" />
+                Medication Reminders
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <MedicationRemindersList 
+                reminders={reminders} 
+                profile={{ ...profile, user_email: user?.email }} 
+                onUpdate={refetchReminders}
+              />
             </CardContent>
           </Card>
 
