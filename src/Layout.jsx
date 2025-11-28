@@ -5,6 +5,7 @@ import { base44 } from "@/api/base44Client";
 import { Home, History, User, Menu, X, MessageCircle, LogOut, Trophy, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import AddToHomeScreen from "@/components/AddToHomeScreen";
 
 export default function Layout({ children, currentPageName }) {
   const [user, setUser] = useState(null);
@@ -158,10 +159,13 @@ export default function Layout({ children, currentPageName }) {
         </aside>
 
         {/* Main Content */}
-        <main className="lg:ml-64 pt-16 lg:pt-0">
-          {children}
-        </main>
-      </div>
-    </>
-  );
-}
+                  <main className="lg:ml-64 pt-16 lg:pt-0">
+                    {children}
+                  </main>
+
+                  {/* Add to Home Screen Prompt */}
+                  <AddToHomeScreen />
+                </div>
+              </>
+            );
+          }
