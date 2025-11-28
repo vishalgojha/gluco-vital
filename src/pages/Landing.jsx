@@ -46,7 +46,7 @@ export default function Landing() {
               <span className="text-xl font-bold text-[#3d6b5f]">VitalSpark</span>
             </div>
             <Button 
-              onClick={() => window.base44?.auth?.redirectToLogin?.(createPageUrl("Home"))}
+              onClick={() => { import("@/api/base44Client").then(m => m.base44.auth.redirectToLogin(createPageUrl("Home"))); }}
               className="bg-[#5b9a8b] hover:bg-[#4a8a7b]"
             >
               Get Started
@@ -73,7 +73,7 @@ export default function Landing() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button 
               size="lg"
-              onClick={() => window.base44?.auth?.redirectToLogin?.(createPageUrl("Home"))}
+              onClick={() => { import("@/api/base44Client").then(m => m.base44.auth.redirectToLogin(createPageUrl("Home"))); }}
               className="bg-[#5b9a8b] hover:bg-[#4a8a7b] h-14 px-8 text-lg rounded-xl shadow-lg shadow-[#5b9a8b]/20"
             >
               Start Free <ArrowRight className="w-5 h-5 ml-2" />
@@ -207,7 +207,7 @@ export default function Landing() {
           </p>
           <Button 
             size="lg"
-            onClick={() => window.base44?.auth?.redirectToLogin?.(createPageUrl("Home"))}
+            onClick={() => { import("@/api/base44Client").then(m => m.base44.auth.redirectToLogin(createPageUrl("Home"))); }}
             className="bg-[#5b9a8b] hover:bg-[#4a8a7b] h-14 px-10 text-lg rounded-xl shadow-lg"
           >
             Get Started Free <ArrowRight className="w-5 h-5 ml-2" />
