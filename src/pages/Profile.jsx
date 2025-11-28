@@ -171,8 +171,19 @@ export default function Profile() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="english">English</SelectItem>
-                      <SelectItem value="hindi">हिंदी</SelectItem>
+                      <SelectItem value="hindi">हिंदी (Hindi)</SelectItem>
                       <SelectItem value="hinglish">Hinglish</SelectItem>
+                      <SelectItem value="chinese">中文 (Chinese) - 🇨🇳 141M diabetics</SelectItem>
+                      <SelectItem value="spanish">Español (Spanish)</SelectItem>
+                      <SelectItem value="portuguese">Português (Portuguese)</SelectItem>
+                      <SelectItem value="urdu">اردو (Urdu) - 🇵🇰 33M diabetics</SelectItem>
+                      <SelectItem value="indonesian">Bahasa (Indonesian) - 🇮🇩 19M diabetics</SelectItem>
+                      <SelectItem value="german">Deutsch (German) - 🇩🇪 8M diabetics</SelectItem>
+                      <SelectItem value="arabic">العربية (Arabic)</SelectItem>
+                      <SelectItem value="bengali">বাংলা (Bengali) - 🇧🇩 13M diabetics</SelectItem>
+                      <SelectItem value="russian">Русский (Russian) - 🇷🇺 9M diabetics</SelectItem>
+                      <SelectItem value="japanese">日本語 (Japanese) - 🇯🇵 11M diabetics</SelectItem>
+                      <SelectItem value="turkish">Türkçe (Turkish) - 🇹🇷 9M diabetics</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
