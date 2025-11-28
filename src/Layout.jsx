@@ -23,6 +23,11 @@ export default function Layout({ children, currentPageName }) {
     { name: "Profile", icon: User, page: "Profile" },
   ];
 
+  // Show Landing page without layout for unauthenticated users
+  if (currentPageName === "Landing") {
+    return children;
+  }
+
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: `
