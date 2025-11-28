@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "./utils";
 import { base44 } from "@/api/base44Client";
-import { Home, History, User, Menu, X, MessageCircle, LogOut } from "lucide-react";
+import { Home, History, User, Menu, X, MessageCircle, LogOut, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -16,6 +16,7 @@ export default function Layout({ children, currentPageName }) {
 
   const navItems = [
     { name: "Home", icon: Home, page: "Home" },
+    { name: "Achievements", icon: Trophy, page: "Achievements" },
     { name: "History", icon: History, page: "History" },
     { name: "Profile", icon: User, page: "Profile" },
   ];
