@@ -50,7 +50,7 @@ export default function Layout({ children, currentPageName }) {
               <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#5b9a8b] to-[#7eb8a8] flex items-center justify-center shadow-sm">
                 <MessageCircle className="w-5 h-5 text-white" />
               </div>
-              <span className="font-bold text-[#3d6b5f]">Health Buddy</span>
+              <span className="font-bold text-[#3d6b5f]">VitalSpark</span>
             </div>
             <Button
               variant="ghost"
@@ -101,8 +101,8 @@ export default function Layout({ children, currentPageName }) {
                 <MessageCircle className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h1 className="font-bold text-[#3d6b5f]">Health Buddy</h1>
-                <p className="text-xs text-[#7a9990]">AI Health Assistant</p>
+                <h1 className="font-bold text-[#3d6b5f]">VitalSpark</h1>
+                <p className="text-xs text-[#7a9990]">Your Health, Ignited</p>
               </div>
             </div>
           </div>
