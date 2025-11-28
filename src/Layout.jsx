@@ -14,44 +14,7 @@ export default function Layout({ children, currentPageName }) {
     base44.auth.me().then(setUser).catch(() => {});
   }, []);
 
-  // Soothing theme styles
-  const soothingStyles = `
-    <style>
-      :root {
-        --soothing-bg: #f0f7f4;
-        --soothing-primary: #5b9a8b;
-        --soothing-primary-light: #8fc0b7;
-        --soothing-accent: #7eb8a8;
-        --soothing-warm: #e8d5c4;
-      }
-      body {
-        background: linear-gradient(135deg, #f0f7f4 0%, #e8f4f0 50%, #faf6f2 100%) !important;
-      }
-      /* Softer shadows */
-      .shadow-sm, .shadow, .shadow-md, .shadow-lg {
-        box-shadow: 0 2px 15px rgba(91, 154, 139, 0.08) !important;
-      }
-      /* Gentler transitions */
-      * {
-        transition-timing-function: ease-out;
-      }
-      /* Softer borders */
-      .border, [class*="border-"] {
-        border-color: rgba(91, 154, 139, 0.15) !important;
-      }
-      /* Calming scrollbar */
-      ::-webkit-scrollbar {
-        width: 8px;
-      }
-      ::-webkit-scrollbar-track {
-        background: #f0f7f4;
-      }
-      ::-webkit-scrollbar-thumb {
-        background: #8fc0b7;
-        border-radius: 4px;
-      }
-    </style>
-  `;
+  
 
   const navItems = [
     { name: "Home", icon: Home, page: "Home" },
@@ -62,10 +25,26 @@ export default function Layout({ children, currentPageName }) {
   ];
 
   return (
-    <div className="min-h-screen bg-[#f0f7f4]" dangerouslySetInnerHTML={{ __html: '' }}>
-      {/* Inject soothing styles */}
-      <div dangerouslySetInnerHTML={{ __html: soothingStyles }} />
-      <div className="min-h-screen">
+    <>
+      <style dangerouslySetInnerHTML={{ __html: `
+        :root {
+          --soothing-bg: #f0f7f4;
+          --soothing-primary: #5b9a8b;
+          --soothing-primary-light: #8fc0b7;
+          --soothing-accent: #7eb8a8;
+          --soothing-warm: #e8d5c4;
+        }
+        body {
+          background: linear-gradient(135deg, #f0f7f4 0%, #e8f4f0 50%, #faf6f2 100%) !important;
+        }
+        .shadow-sm, .shadow, .shadow-md, .shadow-lg {
+          box-shadow: 0 2px 15px rgba(91, 154, 139, 0.08) !important;
+        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f0f7f4; }
+        ::-webkit-scrollbar-thumb { background: #8fc0b7; border-radius: 4px; }
+      ` }} />
+      <div className="min-h-screen bg-[#f0f7f4]">
       {/* Mobile Header */}
                   <header className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-[#f8faf9]/90 backdrop-blur-lg border-b border-[#5b9a8b]/10">
         <div className="flex items-center justify-between px-4 h-16">
@@ -184,7 +163,8 @@ export default function Layout({ children, currentPageName }) {
                   <main className="lg:ml-64 pt-16 lg:pt-0">
                     {children}
                   </main>
-                </div>
-              </div>
-            );
-          }
+                            </div>
+                          </div>
+                        </>
+                      );
+                    }
