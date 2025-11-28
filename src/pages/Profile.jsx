@@ -7,9 +7,10 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { User, Heart, Target, Globe, Plus, X, Save, Loader2, Pill } from "lucide-react";
+import { User, Heart, Target, Globe, Plus, X, Save, Loader2, Pill, Watch } from "lucide-react";
 import { toast } from "sonner";
 import MedicationRemindersList from "@/components/medications/MedicationRemindersList";
+import WearableImport from "@/components/import/WearableImport";
 
 export default function Profile() {
   const queryClient = useQueryClient();
@@ -340,6 +341,12 @@ export default function Profile() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Wearable Import */}
+          <WearableImport 
+            userEmail={user?.email} 
+            onImportComplete={() => queryClient.invalidateQueries({ queryKey: ['health-logs'] })}
+          />
 
           {/* Doctor */}
           <Card className="border-slate-100 shadow-sm">

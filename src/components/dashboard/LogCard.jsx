@@ -10,7 +10,10 @@ const logIcons = {
   exercise: Activity,
   weight: Weight,
   mood: Smile,
-  symptom: AlertCircle
+  symptom: AlertCircle,
+  steps: Activity,
+  heart_rate: Heart,
+  sleep: Activity
 };
 
 const logColors = {
@@ -21,7 +24,10 @@ const logColors = {
   exercise: "bg-violet-50 text-violet-600 border-violet-100",
   weight: "bg-slate-50 text-slate-600 border-slate-100",
   mood: "bg-pink-50 text-pink-600 border-pink-100",
-  symptom: "bg-orange-50 text-orange-600 border-orange-100"
+  symptom: "bg-orange-50 text-orange-600 border-orange-100",
+  steps: "bg-teal-50 text-teal-600 border-teal-100",
+  heart_rate: "bg-rose-50 text-rose-600 border-rose-100",
+  sleep: "bg-indigo-50 text-indigo-600 border-indigo-100"
 };
 
 export default function LogCard({ log }) {
