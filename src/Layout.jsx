@@ -166,9 +166,30 @@ export default function Layout({ children, currentPageName }) {
         </aside>
 
         {/* Main Content */}
-                  <main className="lg:ml-64 pt-16 lg:pt-0">
+                  <main className="lg:ml-64 pt-16 lg:pt-0 pb-20 lg:pb-16">
                     {children}
                   </main>
+
+                  {/* Footer */}
+                  <footer className="lg:ml-64 bg-white/80 backdrop-blur border-t border-[#5b9a8b]/10 py-4 px-4">
+                    <div className="max-w-4xl mx-auto">
+                      <div className="flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-[#7a9990]">
+                        <div className="flex items-center gap-1">
+                          Made with <span className="text-red-500">❤️</span> in India 🇮🇳
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <a href="#" className="hover:text-[#5b9a8b] transition-colors">Privacy Policy</a>
+                          <span>•</span>
+                          <a href="#" className="hover:text-[#5b9a8b] transition-colors">Terms of Service</a>
+                          <span>•</span>
+                          <span>© 2024 VitalSpark</span>
+                        </div>
+                      </div>
+                      <p className="text-center text-[10px] text-[#a0b5ae] mt-2">
+                        Disclaimer: VitalSpark is for informational purposes only and does not constitute medical advice. Always consult your healthcare provider.
+                      </p>
+                    </div>
+                  </footer>
 
                   {/* Add to Home Screen Prompt */}
                   <AddToHomeScreen />
