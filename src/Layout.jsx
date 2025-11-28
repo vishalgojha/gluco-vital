@@ -12,8 +12,10 @@ export default function Layout({ children, currentPageName }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => {});
-  }, []);
+    if (currentPageName !== "Landing") {
+      base44.auth.me().then(setUser).catch(() => {});
+    }
+  }, [currentPageName]);
 
   const navItems = [
     { name: "Home", icon: Home, page: "Home" },
