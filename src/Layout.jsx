@@ -13,10 +13,7 @@ export default function Layout({ children, currentPageName }) {
 
   useEffect(() => {
     if (currentPageName !== "Landing") {
-      base44.auth.me().then(setUser).catch(() => {
-        // Not logged in, redirect to landing
-        window.location.href = createPageUrl("Landing");
-      });
+      base44.auth.me().then(setUser).catch(() => {});
     }
   }, [currentPageName]);
 
