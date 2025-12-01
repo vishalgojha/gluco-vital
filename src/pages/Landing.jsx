@@ -43,7 +43,7 @@ export default function Landing() {
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#5b9a8b] to-[#7eb8a8] flex items-center justify-center shadow-lg">
                 <Heart className="w-5 h-5 text-white" />
               </div>
-              <span className="text-xl font-bold text-[#3d6b5f]">VitalSpark</span>
+              <span className="text-xl font-bold text-[#3d6b5f]">Gluco Vital</span>
             </div>
             <Button 
               onClick={() => base44.auth.redirectToLogin(createPageUrl("Home"))}
@@ -223,7 +223,7 @@ export default function Landing() {
       {/* Footer */}
       <footer className="py-8 border-t border-slate-200">
         <div className="max-w-6xl mx-auto px-4 text-center text-sm text-slate-500">
-          <p>© 2024 VitalSpark. Your health, ignited. 💚</p>
+          <p>© 2024 Gluco Vital • Glucovital.fit 💚</p>
         </div>
       </footer>
     </div>

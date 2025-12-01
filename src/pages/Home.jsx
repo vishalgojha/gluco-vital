@@ -120,7 +120,7 @@ export default function Home() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-slate-800">
-            {user ? `Hello, ${user.full_name?.split(' ')[0] || 'there'}` : 'VitalSpark'} 👋
+            {user ? `Hello, ${user.full_name?.split(' ')[0] || 'there'}` : 'Gluco Vital'} 👋
           </h1>
           <p className="text-slate-500 mt-1">
             {format(new Date(), "EEEE, MMMM d")} • Your health companion
