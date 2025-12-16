@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, FileText, Send, Loader2, Calendar, AlertTriangle, CheckCircle } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -39,7 +39,6 @@ export default function DoctorFeedback() {
     follow_up_date: ""
   });
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
 
   const urlParams = new URLSearchParams(window.location.search);
   const connectionId = urlParams.get('connection');
