@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { format, subDays, isToday } from "date-fns";
 import { Droplet, Heart, Utensils, Activity, TrendingUp, Calendar, Sparkles } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -13,12 +13,25 @@ import PointsDisplay from "@/components/gamification/PointsDisplay";
 import WeeklyChallenge from "@/components/gamification/WeeklyChallenge";
 import RecommendedSchedule from "@/components/dashboard/RecommendedSchedule";
 import NurseCoach from "@/components/coaching/NurseCoach";
+import OnboardingFlow from "@/components/onboarding/OnboardingFlow";
+import QuickLogModal from "@/components/onboarding/QuickLogModal";
+import QuickMedicationModal from "@/components/onboarding/QuickMedicationModal";
 
 export default function Home() {
   const [user, setUser] = useState(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showQuickLog, setShowQuickLog] = useState(false);
+  const [showMedicationModal, setShowMedicationModal] = useState(false);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => {});
+    base44.auth.me().then((userData) => {
+      setUser(userData);
+      // Show onboarding for new users who haven't completed it
+      if (!userData?.onboarding_completed) {
+        setShowOnboarding(true);
+      }
+    }).catch(() => {});
   }, []);
 
   const { data: logs = [], isLoading: logsLoading } = useQuery({
@@ -114,8 +127,49 @@ export default function Home() {
 
   const insights = generateInsights();
 
+  const handleOnboardingAction = (action) => {
+    if (action === "connect_whatsapp") {
+      window.open(base44.agents.getWhatsAppConnectURL('health_buddy'), '_blank');
+    } else if (action === "add_medication") {
+      setShowMedicationModal(true);
+    } else if (action === "first_log") {
+      setShowQuickLog(true);
+    }
+  };
+
+  const handleOnboardingComplete = () => {
+    setShowOnboarding(false);
+    queryClient.invalidateQueries({ queryKey: ['health-logs'] });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+      {/* Onboarding Flow */}
+      {showOnboarding && (
+        <OnboardingFlow 
+          user={user} 
+          onComplete={handleOnboardingComplete}
+          onStepAction={handleOnboardingAction}
+        />
+      )}
+
+      {/* Quick Log Modal */}
+      <QuickLogModal 
+        isOpen={showQuickLog} 
+        onClose={() => {
+          setShowQuickLog(false);
+          queryClient.invalidateQueries({ queryKey: ['health-logs'] });
+        }} 
+        user={user} 
+      />
+
+      {/* Quick Medication Modal */}
+      <QuickMedicationModal 
+        isOpen={showMedicationModal} 
+        onClose={() => setShowMedicationModal(false)} 
+        user={user} 
+      />
+
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
