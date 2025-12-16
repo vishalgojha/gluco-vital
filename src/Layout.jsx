@@ -187,21 +187,34 @@ export default function Layout({ children, currentPageName }) {
                         </p>
                       </div>
 
-                      <div className="flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-[#7a9990]">
+                      {/* Footer Links */}
+                      <div className="flex flex-wrap items-center justify-center gap-3 text-xs text-[#7a9990] mb-3">
+                        <a href="#" className="hover:text-[#5b9a8b] transition-colors">About</a>
+                        <span>•</span>
+                        <a href="#" className="hover:text-[#5b9a8b] transition-colors">Privacy Policy</a>
+                        <span>•</span>
+                        <a href="#" className="hover:text-[#5b9a8b] transition-colors">Terms of Service</a>
+                        <span>•</span>
+                        <a href="mailto:support@glucovital.fit" className="hover:text-[#5b9a8b] transition-colors">Contact</a>
+                      </div>
+
+                      {/* Copyright & Made in India */}
+                      <div className="flex flex-col items-center gap-2 text-xs text-[#7a9990] mb-3">
                         <div className="flex items-center gap-1">
                           Made with <span className="text-red-500">❤️</span> in India 🇮🇳
                         </div>
-                        <div className="flex items-center gap-4">
-                          <a href="#" className="hover:text-[#5b9a8b] transition-colors">Privacy Policy</a>
-                          <span>•</span>
-                          <a href="#" className="hover:text-[#5b9a8b] transition-colors">Terms of Service</a>
-                          <span>•</span>
-                          <span>© 2024 Gluco Vital</span>
-                        </div>
+                        <span>© 2025 GlucoVital.fit • All rights reserved</span>
                       </div>
-                      <div className="mt-3 p-2 bg-amber-50 border border-amber-200 rounded-lg">
+
+                      {/* Data Security Note */}
+                      <div className="text-center text-[10px] text-[#7a9990] mb-3">
+                        🔒 We follow industry-standard practices to protect your health data.
+                      </div>
+
+                      {/* Medical Disclaimer */}
+                      <div className="p-2 bg-amber-50 border border-amber-200 rounded-lg">
                         <p className="text-center text-[11px] text-amber-800 font-medium">
-                          ⚠️ IMPORTANT: Gluco Vital is NOT a substitute for professional medical advice, diagnosis, or treatment. Never disregard or delay seeking medical advice because of information provided here. Always consult a qualified healthcare provider for any health concerns.
+                          ⚠️ GlucoVital.fit is for informational and educational purposes only and is not a substitute for professional medical advice, diagnosis, or treatment. Always consult a qualified healthcare provider for any health concerns.
                         </p>
                       </div>
                     </div>
