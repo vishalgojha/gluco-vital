@@ -1,0 +1,287 @@
+import React, { useState, useEffect } from "react";
+import { base44 } from "@/api/base44Client";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Users, UserCheck, Clock, Activity, Droplet, Heart, TrendingUp, MessageCircle, FileText, Loader2, CheckCircle, AlertTriangle } from "lucide-react";
+import { toast } from "sonner";
+import { Link } from "react-router-dom";
+import { createPageUrl } from "@/utils";
+import { format, subDays, isToday } from "date-fns";
+
+export default function DoctorDashboard() {
+  const [user, setUser] = useState(null);
+  const [selectedPatient, setSelectedPatient] = useState(null);
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    base44.auth.me().then(setUser).catch(() => {});
+  }, []);
+
+  // Get connections where user is the doctor
+  const { data: connections = [], isLoading: connectionsLoading } = useQuery({
+    queryKey: ['doctor-patients', user?.email],
+    queryFn: () => base44.entities.DoctorConnection.filter({ doctor_email: user?.email }),
+    enabled: !!user?.email
+  });
+
+  const pendingConnections = connections.filter(c => c.status === "pending");
+  const activeConnections = connections.filter(c => c.status === "active");
+
+  const acceptMutation = useMutation({
+    mutationFn: (id) => base44.entities.DoctorConnection.update(id, { 
+      status: "active",
+      accepted_at: new Date().toISOString()
+    }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['doctor-patients'] });
+      toast.success("Connection accepted!");
+    }
+  });
+
+  const declineMutation = useMutation({
+    mutationFn: (id) => base44.entities.DoctorConnection.update(id, { status: "revoked" }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['doctor-patients'] });
+      toast.success("Connection declined");
+    }
+  });
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-slate-400" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-slate-800">Doctor Dashboard</h1>
+          <p className="text-slate-500 mt-1">View and manage your patients' health data</p>
+        </div>
+
+        {/* Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-blue-100 rounded-lg">
+                  <Users className="w-5 h-5 text-blue-600" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-slate-800">{activeConnections.length}</p>
+                  <p className="text-xs text-slate-500">Active Patients</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-amber-100 rounded-lg">
+                  <Clock className="w-5 h-5 text-amber-600" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-slate-800">{pendingConnections.length}</p>
+                  <p className="text-xs text-slate-500">Pending Requests</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Pending Requests */}
+        {pendingConnections.length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+              <Clock className="w-5 h-5 text-amber-500" />
+              Pending Connection Requests
+            </h2>
+            <div className="space-y-3">
+              {pendingConnections.map(conn => (
+                <Card key={conn.id} className="border-amber-200 bg-amber-50/50">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
+                          <span className="font-semibold text-amber-700">
+                            {conn.patient_name?.[0]?.toUpperCase() || "P"}
+                          </span>
+                        </div>
+                        <div>
+                          <p className="font-medium text-slate-800">{conn.patient_name}</p>
+                          <p className="text-sm text-slate-500">{conn.patient_email}</p>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          onClick={() => acceptMutation.mutate(conn.id)}
+                          disabled={acceptMutation.isPending}
+                          className="bg-green-600 hover:bg-green-700"
+                        >
+                          <CheckCircle className="w-4 h-4 mr-1" />
+                          Accept
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => declineMutation.mutate(conn.id)}
+                          className="text-red-600 border-red-200"
+                        >
+                          Decline
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Active Patients */}
+        <div>
+          <h2 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+            <UserCheck className="w-5 h-5 text-green-500" />
+            Your Patients
+          </h2>
+
+          {connectionsLoading ? (
+            <div className="flex justify-center py-12">
+              <Loader2 className="w-8 h-8 animate-spin text-slate-400" />
+            </div>
+          ) : activeConnections.length === 0 ? (
+            <Card className="border-dashed">
+              <CardContent className="py-12 text-center">
+                <Users className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                <p className="text-slate-500">No active patients yet</p>
+                <p className="text-sm text-slate-400 mt-1">Patients can invite you from their app</p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid md:grid-cols-2 gap-4">
+              {activeConnections.map(conn => (
+                <PatientCard key={conn.id} connection={conn} />
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PatientCard({ connection }) {
+  const { data: logs = [] } = useQuery({
+    queryKey: ['patient-logs', connection.patient_email],
+    queryFn: () => base44.entities.HealthLog.filter(
+      { user_email: connection.patient_email },
+      '-created_date',
+      50
+    ),
+    enabled: connection.permissions?.includes('view_logs')
+  });
+
+  const { data: profile } = useQuery({
+    queryKey: ['patient-profile', connection.patient_email],
+    queryFn: () => base44.entities.PatientProfile.filter({ user_email: connection.patient_email }),
+    select: data => data?.[0]
+  });
+
+  const sugarLogs = logs.filter(l => l.log_type === "sugar" && l.numeric_value);
+  const lastSugar = sugarLogs[0]?.numeric_value;
+  const avgSugar = sugarLogs.length > 0
+    ? Math.round(sugarLogs.slice(0, 7).reduce((a, b) => a + b.numeric_value, 0) / Math.min(sugarLogs.length, 7))
+    : null;
+
+  const bpLogs = logs.filter(l => l.log_type === "blood_pressure");
+  const lastBP = bpLogs[0]?.value;
+
+  const todayLogs = logs.filter(l => isToday(new Date(l.created_date)));
+
+  // Check for concerning values
+  const hasHighSugar = lastSugar && lastSugar > 180;
+  const hasLowSugar = lastSugar && lastSugar < 70;
+
+  return (
+    <Card className={`hover:shadow-md transition-shadow ${hasHighSugar || hasLowSugar ? 'border-red-200' : ''}`}>
+      <CardContent className="p-5">
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#5b9a8b]/20 to-[#7eb8a8]/20 flex items-center justify-center">
+              <span className="text-lg font-semibold text-[#5b9a8b]">
+                {connection.patient_name?.[0]?.toUpperCase() || "P"}
+              </span>
+            </div>
+            <div>
+              <h3 className="font-semibold text-slate-800">{connection.patient_name}</h3>
+              <p className="text-sm text-slate-500">
+                {profile?.age ? `${profile.age} yrs` : ""} 
+                {profile?.conditions?.length > 0 && ` • ${profile.conditions.join(", ")}`}
+              </p>
+            </div>
+          </div>
+          {(hasHighSugar || hasLowSugar) && (
+            <Badge className="bg-red-100 text-red-700">
+              <AlertTriangle className="w-3 h-3 mr-1" />
+              Alert
+            </Badge>
+          )}
+        </div>
+
+        {/* Quick Stats */}
+        <div className="grid grid-cols-3 gap-3 mb-4">
+          <div className="p-3 bg-blue-50 rounded-lg text-center">
+            <Droplet className="w-4 h-4 text-blue-500 mx-auto mb-1" />
+            <p className={`text-lg font-bold ${hasHighSugar ? 'text-red-600' : hasLowSugar ? 'text-amber-600' : 'text-slate-800'}`}>
+              {lastSugar || "--"}
+            </p>
+            <p className="text-xs text-slate-500">Last Sugar</p>
+          </div>
+          <div className="p-3 bg-red-50 rounded-lg text-center">
+            <Heart className="w-4 h-4 text-red-500 mx-auto mb-1" />
+            <p className="text-lg font-bold text-slate-800">{lastBP || "--"}</p>
+            <p className="text-xs text-slate-500">Last BP</p>
+          </div>
+          <div className="p-3 bg-green-50 rounded-lg text-center">
+            <TrendingUp className="w-4 h-4 text-green-500 mx-auto mb-1" />
+            <p className="text-lg font-bold text-slate-800">{avgSugar || "--"}</p>
+            <p className="text-xs text-slate-500">7-Day Avg</p>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between text-sm text-slate-500 mb-4">
+          <span>{todayLogs.length} logs today</span>
+          <span>Last active: {logs[0] ? format(new Date(logs[0].created_date), "MMM d, h:mm a") : "Never"}</span>
+        </div>
+
+        {/* Actions */}
+        <div className="flex gap-2">
+          <Link to={createPageUrl(`PatientDetail?email=${connection.patient_email}&connection=${connection.id}`)} className="flex-1">
+            <Button variant="outline" className="w-full" size="sm">
+              <Activity className="w-4 h-4 mr-1" />
+              View Details
+            </Button>
+          </Link>
+          <Link to={createPageUrl(`DoctorMessages?connection=${connection.id}`)}>
+            <Button variant="outline" size="sm">
+              <MessageCircle className="w-4 h-4" />
+            </Button>
+          </Link>
+          <Link to={createPageUrl(`DoctorFeedback?connection=${connection.id}`)}>
+            <Button size="sm" className="bg-[#5b9a8b] hover:bg-[#4a8a7b]">
+              <FileText className="w-4 h-4 mr-1" />
+              Feedback
+            </Button>
+          </Link>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
