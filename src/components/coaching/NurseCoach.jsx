@@ -4,6 +4,31 @@ import { Button } from "@/components/ui/button";
 import { Stethoscope, Sparkles, TrendingUp, TrendingDown, Target, Calendar, Loader2, RefreshCw } from "lucide-react";
 import { format, subDays, differenceInDays } from "date-fns";
 import ReactMarkdown from "react-markdown";
+import { Utensils, Activity as ActivityIcon, Shield, Pill } from "lucide-react";
+
+function calculateStdDev(values) {
+  const avg = values.reduce((a, b) => a + b, 0) / values.length;
+  const variance = values.reduce((sum, val) => sum + Math.pow(val - avg, 2), 0) / values.length;
+  return Math.sqrt(variance);
+}
+
+function RiskBadge({ label, level }) {
+  const colors = {
+    none: "bg-green-100 text-green-700 border-green-200",
+    low: "bg-blue-100 text-blue-700 border-blue-200",
+    mild: "bg-blue-100 text-blue-700 border-blue-200",
+    moderate: "bg-amber-100 text-amber-700 border-amber-200",
+    significant: "bg-orange-100 text-orange-700 border-orange-200",
+    high: "bg-red-100 text-red-700 border-red-200"
+  };
+  
+  return (
+    <div className={`text-center px-3 py-2 rounded-lg border ${colors[level] || colors.none}`}>
+      <p className="text-xs font-semibold">{label}</p>
+      <p className="text-[10px] uppercase mt-0.5">{level}</p>
+    </div>
+  );
+}
 
 export default function NurseCoach({ logs = [], profile, achievements }) {
   const [coaching, setCoaching] = useState(null);
@@ -17,6 +42,8 @@ export default function NurseCoach({ logs = [], profile, achievements }) {
       const bpLogs = logs.filter(l => l.log_type === "blood_pressure");
       const mealLogs = logs.filter(l => l.log_type === "meal");
       const medicationLogs = logs.filter(l => l.log_type === "medication");
+      const exerciseLogs = logs.filter(l => l.log_type === "exercise");
+      const symptomLogs = logs.filter(l => l.log_type === "symptom");
 
       // Calculate patterns
       const fastingReadings = sugarLogs.filter(l => l.time_of_day === "morning_fasting");
@@ -28,6 +55,27 @@ export default function NurseCoach({ logs = [], profile, achievements }) {
       const avgPP = ppReadings.length > 0 
         ? Math.round(ppReadings.reduce((a, b) => a + b.numeric_value, 0) / ppReadings.length) 
         : null;
+
+      // RISK DETECTION: DKA and Hypoglycemia patterns
+      const highSugarReadings = sugarLogs.filter(l => l.numeric_value > 250);
+      const veryHighSugarReadings = sugarLogs.filter(l => l.numeric_value > 300);
+      const lowSugarReadings = sugarLogs.filter(l => l.numeric_value < 70);
+      const veryLowSugarReadings = sugarLogs.filter(l => l.numeric_value < 50);
+      
+      // Recent dangerous patterns (last 7 days)
+      const recentHighs = highSugarReadings.filter(l => differenceInDays(new Date(), new Date(l.created_date)) <= 7);
+      const recentLows = lowSugarReadings.filter(l => differenceInDays(new Date(), new Date(l.created_date)) <= 7);
+      
+      // Variability (high variability = poor control)
+      const last14Readings = sugarLogs.slice(0, 14).map(l => l.numeric_value);
+      const stdDev = last14Readings.length > 2 ? calculateStdDev(last14Readings) : 0;
+      const highVariability = stdDev > 50;
+
+      // Symptom analysis
+      const recentSymptoms = symptomLogs.filter(l => differenceInDays(new Date(), new Date(l.created_date)) <= 7);
+      const worryingSymptoms = recentSymptoms.filter(l => 
+        /dizzy|nausea|vomit|confusion|chest|pain|breath/i.test(l.value || l.notes || '')
+      );
 
       // Weekly comparison
       const last7Days = sugarLogs.filter(l => differenceInDays(new Date(), new Date(l.created_date)) <= 7);
@@ -43,12 +91,27 @@ export default function NurseCoach({ logs = [], profile, achievements }) {
         ? Math.round(prev7Days.reduce((a, b) => a + b.numeric_value, 0) / prev7Days.length) 
         : null;
 
-      // Time-of-day patterns
+      // Time-of-day patterns for meal recommendations
+      const morningAvg = sugarLogs.filter(l => l.time_of_day?.includes("breakfast")).reduce((sum, l, _, arr) => sum + l.numeric_value / arr.length, 0);
+      const lunchAvg = sugarLogs.filter(l => l.time_of_day?.includes("lunch")).reduce((sum, l, _, arr) => sum + l.numeric_value / arr.length, 0);
+      const dinnerAvg = sugarLogs.filter(l => l.time_of_day?.includes("dinner")).reduce((sum, l, _, arr) => sum + l.numeric_value / arr.length, 0);
+      
       const afterDinnerAvg = sugarLogs.filter(l => l.time_of_day === "after_dinner").length > 0
         ? Math.round(sugarLogs.filter(l => l.time_of_day === "after_dinner").reduce((a, b) => a + b.numeric_value, 0) / sugarLogs.filter(l => l.time_of_day === "after_dinner").length)
         : null;
 
-      const prompt = `You are Nurse Priya, a warm and caring diabetes health coach. Analyze this patient's health data and provide personalized coaching.
+      // Engagement metrics
+      const loggingStreak = achievements?.current_streak || 0;
+      const totalLogs = achievements?.logs_count || logs.length;
+      const recentEngagement = logs.filter(l => differenceInDays(new Date(), new Date(l.created_date)) <= 7).length;
+      const engagementLevel = recentEngagement >= 14 ? "high" : recentEngagement >= 7 ? "medium" : "low";
+
+      // Medication adherence
+      const expectedMeds = profile?.medications?.length || 0;
+      const actualMeds = medicationLogs.filter(l => differenceInDays(new Date(), new Date(l.created_date)) <= 7).length;
+      const medAdherence = expectedMeds > 0 ? Math.round((actualMeds / (expectedMeds * 7)) * 100) : 100;
+
+      const prompt = `You are Nurse Priya, a warm, caring, and highly intelligent diabetes health coach with advanced clinical knowledge. Analyze this patient's data deeply and provide proactive, personalized coaching with early risk detection.
 
 **PATIENT PROFILE:**
 - Name: ${profile?.name || "Patient"}
@@ -57,42 +120,99 @@ export default function NurseCoach({ logs = [], profile, achievements }) {
 - Conditions: ${profile?.conditions?.join(", ") || "Diabetes"}
 - Target Fasting: ${profile?.target_sugar_fasting || 100} mg/dL
 - Target PP: ${profile?.target_sugar_post_meal || 140} mg/dL
-- Current Streak: ${achievements?.current_streak || 0} days
-- Language Preference: ${profile?.language_preference || "english"}
+- Current Streak: ${loggingStreak} days
+- Language: ${profile?.language_preference || "english"}
+- Cultural Context: ${profile?.cultural_context || "general"}
+- Preferred Honorific: ${profile?.preferred_honorific || ""}
 
 **HEALTH DATA (Last 30 days):**
 - Total Sugar Readings: ${sugarLogs.length}
-- Fasting Readings: ${fastingReadings.length} (Avg: ${avgFasting || "N/A"} mg/dL)
-- PP Readings: ${ppReadings.length} (Avg: ${avgPP || "N/A"} mg/dL)
-- After Dinner Avg: ${afterDinnerAvg || "N/A"} mg/dL
+- Fasting: ${fastingReadings.length} readings (Avg: ${avgFasting || "N/A"} mg/dL)
+- Post-Prandial: ${ppReadings.length} readings (Avg: ${avgPP || "N/A"} mg/dL)
 - BP Readings: ${bpLogs.length}
 - Meal Logs: ${mealLogs.length}
 - Medication Logs: ${medicationLogs.length}
+- Exercise Logs: ${exerciseLogs.length}
+- Symptom Logs: ${symptomLogs.length}
+
+**⚠️ CRITICAL RISK INDICATORS:**
+- High readings (>250): ${highSugarReadings.length} total, ${recentHighs.length} in last 7 days
+- Very high (>300): ${veryHighSugarReadings.length} total
+- Low readings (<70): ${lowSugarReadings.length} total, ${recentLows.length} in last 7 days
+- Very low (<50): ${veryLowSugarReadings.length} total
+- Blood sugar variability (StdDev): ${stdDev.toFixed(1)} ${highVariability ? "⚠️ HIGH" : ""}
+- Worrying symptoms: ${worryingSymptoms.length} in last 7 days
+- Medication adherence: ${medAdherence}%
+
+**PATTERN ANALYSIS:**
+- Morning (breakfast): ${morningAvg ? morningAvg.toFixed(0) : "N/A"} mg/dL avg
+- Afternoon (lunch): ${lunchAvg ? lunchAvg.toFixed(0) : "N/A"} mg/dL avg
+- Evening (dinner): ${dinnerAvg ? dinnerAvg.toFixed(0) : "N/A"} mg/dL avg
+- After dinner spike: ${afterDinnerAvg || "N/A"} mg/dL
 
 **WEEKLY TREND:**
-- Last 7 days avg: ${avgLast7 || "N/A"} mg/dL
-- Previous 7 days avg: ${avgPrev7 || "N/A"} mg/dL
-- Trend: ${avgLast7 && avgPrev7 ? (avgLast7 < avgPrev7 ? "Improving ✓" : avgLast7 > avgPrev7 ? "Needs attention" : "Stable") : "Need more data"}
+- Last 7 days: ${avgLast7 || "N/A"} mg/dL avg
+- Previous 7 days: ${avgPrev7 || "N/A"} mg/dL avg
+- Direction: ${avgLast7 && avgPrev7 ? (avgLast7 < avgPrev7 ? "Improving ↓" : avgLast7 > avgPrev7 ? "Worsening ↑" : "Stable →") : "Insufficient data"}
+
+**ENGAGEMENT LEVEL:** ${engagementLevel.toUpperCase()}
+- Recent logs (7d): ${recentEngagement}
+- Logging streak: ${loggingStreak} days
+- Total lifetime logs: ${totalLogs}
+
+**COACHING INSTRUCTIONS:**
+1. **Risk Assessment First**: If ANY critical risks detected (DKA signs, frequent hypoglycemia, high variability, dangerous symptoms), flag them URGENTLY
+2. **Personalization**: Adapt tone based on engagement level:
+   - High engagement: Detailed, analytical, celebrate progress
+   - Medium engagement: Encouraging, supportive, motivate consistency
+   - Low engagement: Simple, warm, re-engage gently
+3. **Cultural Sensitivity**: Use appropriate language/examples for ${profile?.cultural_context || "general"} context
+4. **Lifestyle Recommendations**: Provide SPECIFIC diet and exercise advice based on:
+   - Time-of-day patterns (which meal causes spikes?)
+   - Cultural food preferences
+   - Current exercise level
+5. **Medication Insights**: If adherence <80%, probe why (forgetfulness? side effects? access?)
 
 **RECENT READINGS (last 10):**
-${sugarLogs.slice(0, 10).map(l => `- ${format(new Date(l.created_date), "MMM d")}: ${l.numeric_value} mg/dL (${l.time_of_day || "unspecified"})`).join("\n")}
+${sugarLogs.slice(0, 10).map(l => `- ${format(new Date(l.created_date), "MMM d HH:mm")}: ${l.numeric_value} mg/dL (${l.time_of_day || "unspecified"})${l.notes ? ` - "${l.notes}"` : ''}`).join("\n")}
 
-Provide coaching response in this JSON format:
+${worryingSymptoms.length > 0 ? `\n**RECENT SYMPTOMS:**\n${worryingSymptoms.map(s => `- ${s.value}: ${s.notes || ''}`).join("\n")}` : ''}
+
+Provide comprehensive coaching response in this JSON format:
 {
-  "greeting": "Warm personalized greeting using their name and cultural context",
-  "overall_status": "good" | "moderate" | "needs_attention",
-  "status_message": "Brief status summary",
+  "greeting": "Warm personalized greeting using name, honorific, cultural context",
+  "overall_status": "excellent" | "good" | "moderate" | "needs_attention" | "critical",
+  "status_message": "Brief overall assessment",
+  "urgent_alerts": [
+    "Any critical health risks requiring immediate doctor consultation"
+  ],
+  "risk_assessment": {
+    "dka_risk": "none" | "low" | "moderate" | "high",
+    "hypoglycemia_risk": "none" | "low" | "moderate" | "high",
+    "variability_concern": "none" | "mild" | "significant",
+    "notes": "Brief explanation of detected risks"
+  },
   "key_insights": [
-    {"type": "positive" | "warning" | "tip", "message": "Insight message"}
+    {"type": "positive" | "warning" | "critical" | "tip", "message": "Insight with specific data"}
   ],
-  "weekly_focus": "One specific goal for this week",
+  "diet_recommendations": [
+    "Specific food/meal advice based on time-of-day patterns and cultural context",
+    "What to eat more/less of with reasoning"
+  ],
+  "exercise_recommendations": [
+    "Specific exercise advice based on current level and sugar patterns",
+    "Best timing for exercise based on their data"
+  ],
+  "medication_coaching": "Advice on medication timing/adherence if needed, or null",
+  "weekly_focus": "One specific, measurable goal for this week",
   "action_plan": [
-    "Specific actionable step 1",
-    "Specific actionable step 2", 
-    "Specific actionable step 3"
+    "Specific actionable step with reasoning",
+    "Another specific step",
+    "Third specific step"
   ],
-  "motivation": "Encouraging message with cultural touch",
-  "next_check_reminder": "What to focus on next"
+  "motivation": "Personalized encouragement based on engagement level and progress",
+  "engagement_boost": "Specific message to improve logging consistency if engagement is low, or null",
+  "next_check_reminder": "What specific metrics to track next"
 }`;
 
       const result = await base44.integrations.Core.InvokeLLM({
@@ -101,8 +221,18 @@ Provide coaching response in this JSON format:
           type: "object",
           properties: {
             greeting: { type: "string" },
-            overall_status: { type: "string", enum: ["good", "moderate", "needs_attention"] },
+            overall_status: { type: "string", enum: ["excellent", "good", "moderate", "needs_attention", "critical"] },
             status_message: { type: "string" },
+            urgent_alerts: { type: "array", items: { type: "string" } },
+            risk_assessment: {
+              type: "object",
+              properties: {
+                dka_risk: { type: "string", enum: ["none", "low", "moderate", "high"] },
+                hypoglycemia_risk: { type: "string", enum: ["none", "low", "moderate", "high"] },
+                variability_concern: { type: "string", enum: ["none", "mild", "significant"] },
+                notes: { type: "string" }
+              }
+            },
             key_insights: { 
               type: "array", 
               items: { 
@@ -113,9 +243,13 @@ Provide coaching response in this JSON format:
                 } 
               } 
             },
+            diet_recommendations: { type: "array", items: { type: "string" } },
+            exercise_recommendations: { type: "array", items: { type: "string" } },
+            medication_coaching: { type: "string" },
             weekly_focus: { type: "string" },
             action_plan: { type: "array", items: { type: "string" } },
             motivation: { type: "string" },
+            engagement_boost: { type: "string" },
             next_check_reminder: { type: "string" }
           }
         }
@@ -130,14 +264,17 @@ Provide coaching response in this JSON format:
   };
 
   const statusColors = {
+    excellent: "from-emerald-500 to-green-500",
     good: "from-green-500 to-emerald-500",
     moderate: "from-amber-500 to-orange-500",
-    needs_attention: "from-red-500 to-rose-500"
+    needs_attention: "from-orange-500 to-red-500",
+    critical: "from-red-600 to-rose-600"
   };
 
   const insightIcons = {
     positive: "✅",
     warning: "⚠️",
+    critical: "🚨",
     tip: "💡"
   };
 
@@ -232,6 +369,50 @@ Provide coaching response in this JSON format:
           <p className="text-sm text-indigo-700">{coaching.weekly_focus}</p>
         </div>
 
+        {/* Diet Recommendations */}
+        {coaching.diet_recommendations && coaching.diet_recommendations.length > 0 && (
+          <div>
+            <h4 className="font-medium text-slate-800 flex items-center gap-2 mb-3">
+              <Utensils className="w-4 h-4 text-green-600" /> Personalized Diet Advice
+            </h4>
+            <div className="space-y-2">
+              {coaching.diet_recommendations.map((rec, idx) => (
+                <div key={idx} className="flex items-start gap-2 bg-green-50 rounded-lg p-3 border border-green-100">
+                  <span className="text-green-600">🥗</span>
+                  <p className="text-sm text-green-800">{rec}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Exercise Recommendations */}
+        {coaching.exercise_recommendations && coaching.exercise_recommendations.length > 0 && (
+          <div>
+            <h4 className="font-medium text-slate-800 flex items-center gap-2 mb-3">
+              <Activity className="w-4 h-4 text-blue-600" /> Exercise Guidance
+            </h4>
+            <div className="space-y-2">
+              {coaching.exercise_recommendations.map((rec, idx) => (
+                <div key={idx} className="flex items-start gap-2 bg-blue-50 rounded-lg p-3 border border-blue-100">
+                  <span className="text-blue-600">🏃</span>
+                  <p className="text-sm text-blue-800">{rec}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Medication Coaching */}
+        {coaching.medication_coaching && (
+          <div className="bg-gradient-to-r from-purple-50 to-violet-50 rounded-xl p-4 border border-purple-100">
+            <h4 className="font-medium text-purple-800 flex items-center gap-2 mb-2">
+              <Pill className="w-4 h-4" /> Medication Insights
+            </h4>
+            <p className="text-sm text-purple-700">{coaching.medication_coaching}</p>
+          </div>
+        )}
+
         {/* Action Plan */}
         <div>
           <h4 className="font-medium text-slate-800 flex items-center gap-2 mb-3">
@@ -248,6 +429,13 @@ Provide coaching response in this JSON format:
             ))}
           </div>
         </div>
+
+        {/* Engagement Boost */}
+        {coaching.engagement_boost && (
+          <div className="bg-gradient-to-r from-pink-50 to-rose-50 rounded-xl p-4 border border-pink-100">
+            <p className="text-sm text-pink-800">💪 <strong>Stay Engaged:</strong> {coaching.engagement_boost}</p>
+          </div>
+        )}
 
         {/* Motivation */}
         <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-4 border border-amber-100">
