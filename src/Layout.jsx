@@ -19,6 +19,7 @@ export default function Layout({ children, currentPageName }) {
 
   const navItems = [
     { name: "Home", icon: Home, page: "Home" },
+    { name: "Progress", icon: Activity, page: "Progress" },
     { name: "Reports", icon: FileText, page: "Reports" },
     { name: "Achievements", icon: Trophy, page: "Achievements" },
     { name: "History", icon: History, page: "History" },

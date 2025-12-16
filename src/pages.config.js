@@ -4,6 +4,7 @@ import Home from './pages/Home';
 import Landing from './pages/Landing';
 import Profile from './pages/Profile';
 import Reports from './pages/Reports';
+import Progress from './pages/Progress';
 import __Layout from './Layout.jsx';
 
 
@@ -14,6 +15,7 @@ export const PAGES = {
     "Landing": Landing,
     "Profile": Profile,
     "Reports": Reports,
+    "Progress": Progress,
 }
 
 export const pagesConfig = {
