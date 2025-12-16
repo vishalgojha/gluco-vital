@@ -20,10 +20,14 @@ export default function Profile() {
   const [formData, setFormData] = useState({
     name: "",
     age: "",
+    gender: "",
     conditions: [],
     medications: [],
+    is_on_insulin: false,
     disability_type: "",
     language_preference: "english",
+    cultural_context: "",
+    preferred_honorific: "",
     target_sugar_fasting: 100,
     target_sugar_post_meal: 140,
     target_bp_systolic: 120,
@@ -61,10 +65,14 @@ export default function Profile() {
       setFormData({
         name: profile.name || user?.full_name || "",
         age: profile.age || "",
+        gender: profile.gender || "",
         conditions: profile.conditions || [],
         medications: medicationsAsStrings,
+        is_on_insulin: profile.is_on_insulin || false,
         disability_type: profile.disability_type || "",
         language_preference: profile.language_preference || "english",
+        cultural_context: profile.cultural_context || "",
+        preferred_honorific: profile.preferred_honorific || "",
         target_sugar_fasting: profile.target_sugar_fasting || 100,
         target_sugar_post_meal: profile.target_sugar_post_meal || 140,
         target_bp_systolic: profile.target_bp_systolic || 120,
@@ -199,6 +207,22 @@ export default function Profile() {
 
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
+                  <Label>Gender</Label>
+                  <Select
+                    value={formData.gender}
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, gender: value }))}
+                  >
+                    <SelectTrigger className="mt-1.5">
+                      <SelectValue placeholder="Select gender" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="male">Male</SelectItem>
+                      <SelectItem value="female">Female</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
                   <Label>Language Preference</Label>
                   <Select
                     value={formData.language_preference}
@@ -231,6 +255,38 @@ export default function Profile() {
                     value={formData.disability_type}
                     onChange={(e) => setFormData(prev => ({ ...prev, disability_type: e.target.value }))}
                     placeholder="e.g., Visual impairment, Motor disability"
+                    className="mt-1.5"
+                  />
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <Label>Cultural Context</Label>
+                  <Select
+                    value={formData.cultural_context}
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, cultural_context: value }))}
+                  >
+                    <SelectTrigger className="mt-1.5">
+                      <SelectValue placeholder="Select cultural context" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="south_asian">South Asian</SelectItem>
+                      <SelectItem value="chinese">Chinese</SelectItem>
+                      <SelectItem value="arabic">Arabic</SelectItem>
+                      <SelectItem value="latin">Latin</SelectItem>
+                      <SelectItem value="western">Western</SelectItem>
+                      <SelectItem value="southeast_asian">Southeast Asian</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Preferred Honorific</Label>
+                  <Input
+                    value={formData.preferred_honorific}
+                    onChange={(e) => setFormData(prev => ({ ...prev, preferred_honorific: e.target.value }))}
+                    placeholder="e.g., Beta, Bhaiya, Uncle, Auntie"
                     className="mt-1.5"
                   />
                 </div>
@@ -295,6 +351,19 @@ export default function Profile() {
                     </Badge>
                   ))}
                 </div>
+              </div>
+
+              <div className="flex items-center justify-between p-4 bg-amber-50 rounded-lg border border-amber-200">
+                <div>
+                  <Label className="text-amber-800">On Insulin Therapy?</Label>
+                  <p className="text-xs text-amber-600 mt-1">Important for monitoring schedule recommendations</p>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={formData.is_on_insulin}
+                  onChange={(e) => setFormData(prev => ({ ...prev, is_on_insulin: e.target.checked }))}
+                  className="w-5 h-5 rounded border-amber-300 text-amber-600 focus:ring-amber-500"
+                />
               </div>
             </CardContent>
           </Card>
