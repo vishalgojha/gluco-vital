@@ -189,11 +189,11 @@ export default function Layout({ children, currentPageName }) {
 
                       {/* Footer Links */}
                       <div className="flex flex-wrap items-center justify-center gap-3 text-xs text-[#7a9990] mb-3">
-                        <a href="#" className="hover:text-[#5b9a8b] transition-colors">About</a>
+                        <Link to={createPageUrl("About")} className="hover:text-[#5b9a8b] transition-colors">About</Link>
                         <span>•</span>
-                        <a href="#" className="hover:text-[#5b9a8b] transition-colors">Privacy Policy</a>
+                        <Link to={createPageUrl("PrivacyPolicy")} className="hover:text-[#5b9a8b] transition-colors">Privacy Policy</Link>
                         <span>•</span>
-                        <a href="#" className="hover:text-[#5b9a8b] transition-colors">Terms of Service</a>
+                        <Link to={createPageUrl("Terms")} className="hover:text-[#5b9a8b] transition-colors">Terms of Service</Link>
                         <span>•</span>
                         <a href="mailto:support@glucovital.fit" className="hover:text-[#5b9a8b] transition-colors">Contact</a>
                       </div>
