@@ -164,18 +164,14 @@ export default function Landing() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button 
               size="lg"
-              onClick={() => base44.auth.redirectToLogin(createPageUrl("Home"))}
-              className="bg-[#5b9a8b] hover:bg-[#4a8a7b] h-14 px-8 text-lg rounded-xl shadow-lg shadow-[#5b9a8b]/20"
-            >
-              Start Free <ArrowRight className="w-5 h-5 ml-2" />
-            </Button>
-            <Button 
-              size="lg"
               variant="outline"
               className="h-14 px-8 text-lg rounded-xl border-2"
+              asChild
             >
-              <MessageCircle className="w-5 h-5 mr-2 text-green-600" />
-              Try on WhatsApp
+              <a href={`https://wa.me/15551234567`} target="_blank" rel="noopener noreferrer">
+                <MessageCircle className="w-5 h-5 mr-2 text-green-600" />
+                Try on WhatsApp
+              </a>
             </Button>
           </div>
 
