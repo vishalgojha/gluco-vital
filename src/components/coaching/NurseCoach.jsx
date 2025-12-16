@@ -340,6 +340,42 @@ Provide comprehensive coaching response in this JSON format:
         {/* Greeting */}
         <p className="text-slate-700 leading-relaxed">{coaching.greeting}</p>
 
+        {/* Urgent Alerts */}
+        {coaching.urgent_alerts && coaching.urgent_alerts.length > 0 && (
+          <div className="bg-gradient-to-br from-red-50 to-rose-50 rounded-xl p-5 border-2 border-red-200">
+            <h3 className="font-semibold text-red-800 mb-3 flex items-center gap-2">
+              <TrendingDown className="w-5 h-5 text-red-600 animate-pulse" />
+              Urgent Health Alerts
+            </h3>
+            <div className="space-y-2">
+              {coaching.urgent_alerts.map((alert, idx) => (
+                <div key={idx} className="flex items-start gap-2 bg-white/60 rounded-lg p-3">
+                  <span className="text-red-600 font-bold">🚨</span>
+                  <p className="text-sm text-red-900 font-medium">{alert}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Risk Assessment */}
+        {coaching.risk_assessment && (
+          <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-5 border border-amber-100">
+            <h3 className="font-semibold text-amber-900 mb-3 flex items-center gap-2">
+              <Shield className="w-5 h-5 text-amber-600" />
+              Risk Assessment
+            </h3>
+            <div className="grid grid-cols-3 gap-3 mb-3">
+              <RiskBadge label="DKA Risk" level={coaching.risk_assessment.dka_risk} />
+              <RiskBadge label="Hypo Risk" level={coaching.risk_assessment.hypoglycemia_risk} />
+              <RiskBadge label="Variability" level={coaching.risk_assessment.variability_concern} />
+            </div>
+            {coaching.risk_assessment.notes && (
+              <p className="text-sm text-amber-800 bg-white/50 rounded-lg p-3">{coaching.risk_assessment.notes}</p>
+            )}
+          </div>
+        )}
+
         {/* Key Insights */}
         <div className="space-y-2">
           <h4 className="font-medium text-slate-800 flex items-center gap-2">
@@ -390,7 +426,7 @@ Provide comprehensive coaching response in this JSON format:
         {coaching.exercise_recommendations && coaching.exercise_recommendations.length > 0 && (
           <div>
             <h4 className="font-medium text-slate-800 flex items-center gap-2 mb-3">
-              <Activity className="w-4 h-4 text-blue-600" /> Exercise Guidance
+              <ActivityIcon className="w-4 h-4 text-blue-600" /> Exercise Guidance
             </h4>
             <div className="space-y-2">
               {coaching.exercise_recommendations.map((rec, idx) => (
