@@ -44,6 +44,9 @@ export default function NurseCoach({ logs = [], profile, achievements }) {
       const medicationLogs = logs.filter(l => l.log_type === "medication");
       const exerciseLogs = logs.filter(l => l.log_type === "exercise");
       const symptomLogs = logs.filter(l => l.log_type === "symptom");
+      const stepsLogs = logs.filter(l => l.log_type === "steps");
+      const heartRateLogs = logs.filter(l => l.log_type === "heart_rate");
+      const sleepLogs = logs.filter(l => l.log_type === "sleep");
 
       // Calculate patterns
       const fastingReadings = sugarLogs.filter(l => l.time_of_day === "morning_fasting");
@@ -106,6 +109,19 @@ export default function NurseCoach({ logs = [], profile, achievements }) {
       const recentEngagement = logs.filter(l => differenceInDays(new Date(), new Date(l.created_date)) <= 7).length;
       const engagementLevel = recentEngagement >= 14 ? "high" : recentEngagement >= 7 ? "medium" : "low";
 
+      // Wearable insights
+      const recentSteps = stepsLogs.filter(l => differenceInDays(new Date(), new Date(l.created_date)) <= 7);
+      const avgDailySteps = recentSteps.length > 0 
+        ? Math.round(recentSteps.reduce((sum, l) => sum + (l.numeric_value || 0), 0) / 7)
+        : 0;
+      const recentSleep = sleepLogs.filter(l => differenceInDays(new Date(), new Date(l.created_date)) <= 7);
+      const avgSleep = recentSleep.length > 0
+        ? (recentSleep.reduce((sum, l) => sum + (l.numeric_value || 0), 0) / recentSleep.length).toFixed(1)
+        : 0;
+      const avgHR = heartRateLogs.length > 0
+        ? Math.round(heartRateLogs.slice(0, 20).reduce((sum, l) => sum + (l.numeric_value || 0), 0) / Math.min(heartRateLogs.length, 20))
+        : 0;
+
       // Medication adherence
       const expectedMeds = profile?.medications?.length || 0;
       const actualMeds = medicationLogs.filter(l => differenceInDays(new Date(), new Date(l.created_date)) <= 7).length;
@@ -134,6 +150,7 @@ export default function NurseCoach({ logs = [], profile, achievements }) {
 - Medication Logs: ${medicationLogs.length}
 - Exercise Logs: ${exerciseLogs.length}
 - Symptom Logs: ${symptomLogs.length}
+- Wearable Data: ${stepsLogs.length} steps, ${heartRateLogs.length} HR, ${sleepLogs.length} sleep entries
 
 **⚠️ CRITICAL RISK INDICATORS:**
 - High readings (>250): ${highSugarReadings.length} total, ${recentHighs.length} in last 7 days
@@ -160,6 +177,12 @@ export default function NurseCoach({ logs = [], profile, achievements }) {
 - Logging streak: ${loggingStreak} days
 - Total lifetime logs: ${totalLogs}
 
+**WEARABLE/ACTIVITY DATA (Last 7 days):**
+- Daily Steps Average: ${avgDailySteps > 0 ? `${avgDailySteps.toLocaleString()} (Goal: 10,000)` : "N/A"}
+- Average Sleep: ${avgSleep > 0 ? `${avgSleep} hours/night (Goal: 7-8h)` : "N/A"}
+- Resting Heart Rate: ${avgHR > 0 ? `${avgHR} bpm` : "N/A"}
+- Activity Level: ${avgDailySteps >= 10000 ? "High ✓" : avgDailySteps >= 5000 ? "Moderate" : avgDailySteps > 0 ? "Low - needs improvement" : "No data"}
+
 **COACHING INSTRUCTIONS:**
 1. **Risk Assessment First**: If ANY critical risks detected (DKA signs, frequent hypoglycemia, high variability, dangerous symptoms), flag them URGENTLY
 2. **Personalization**: Adapt tone based on engagement level:
@@ -170,7 +193,8 @@ export default function NurseCoach({ logs = [], profile, achievements }) {
 4. **Lifestyle Recommendations**: Provide SPECIFIC diet and exercise advice based on:
    - Time-of-day patterns (which meal causes spikes?)
    - Cultural food preferences
-   - Current exercise level
+   - Current exercise/activity level from wearable data
+   - Sleep quality and its impact on blood sugar control
 5. **Medication Insights**: If adherence <80%, probe why (forgetfulness? side effects? access?)
 
 **RECENT READINGS (last 10):**

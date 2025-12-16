@@ -11,6 +11,7 @@ import { SugarTrendChart, SugarDistributionChart, TimeOfDayChart, BPTrendChart }
 import MedicationAdherenceChart from "@/components/progress/MedicationAdherenceChart";
 import ProgressStats from "@/components/progress/ProgressStats";
 import ComparisonCards from "@/components/progress/ComparisonCards";
+import WearableDashboard from "@/components/wearables/WearableDashboard";
 
 export default function Progress() {
   const [user, setUser] = useState(null);
@@ -122,10 +123,11 @@ export default function Progress() {
 
         {/* Charts Section */}
         <Tabs defaultValue="sugar" className="mt-8">
-          <TabsList className="grid w-full grid-cols-4 mb-6">
+          <TabsList className="grid w-full grid-cols-5 mb-6">
             <TabsTrigger value="sugar">Blood Sugar</TabsTrigger>
             <TabsTrigger value="bp">Blood Pressure</TabsTrigger>
             <TabsTrigger value="medication">Medication</TabsTrigger>
+            <TabsTrigger value="wearables">Wearables</TabsTrigger>
             <TabsTrigger value="activity">Activity</TabsTrigger>
           </TabsList>
 
@@ -156,6 +158,13 @@ export default function Progress() {
             <MedicationAdherenceChart 
               logs={filteredLogs}
               profile={profile}
+              timeRange={parseInt(timeRange)}
+            />
+          </TabsContent>
+
+          <TabsContent value="wearables" className="space-y-6">
+            <WearableDashboard 
+              userEmail={user?.email}
               timeRange={parseInt(timeRange)}
             />
           </TabsContent>
