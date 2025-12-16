@@ -100,17 +100,29 @@ export default function Profile() {
         medications: medicationsAsObjects
       };
       
+      console.log("Saving profile payload:", payload);
+      console.log("Profile exists:", !!profile?.id);
+      
       if (profile?.id) {
-        return base44.entities.PatientProfile.update(profile.id, payload);
+        const result = await base44.entities.PatientProfile.update(profile.id, payload);
+        console.log("Update result:", result);
+        return result;
       }
-      return base44.entities.PatientProfile.create(payload);
+      const result = await base44.entities.PatientProfile.create(payload);
+      console.log("Create result:", result);
+      return result;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['patient-profile'] });
-      toast.success("Profile saved successfully!");
+      toast.success("Profile saved successfully!", {
+        description: `Name: ${formData.name}, Age: ${formData.age}, Gender: ${formData.gender || 'Not set'}`
+      });
     },
-    onError: () => {
-      toast.error("Failed to save profile");
+    onError: (error) => {
+      console.error("Save error:", error);
+      toast.error("Failed to save profile", {
+        description: error?.message || "Please try again"
+      });
     }
   });
 
@@ -480,11 +492,25 @@ export default function Profile() {
           >
             {saveMutation.isPending ? (
               <Loader2 className="w-5 h-5 animate-spin mr-2" />
+            ) : saveMutation.isSuccess ? (
+              <>
+                <span className="text-green-400 mr-2">✓</span>
+                Saved!
+              </>
             ) : (
-              <Save className="w-5 h-5 mr-2" />
+              <>
+                <Save className="w-5 h-5 mr-2" />
+                Save Profile
+              </>
             )}
-            Save Profile
           </Button>
+
+          {/* Last saved info */}
+          {profile?.updated_date && (
+            <p className="text-center text-xs text-slate-400 mt-2">
+              Last saved: {new Date(profile.updated_date).toLocaleString()}
+            </p>
+          )}
         </div>
       </div>
     </div>
