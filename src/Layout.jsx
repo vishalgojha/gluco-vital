@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "./utils";
 import { base44 } from "@/api/base44Client";
-import { Home, History, User, Menu, X, MessageCircle, LogOut, Trophy, FileText, Activity } from "lucide-react";
+import { Home, History, User, Menu, X, MessageCircle, LogOut, Trophy, FileText, Activity, Stethoscope, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import AddToHomeScreen from "@/components/AddToHomeScreen";
@@ -18,13 +18,15 @@ export default function Layout({ children, currentPageName }) {
   }, [currentPageName]);
 
   const navItems = [
-    { name: "Home", icon: Home, page: "Home" },
-    { name: "Progress", icon: Activity, page: "Progress" },
-    { name: "Reports", icon: FileText, page: "Reports" },
-    { name: "Achievements", icon: Trophy, page: "Achievements" },
-    { name: "History", icon: History, page: "History" },
-    { name: "Profile", icon: User, page: "Profile" },
-  ];
+            { name: "Home", icon: Home, page: "Home" },
+            { name: "Progress", icon: Activity, page: "Progress" },
+            { name: "Reports", icon: FileText, page: "Reports" },
+            { name: "Share with Doctor", icon: Share2, page: "DoctorShare" },
+            { name: "Doctor Portal", icon: Stethoscope, page: "DoctorDashboard" },
+            { name: "Achievements", icon: Trophy, page: "Achievements" },
+            { name: "History", icon: History, page: "History" },
+            { name: "Profile", icon: User, page: "Profile" },
+          ];
 
   // Show Landing page without layout for unauthenticated users
   if (currentPageName === "Landing") {
