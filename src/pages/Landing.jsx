@@ -136,12 +136,6 @@ export default function Landing() {
               </div>
               <span className="text-xl font-bold text-[#3d6b5f]">Gluco Vital</span>
             </div>
-            <Button 
-              onClick={() => base44.auth.redirectToLogin(createPageUrl("Home"))}
-              className="bg-[#5b9a8b] hover:bg-[#4a8a7b]"
-            >
-              Get Started
-            </Button>
           </nav>
         </div>
 
