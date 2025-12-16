@@ -174,6 +174,19 @@ export default function Layout({ children, currentPageName }) {
                   {/* Footer */}
                   <footer className="lg:ml-64 bg-white/80 backdrop-blur border-t border-[#5b9a8b]/10 py-4 px-4">
                     <div className="max-w-4xl mx-auto">
+                      {/* Contextual Footer Tips */}
+                      <div className="mb-3 p-3 bg-[#5b9a8b]/5 rounded-lg border border-[#5b9a8b]/10">
+                        <p className="text-center text-xs text-[#5b9a8b]">
+                          {currentPageName === "Home" && "💡 Tip: Log your sugar readings consistently at the same times daily for better insights."}
+                          {currentPageName === "Profile" && "💡 Tip: Keep your profile updated for personalized health recommendations."}
+                          {currentPageName === "Progress" && "💡 Tip: Review your weekly trends to identify patterns in your readings."}
+                          {currentPageName === "Reports" && "💡 Tip: Share reports with your doctor during checkups for better care."}
+                          {currentPageName === "Achievements" && "🏆 Tip: Log daily to maintain your streak and earn more badges!"}
+                          {currentPageName === "History" && "📊 Tip: Use filters to find specific readings and track patterns."}
+                          {!["Home", "Profile", "Progress", "Reports", "Achievements", "History"].includes(currentPageName) && "💚 Your health journey starts with small daily habits."}
+                        </p>
+                      </div>
+
                       <div className="flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-[#7a9990]">
                         <div className="flex items-center gap-1">
                           Made with <span className="text-red-500">❤️</span> in India 🇮🇳
