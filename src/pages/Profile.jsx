@@ -180,8 +180,17 @@ export default function Profile() {
                   <Label>Age</Label>
                   <Input
                     type="number"
+                    min="1"
+                    max="120"
                     value={formData.age}
-                    onChange={(e) => setFormData(prev => ({ ...prev, age: parseInt(e.target.value) || "" }))}
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value);
+                      if (e.target.value === "") {
+                        setFormData(prev => ({ ...prev, age: "" }));
+                      } else if (val >= 1 && val <= 120) {
+                        setFormData(prev => ({ ...prev, age: val }));
+                      }
+                    }}
                     placeholder="Your age"
                     className="mt-1.5"
                   />

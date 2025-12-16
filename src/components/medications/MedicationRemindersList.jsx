@@ -29,21 +29,29 @@ export default function MedicationRemindersList({ reminders = [], profile, onUpd
   const [editingReminder, setEditingReminder] = useState(null);
 
   const handleSave = async (formData) => {
+    if (!formData.medication_name || formData.medication_name === "__custom__") {
+      toast.error("Please enter a medication name");
+      return;
+    }
+    
     try {
+      const payload = {
+        ...formData,
+        user_email: profile?.user_email
+      };
+      
       if (editingReminder) {
-        await base44.entities.MedicationReminder.update(editingReminder.id, formData);
+        await base44.entities.MedicationReminder.update(editingReminder.id, payload);
         toast.success("Reminder updated!");
       } else {
-        await base44.entities.MedicationReminder.create({
-          ...formData,
-          user_email: profile?.user_email
-        });
+        await base44.entities.MedicationReminder.create(payload);
         toast.success("Reminder created!");
       }
       setShowForm(false);
       setEditingReminder(null);
       onUpdate?.();
     } catch (error) {
+      console.error("Save error:", error);
       toast.error("Failed to save reminder");
     }
   };
