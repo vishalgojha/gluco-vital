@@ -55,12 +55,12 @@ export default function Layout({ children, currentPageName }) {
         {/* Mobile Header */}
         <header className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-[#f8faf9]/90 backdrop-blur-lg border-b border-[#5b9a8b]/10">
           <div className="flex items-center justify-between px-4 h-16">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#5b9a8b] to-[#7eb8a8] flex items-center justify-center shadow-sm">
-                <MessageCircle className="w-5 h-5 text-white" />
-              </div>
-              <span className="font-bold text-[#3d6b5f]">Gluco Vital</span>
-            </div>
+            <Link to={createPageUrl("Home")} className="flex items-center gap-3">
+                                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#5b9a8b] to-[#7eb8a8] flex items-center justify-center shadow-sm">
+                                  <MessageCircle className="w-5 h-5 text-white" />
+                                </div>
+                                <span className="font-bold text-[#3d6b5f]">Gluco Vital</span>
+                              </Link>
             <Button
               variant="ghost"
               size="icon"
@@ -105,15 +105,15 @@ export default function Layout({ children, currentPageName }) {
         {/* Desktop Sidebar */}
         <aside className="hidden lg:flex fixed left-0 top-0 bottom-0 w-64 bg-[#f8faf9] border-r border-[#5b9a8b]/10 flex-col">
           <div className="p-6">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#5b9a8b] to-[#7eb8a8] flex items-center justify-center shadow-md shadow-[#5b9a8b]/20">
-                <MessageCircle className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h1 className="font-bold text-[#3d6b5f]">Gluco Vital</h1>
-                <p className="text-xs text-[#7a9990]">Glucovital.fit</p>
-              </div>
-            </div>
+            <Link to={createPageUrl("Home")} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#5b9a8b] to-[#7eb8a8] flex items-center justify-center shadow-md shadow-[#5b9a8b]/20">
+                                  <MessageCircle className="w-5 h-5 text-white" />
+                                </div>
+                                <div>
+                                  <h1 className="font-bold text-[#3d6b5f]">Gluco Vital</h1>
+                                  <p className="text-xs text-[#7a9990]">Glucovital.fit</p>
+                                </div>
+                              </Link>
           </div>
 
           <nav className="flex-1 px-4">
