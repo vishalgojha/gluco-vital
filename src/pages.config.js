@@ -1,19 +1,19 @@
-import Home from './pages/Home';
-import Profile from './pages/Profile';
-import History from './pages/History';
 import Achievements from './pages/Achievements';
-import Reports from './pages/Reports';
+import History from './pages/History';
+import Home from './pages/Home';
 import Landing from './pages/Landing';
+import Profile from './pages/Profile';
+import Reports from './pages/Reports';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
-    "Home": Home,
-    "Profile": Profile,
-    "History": History,
     "Achievements": Achievements,
-    "Reports": Reports,
+    "History": History,
+    "Home": Home,
     "Landing": Landing,
+    "Profile": Profile,
+    "Reports": Reports,
 }
 
 export const pagesConfig = {
