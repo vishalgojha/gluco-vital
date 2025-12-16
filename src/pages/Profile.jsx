@@ -50,11 +50,19 @@ export default function Profile() {
 
   useEffect(() => {
     if (profile) {
+      // Convert medications from objects back to strings for display
+      const medicationsAsStrings = (profile.medications || []).map(med => {
+        if (typeof med === 'object' && med.name) {
+          return med.dosage ? `${med.name} ${med.dosage}` : med.name;
+        }
+        return med;
+      });
+      
       setFormData({
         name: profile.name || user?.full_name || "",
         age: profile.age || "",
         conditions: profile.conditions || [],
-        medications: profile.medications || [],
+        medications: medicationsAsStrings,
         disability_type: profile.disability_type || "",
         language_preference: profile.language_preference || "english",
         target_sugar_fasting: profile.target_sugar_fasting || 100,
@@ -70,7 +78,20 @@ export default function Profile() {
 
   const saveMutation = useMutation({
     mutationFn: async (data) => {
-      const payload = { ...data, user_email: user.email };
+      // Convert medications array of strings to array of objects
+      const medicationsAsObjects = (data.medications || []).map(med => {
+        if (typeof med === 'string') {
+          return { name: med };
+        }
+        return med;
+      });
+      
+      const payload = { 
+        ...data, 
+        user_email: user.email,
+        medications: medicationsAsObjects
+      };
+      
       if (profile?.id) {
         return base44.entities.PatientProfile.update(profile.id, payload);
       }
