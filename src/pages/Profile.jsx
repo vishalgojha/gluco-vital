@@ -283,6 +283,7 @@ export default function Profile() {
                       <SelectValue placeholder="Select cultural context" />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="indian">Indian</SelectItem>
                       <SelectItem value="south_asian">South Asian</SelectItem>
                       <SelectItem value="chinese">Chinese</SelectItem>
                       <SelectItem value="arabic">Arabic</SelectItem>
