@@ -303,7 +303,16 @@ export default function Landing() {
       {/* Footer */}
       <footer className="py-8 border-t border-slate-200">
         <div className="max-w-6xl mx-auto px-4 text-center text-sm text-slate-500">
-          <p>© 2024 Gluco Vital • Glucovital.fit 💚</p>
+          <div className="flex flex-wrap items-center justify-center gap-3 mb-3">
+            <a href={createPageUrl("About")} className="hover:text-[#5b9a8b] transition-colors">About</a>
+            <span>•</span>
+            <a href={createPageUrl("PrivacyPolicy")} className="hover:text-[#5b9a8b] transition-colors">Privacy Policy</a>
+            <span>•</span>
+            <a href={createPageUrl("Terms")} className="hover:text-[#5b9a8b] transition-colors">Terms of Service</a>
+            <span>•</span>
+            <a href="mailto:support@glucovital.fit" className="hover:text-[#5b9a8b] transition-colors">Contact</a>
+          </div>
+          <p>© 2025 Gluco Vital • Glucovital.fit 💚</p>
         </div>
       </footer>
     </div>
