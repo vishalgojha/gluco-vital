@@ -1,5 +1,8 @@
 import React from "react";
-import { Heart, MessageCircle, Globe, Shield, Users, Sparkles } from "lucide-react";
+import { Heart, MessageCircle, Globe, Shield, Users, Sparkles, ArrowLeft } from "lucide-react";
+import { Link } from "react-router-dom";
+import { createPageUrl } from "@/utils";
+import { Button } from "@/components/ui/button";
 
 export default function About() {
   return (

@@ -1,5 +1,8 @@
 import React from "react";
-import { FileText, AlertTriangle, UserCheck, Ban, Scale, Mail } from "lucide-react";
+import { FileText, AlertTriangle, UserCheck, Ban, Scale, Mail, ArrowLeft } from "lucide-react";
+import { Link } from "react-router-dom";
+import { createPageUrl } from "@/utils";
+import { Button } from "@/components/ui/button";
 
 export default function Terms() {
   return (
