@@ -100,17 +100,14 @@ export default function Profile() {
         medications: medicationsAsObjects
       };
       
-      console.log("Saving profile payload:", payload);
-      console.log("Profile exists:", !!profile?.id);
+      // Use backend function for reliable upsert
+      const response = await base44.functions.invoke('entityOperations', {
+        operation: 'upsert',
+        entity: 'PatientProfile',
+        data: payload
+      });
       
-      if (profile?.id) {
-        const result = await base44.entities.PatientProfile.update(profile.id, payload);
-        console.log("Update result:", result);
-        return result;
-      }
-      const result = await base44.entities.PatientProfile.create(payload);
-      console.log("Create result:", result);
-      return result;
+      return response.data;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['patient-profile'] });
