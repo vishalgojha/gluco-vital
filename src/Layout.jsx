@@ -28,8 +28,9 @@ export default function Layout({ children, currentPageName }) {
             { name: "Profile", icon: User, page: "Profile" },
           ];
 
-  // Show Landing page without layout for unauthenticated users
-  if (currentPageName === "Landing") {
+  // Show these pages without the full layout (accessible without auth)
+  const publicPages = ["Landing", "About", "PrivacyPolicy", "Terms"];
+  if (publicPages.includes(currentPageName)) {
     return children;
   }
 
