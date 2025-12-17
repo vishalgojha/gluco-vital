@@ -8,6 +8,13 @@ export default function PrivacyPolicy() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
       <div className="max-w-3xl mx-auto px-4 py-8">
+        <div className="mb-6">
+          <Link to={createPageUrl("Landing")}>
+            <Button variant="ghost" size="sm" className="gap-2 text-slate-600">
+              <ArrowLeft className="w-4 h-4" /> Back
+            </Button>
+          </Link>
+        </div>
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-slate-800">Privacy Policy</h1>
           <p className="text-slate-500 mt-2">Last updated: December 2025</p>
