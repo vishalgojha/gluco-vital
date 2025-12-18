@@ -34,9 +34,19 @@ export default function DoctorShare() {
     base44.auth.me().then(setUser).catch(() => {});
   }, []);
 
+  // Get connections where patient invited doctor OR doctor invited patient
   const { data: connections = [], isLoading } = useQuery({
     queryKey: ['doctor-connections', user?.email],
-    queryFn: () => base44.entities.DoctorConnection.filter({ patient_email: user?.email }),
+    queryFn: async () => {
+      const patientInitiated = await base44.entities.DoctorConnection.filter({ patient_email: user?.email });
+      const doctorInitiated = await base44.entities.DoctorConnection.filter({ patient_email: user?.email });
+      // Combine and dedupe by id
+      const all = [...patientInitiated, ...doctorInitiated];
+      const unique = all.filter((conn, idx, self) => 
+        idx === self.findIndex(c => c.id === conn.id)
+      );
+      return unique;
+    },
     enabled: !!user?.email
   });
 
@@ -248,7 +258,7 @@ export default function DoctorShare() {
               <CardContent className="py-12 text-center">
                 <UserPlus className="w-12 h-12 text-slate-300 mx-auto mb-3" />
                 <p className="text-slate-500">No doctors connected yet</p>
-                <p className="text-sm text-slate-400 mt-1">Invite your healthcare provider to view your health data</p>
+                <p className="text-sm text-slate-400 mt-1">Invite your healthcare provider or ask them to invite you</p>
               </CardContent>
             </Card>
           ) : (
