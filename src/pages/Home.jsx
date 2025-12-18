@@ -35,12 +35,16 @@ export default function Home() {
   }, []);
 
   const { data: logs = [], isLoading: logsLoading } = useQuery({
-    queryKey: ['health-logs'],
-    queryFn: () => base44.entities.HealthLog.filter(
-      { user_email: user?.email },
-      '-created_date',
-      100
-    ),
+    queryKey: ['health-logs', user?.email],
+    queryFn: async () => {
+      // Fetch logs where user_email matches OR created_by matches
+      const results = await base44.entities.HealthLog.list('-created_date', 200);
+      // Filter for this user's logs (by user_email or created_by)
+      return results.filter(log => 
+        log.user_email === user?.email || 
+        log.created_by === user?.email
+      );
+    },
     enabled: !!user?.email
   });
 
