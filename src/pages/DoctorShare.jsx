@@ -102,6 +102,18 @@ export default function DoctorShare() {
     }
   });
 
+  // Accept invitation from doctor
+  const acceptDoctorInviteMutation = useMutation({
+    mutationFn: (id) => base44.entities.DoctorConnection.update(id, { 
+      status: "active",
+      accepted_at: new Date().toISOString()
+    }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['doctor-connections'] });
+      toast.success("Connection accepted! Your doctor can now view your health data.");
+    }
+  });
+
   const togglePermission = (permId) => {
     setInviteForm(prev => ({
       ...prev,
@@ -263,9 +275,16 @@ export default function DoctorShare() {
             </Card>
           ) : (
             <div className="space-y-4">
-              {connections.map(conn => (
-                <Card key={conn.id} className={conn.status === "revoked" ? "opacity-60" : ""}>
+              {connections.map(conn => {
+                const isPendingFromDoctor = conn.status === 'pending' && conn.created_by === conn.doctor_email;
+                return (
+                <Card key={conn.id} className={conn.status === "revoked" ? "opacity-60" : isPendingFromDoctor ? "border-amber-200 bg-amber-50/30" : ""}>
                   <CardContent className="p-5">
+                    {isPendingFromDoctor && (
+                      <div className="mb-3 p-2 bg-amber-100 rounded-lg text-sm text-amber-800">
+                        🔔 {conn.doctor_name || 'A doctor'} has invited you to connect
+                      </div>
+                    )}
                     <div className="flex items-start justify-between">
                       <div className="flex items-start gap-4">
                         <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-100 to-violet-100 flex items-center justify-center">
@@ -287,6 +306,16 @@ export default function DoctorShare() {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
+                        {isPendingFromDoctor && (
+                          <Button
+                            size="sm"
+                            className="bg-green-600 hover:bg-green-700"
+                            onClick={() => acceptDoctorInviteMutation.mutate(conn.id)}
+                          >
+                            <CheckCircle className="w-4 h-4 mr-1" />
+                            Accept
+                          </Button>
+                        )}
                         {conn.status === "active" && (
                           <Link to={createPageUrl(`DoctorMessages?connection=${conn.id}`)}>
                             <Button size="sm" variant="outline">
@@ -302,7 +331,7 @@ export default function DoctorShare() {
                             className="text-red-600 border-red-200 hover:bg-red-50"
                             onClick={() => revokeMutation.mutate(conn.id)}
                           >
-                            Revoke
+                            {isPendingFromDoctor ? "Decline" : "Revoke"}
                           </Button>
                         )}
                         {conn.status === "revoked" && (
@@ -338,7 +367,8 @@ export default function DoctorShare() {
                     </div>
                   </CardContent>
                 </Card>
-              ))}
+              );
+              })}
             </div>
           )}
         </div>
