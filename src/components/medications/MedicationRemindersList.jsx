@@ -3,7 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Pill, Clock, Bell, BellRing, BellOff, Plus, Pencil, Trash2, Check } from "lucide-react";
+import { Pill, Clock, Bell, BellRing, BellOff, Plus, Pencil, Trash2, Check, X } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import MedicationReminderForm from "./MedicationReminderForm";
@@ -79,20 +79,54 @@ export default function MedicationRemindersList({ reminders = [], profile, onUpd
 
   const markTaken = async (reminder) => {
     try {
+      const now = new Date().toISOString();
+      
+      // Update the reminder
       await base44.entities.MedicationReminder.update(reminder.id, {
-        last_taken: new Date().toISOString()
+        last_taken: now
       });
-      // Also log to HealthLog
+      
+      // Log to HealthLog
       await base44.entities.HealthLog.create({
         user_email: profile?.user_email,
         log_type: "medication",
         value: `${reminder.medication_name} ${reminder.dosage}`,
         notes: "Marked via reminder"
       });
+      
+      // Create adherence record
+      await base44.entities.MedicationAdherence.create({
+        user_email: profile?.user_email,
+        reminder_id: reminder.id,
+        medication_name: reminder.medication_name,
+        scheduled_time: now,
+        status: "taken",
+        taken_at: now,
+        confirmed_via: "app"
+      });
+      
       toast.success(`${reminder.medication_name} marked as taken!`);
       onUpdate?.();
     } catch (error) {
       toast.error("Failed to mark as taken");
+    }
+  };
+
+  const markSkipped = async (reminder, reason = "") => {
+    try {
+      await base44.entities.MedicationAdherence.create({
+        user_email: profile?.user_email,
+        reminder_id: reminder.id,
+        medication_name: reminder.medication_name,
+        scheduled_time: new Date().toISOString(),
+        status: "skipped",
+        confirmed_via: "app",
+        skip_reason: reason
+      });
+      toast.info(`${reminder.medication_name} marked as skipped`);
+      onUpdate?.();
+    } catch (error) {
+      toast.error("Failed to update");
     }
   };
 
@@ -186,7 +220,15 @@ export default function MedicationRemindersList({ reminders = [], profile, onUpd
                     onClick={() => markTaken(reminder)}
                     className="flex-1 text-green-600 border-green-200 hover:bg-green-50"
                   >
-                    <Check className="w-4 h-4 mr-1" /> Mark Taken
+                    <Check className="w-4 h-4 mr-1" /> Taken
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => markSkipped(reminder)}
+                    className="text-slate-500 border-slate-200 hover:bg-slate-50"
+                  >
+                    <X className="w-4 h-4 mr-1" /> Skip
                   </Button>
                   <Button
                     size="icon"
