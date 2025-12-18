@@ -18,11 +18,29 @@ import { format, subDays, isToday } from "date-fns";
 export default function DoctorDashboard() {
   const [user, setUser] = useState(null);
   const [selectedPatient, setSelectedPatient] = useState(null);
+  const [showInviteDialog, setShowInviteDialog] = useState(false);
+  const [inviteForm, setInviteForm] = useState({ patient_email: "", patient_name: "", message: "" });
   const queryClient = useQueryClient();
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
   }, []);
+
+  const inviteMutation = useMutation({
+    mutationFn: async (data) => {
+      const response = await base44.functions.invoke('invitePatient', data);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['doctor-patients'] });
+      toast.success("Invitation sent to patient!");
+      setShowInviteDialog(false);
+      setInviteForm({ patient_email: "", patient_name: "", message: "" });
+    },
+    onError: (error) => {
+      toast.error(error?.response?.data?.error || "Failed to send invitation");
+    }
+  });
 
   // Get connections where user is the doctor
   const { data: connections = [], isLoading: connectionsLoading } = useQuery({
@@ -64,9 +82,15 @@ export default function DoctorDashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
       <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-800">Doctor Dashboard</h1>
-          <p className="text-slate-500 mt-1">View and manage your patients' health data</p>
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-slate-800">Doctor Dashboard</h1>
+            <p className="text-slate-500 mt-1">View and manage your patients' health data</p>
+          </div>
+          <Button onClick={() => setShowInviteDialog(true)} className="bg-[#5b9a8b] hover:bg-[#4a8a7b]">
+            <UserPlus className="w-4 h-4 mr-2" />
+            Invite Patient
+          </Button>
         </div>
 
         {/* Stats */}
@@ -165,7 +189,11 @@ export default function DoctorDashboard() {
               <CardContent className="py-12 text-center">
                 <Users className="w-12 h-12 text-slate-300 mx-auto mb-3" />
                 <p className="text-slate-500">No active patients yet</p>
-                <p className="text-sm text-slate-400 mt-1">Patients can invite you from their app</p>
+                <p className="text-sm text-slate-400 mt-1">Invite patients or wait for them to connect from their app</p>
+                <Button onClick={() => setShowInviteDialog(true)} className="mt-4" variant="outline">
+                  <UserPlus className="w-4 h-4 mr-2" />
+                  Invite Your First Patient
+                </Button>
               </CardContent>
             </Card>
           ) : (
@@ -176,6 +204,68 @@ export default function DoctorDashboard() {
             </div>
           )}
         </div>
+
+        {/* Invite Patient Dialog */}
+        <Dialog open={showInviteDialog} onOpenChange={setShowInviteDialog}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Mail className="w-5 h-5 text-[#5b9a8b]" />
+                Invite Patient
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label>Patient Email *</Label>
+                <Input
+                  type="email"
+                  value={inviteForm.patient_email}
+                  onChange={(e) => setInviteForm(prev => ({ ...prev, patient_email: e.target.value }))}
+                  placeholder="patient@example.com"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label>Patient Name (optional)</Label>
+                <Input
+                  value={inviteForm.patient_name}
+                  onChange={(e) => setInviteForm(prev => ({ ...prev, patient_name: e.target.value }))}
+                  placeholder="John Doe"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label>Personal Message (optional)</Label>
+                <Textarea
+                  value={inviteForm.message}
+                  onChange={(e) => setInviteForm(prev => ({ ...prev, message: e.target.value }))}
+                  placeholder="Hi, I'd like to monitor your health data through Gluco Vital..."
+                  className="mt-1 h-20"
+                />
+              </div>
+              <div className="bg-blue-50 p-3 rounded-lg text-sm text-blue-700">
+                <p className="font-medium">What happens next:</p>
+                <ul className="mt-1 text-xs space-y-1">
+                  <li>• Patient receives an email invitation</li>
+                  <li>• They sign up (if new) and accept the connection</li>
+                  <li>• Once accepted, you can view their health data</li>
+                </ul>
+              </div>
+              <Button 
+                onClick={() => inviteMutation.mutate(inviteForm)}
+                disabled={!inviteForm.patient_email || inviteMutation.isPending}
+                className="w-full bg-[#5b9a8b] hover:bg-[#4a8a7b]"
+              >
+                {inviteMutation.isPending ? (
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                ) : (
+                  <Mail className="w-4 h-4 mr-2" />
+                )}
+                Send Invitation
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
