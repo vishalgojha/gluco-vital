@@ -1,5 +1,6 @@
 import About from './pages/About';
 import Achievements from './pages/Achievements';
+import CareHub from './pages/CareHub';
 import DoctorDashboard from './pages/DoctorDashboard';
 import DoctorFeedback from './pages/DoctorFeedback';
 import DoctorMessages from './pages/DoctorMessages';
@@ -13,13 +14,13 @@ import Profile from './pages/Profile';
 import Progress from './pages/Progress';
 import Reports from './pages/Reports';
 import Terms from './pages/Terms';
-import CareHub from './pages/CareHub';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "About": About,
     "Achievements": Achievements,
+    "CareHub": CareHub,
     "DoctorDashboard": DoctorDashboard,
     "DoctorFeedback": DoctorFeedback,
     "DoctorMessages": DoctorMessages,
@@ -33,7 +34,6 @@ export const PAGES = {
     "Progress": Progress,
     "Reports": Reports,
     "Terms": Terms,
-    "CareHub": CareHub,
 }
 
 export const pagesConfig = {
