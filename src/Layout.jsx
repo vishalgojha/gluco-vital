@@ -18,16 +18,16 @@ export default function Layout({ children, currentPageName }) {
   }, [currentPageName]);
 
   const navItems = [
-            { name: "Home", icon: Home, page: "Home" },
-            { name: "Care Hub", icon: Heart, page: "CareHub" },
-            { name: "Progress", icon: Activity, page: "Progress" },
-            { name: "Reports", icon: FileText, page: "Reports" },
-            { name: "Share with Doctor", icon: Share2, page: "DoctorShare" },
-            { name: "Doctor Portal", icon: Stethoscope, page: "DoctorDashboard" },
-            { name: "Achievements", icon: Trophy, page: "Achievements" },
-            { name: "History", icon: History, page: "History" },
-            { name: "Profile", icon: User, page: "Profile" },
-          ];
+  { name: "Home", icon: Home, page: "Home" },
+  { name: "Care Hub", icon: Heart, page: "CareHub" },
+  { name: "Progress", icon: Activity, page: "Progress" },
+  { name: "Reports", icon: FileText, page: "Reports" },
+  { name: "Share with Doctor", icon: Share2, page: "DoctorShare" },
+  { name: "Doctor Portal", icon: Stethoscope, page: "DoctorDashboard" },
+  { name: "Achievements", icon: Trophy, page: "Achievements" },
+  { name: "History", icon: History, page: "History" },
+  { name: "Profile", icon: User, page: "Profile" }];
+
 
   // Show these pages without the full layout (accessible without auth)
   const publicPages = ["Landing", "About", "PrivacyPolicy", "Terms"];
@@ -68,42 +68,42 @@ export default function Layout({ children, currentPageName }) {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            >
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </Button>
           </div>
 
           {/* Mobile Menu */}
-          {mobileMenuOpen && (
-            <div className="absolute top-16 left-0 right-0 bg-[#f8faf9] border-b border-[#5b9a8b]/10 shadow-lg">
+          {mobileMenuOpen &&
+          <div className="absolute top-16 left-0 right-0 bg-[#f8faf9] border-b border-[#5b9a8b]/10 shadow-lg">
               <nav className="p-4 space-y-2">
-                {navItems.map((item) => (
-                  <Link
-                    key={item.page}
-                    to={createPageUrl(item.page)}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={cn(
-                      "flex items-center gap-3 px-4 py-3 rounded-xl transition-all",
-                      currentPageName === item.page
-                        ? "bg-[#5b9a8b]/10 text-[#3d6b5f]"
-                        : "text-[#5a6b66] hover:bg-[#5b9a8b]/5"
-                    )}
-                  >
+                {navItems.map((item) =>
+              <Link
+                key={item.page}
+                to={createPageUrl(item.page)}
+                onClick={() => setMobileMenuOpen(false)}
+                className={cn(
+                  "flex items-center gap-3 px-4 py-3 rounded-xl transition-all",
+                  currentPageName === item.page ?
+                  "bg-[#5b9a8b]/10 text-[#3d6b5f]" :
+                  "text-[#5a6b66] hover:bg-[#5b9a8b]/5"
+                )}>
+
                     <item.icon className="w-5 h-5" />
                     <span className="font-medium">{item.name}</span>
                   </Link>
-                ))}
+              )}
                 <button
-                  onClick={() => base44.auth.logout()}
-                  className="flex items-center gap-3 px-4 py-3 rounded-xl text-[#c47c7c] hover:bg-[#c47c7c]/10 w-full"
-                >
+                onClick={() => base44.auth.logout()}
+                className="flex items-center gap-3 px-4 py-3 rounded-xl text-[#c47c7c] hover:bg-[#c47c7c]/10 w-full">
+
                   <LogOut className="w-5 h-5" />
                   <span className="font-medium">Logout</span>
                 </button>
               </nav>
             </div>
-          )}
+          }
         </header>
 
         {/* Desktop Sidebar */}
@@ -122,30 +122,30 @@ export default function Layout({ children, currentPageName }) {
 
           <nav className="flex-1 px-4">
             <div className="space-y-1">
-              {navItems.map((item) => (
-                <Link
-                  key={item.page}
-                  to={createPageUrl(item.page)}
-                  className={cn(
-                    "flex items-center gap-3 px-4 py-3 rounded-xl transition-all",
-                    currentPageName === item.page
-                      ? "bg-gradient-to-r from-[#5b9a8b]/15 to-[#7eb8a8]/10 text-[#3d6b5f] shadow-sm"
-                      : "text-[#5a6b66] hover:bg-[#5b9a8b]/5"
-                  )}
-                >
+              {navItems.map((item) =>
+              <Link
+                key={item.page}
+                to={createPageUrl(item.page)}
+                className={cn(
+                  "flex items-center gap-3 px-4 py-3 rounded-xl transition-all",
+                  currentPageName === item.page ?
+                  "bg-gradient-to-r from-[#5b9a8b]/15 to-[#7eb8a8]/10 text-[#3d6b5f] shadow-sm" :
+                  "text-[#5a6b66] hover:bg-[#5b9a8b]/5"
+                )}>
+
                   <item.icon className={cn(
-                    "w-5 h-5",
-                    currentPageName === item.page ? "text-[#5b9a8b]" : ""
-                  )} />
+                  "w-5 h-5",
+                  currentPageName === item.page ? "text-[#5b9a8b]" : ""
+                )} />
                   <span className="font-medium">{item.name}</span>
                 </Link>
-              ))}
+              )}
             </div>
           </nav>
 
           {/* User Section */}
-          {user && (
-            <div className="p-4 border-t border-[#5b9a8b]/10">
+          {user &&
+          <div className="p-4 border-t border-[#5b9a8b]/10">
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#5b9a8b]/20 to-[#7eb8a8]/20 flex items-center justify-center">
                   <span className="text-sm font-semibold text-[#5b9a8b]">
@@ -158,16 +158,16 @@ export default function Layout({ children, currentPageName }) {
                 </div>
               </div>
               <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => base44.auth.logout()}
-                className="w-full justify-start text-[#7a9990] hover:text-[#c47c7c] hover:bg-[#c47c7c]/10"
-              >
+              variant="ghost"
+              size="sm"
+              onClick={() => base44.auth.logout()}
+              className="w-full justify-start text-[#7a9990] hover:text-[#c47c7c] hover:bg-[#c47c7c]/10">
+
                 <LogOut className="w-4 h-4 mr-2" />
                 Logout
               </Button>
             </div>
-          )}
+          }
         </aside>
 
         {/* Main Content */}
@@ -217,9 +217,9 @@ export default function Layout({ children, currentPageName }) {
 
                       {/* Medical Disclaimer */}
                       <div className="p-2 bg-amber-50 border border-amber-200 rounded-lg">
-                        <p className="text-center text-[11px] text-amber-800 font-medium">
-                          ⚠️ GlucoVital.fit is for informational and educational purposes only and is not a substitute for professional medical advice, diagnosis, or treatment. Always consult a qualified healthcare provider for any health concerns.
-                        </p>
+                        <p className="text-center text-[11px] text-amber-800 font-medium">⚠️ GlucoVital.fit is for informational and educational purposes only and is not a substitute for professional medical advice, diagnosis, or treatment. Always consult a qualified healthcare provider for any health concerns. Any personas used (such as ‘Nurse’) are for conversational and support purposes only and do not represent licensed medical professionals
+
+              </p>
                       </div>
                     </div>
                   </footer>
@@ -227,6 +227,6 @@ export default function Layout({ children, currentPageName }) {
                   {/* Add to Home Screen Prompt */}
                   <AddToHomeScreen />
                 </div>
-              </>
-            );
-          }
+              </>);
+
+}
