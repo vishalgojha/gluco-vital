@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { User, Heart, Target, Globe, Plus, X, Save, Loader2, Pill, Watch } from "lucide-react";
 import { toast } from "sonner";
 import MedicationRemindersList from "@/components/medications/MedicationRemindersList";
+import AdherenceTracker from "@/components/medications/AdherenceTracker";
 import WearableImport from "@/components/import/WearableImport";
 
 export default function Profile() {
@@ -391,6 +392,22 @@ export default function Profile() {
                 reminders={reminders} 
                 profile={{ ...profile, user_email: user?.email }} 
                 onUpdate={refetchReminders}
+              />
+            </CardContent>
+          </Card>
+
+          {/* Medication Adherence Tracking */}
+          <Card className="border-slate-100 shadow-sm">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Target className="w-5 h-5 text-[#5b9a8b]" />
+                Medication Adherence
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <AdherenceTracker 
+                userEmail={user?.email}
+                reminders={reminders}
               />
             </CardContent>
           </Card>
