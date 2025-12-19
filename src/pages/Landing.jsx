@@ -280,6 +280,61 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* FAQ */}
+      <section className="py-16 bg-white/50">
+        <div className="max-w-3xl mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center text-slate-800 mb-4">
+            Frequently Asked Questions
+          </h2>
+          <p className="text-center text-slate-500 mb-10">
+            Everything you need to know about Gluco Vital
+          </p>
+          
+          <div className="space-y-4">
+            {[
+              {
+                q: "Is Gluco Vital a replacement for my doctor?",
+                a: "No. Gluco Vital helps you log and track your health data, but it does not diagnose, treat, or replace medical care. Always consult your doctor for medical decisions."
+              },
+              {
+                q: "How do I log my readings?",
+                a: "Simply send a WhatsApp message like 'Sugar 120' or 'BP 130/80'. You can also log meals, medications, and symptoms using natural language."
+              },
+              {
+                q: "Is my health data private and secure?",
+                a: "Yes. Your data is encrypted and stored securely. We never share your personal health information with third parties. You control your data."
+              },
+              {
+                q: "What languages are supported?",
+                a: "We support 14 languages including Hindi, English, Chinese, Spanish, Arabic, Bengali, Urdu, Portuguese, and more. The app responds in your preferred language."
+              },
+              {
+                q: "Is Gluco Vital really free?",
+                a: "Yes, Gluco Vital is free to use. No credit card required, no hidden charges. We believe health tracking should be accessible to everyone."
+              },
+              {
+                q: "Can I share my reports with my doctor?",
+                a: "Absolutely! You can generate clear, organized health reports and share them directly with your doctor via email or as a PDF."
+              },
+              {
+                q: "What if I have an emergency reading?",
+                a: "If your sugar is very high (>300) or very low (<70), or BP is critically high (>180/120), Gluco Vital will immediately advise you to seek medical help. It does not replace emergency care."
+              }
+            ].map((faq, idx) => (
+              <details key={idx} className="group bg-white rounded-xl border border-slate-200 overflow-hidden">
+                <summary className="flex items-center justify-between p-5 cursor-pointer hover:bg-slate-50 transition-colors">
+                  <span className="font-medium text-slate-800 pr-4">{faq.q}</span>
+                  <span className="text-[#5b9a8b] text-xl font-light group-open:rotate-45 transition-transform">+</span>
+                </summary>
+                <div className="px-5 pb-5 text-slate-600 text-sm leading-relaxed">
+                  {faq.a}
+                </div>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="py-20">
         <div className="max-w-2xl mx-auto px-4 text-center">
