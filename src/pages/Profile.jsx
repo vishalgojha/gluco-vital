@@ -7,11 +7,12 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { User, Heart, Target, Globe, Plus, X, Save, Loader2, Pill, Watch } from "lucide-react";
+import { User, Heart, Target, Globe, Plus, X, Save, Loader2, Pill, Watch, FileImage } from "lucide-react";
 import { toast } from "sonner";
 import MedicationRemindersList from "@/components/medications/MedicationRemindersList";
 import AdherenceTracker from "@/components/medications/AdherenceTracker";
 import WearableImport from "@/components/import/WearableImport";
+import PrescriptionUpload from "@/components/profile/PrescriptionUpload";
 
 export default function Profile() {
   const queryClient = useQueryClient();
@@ -467,6 +468,14 @@ export default function Profile() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Prescription Upload */}
+          <PrescriptionUpload 
+            profile={profile}
+            onUpdate={async (data) => {
+              await saveMutation.mutateAsync({ ...formData, ...data });
+            }}
+          />
 
           {/* Wearable Import */}
           <WearableImport 
