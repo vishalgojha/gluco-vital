@@ -309,8 +309,8 @@ export default function Landing() {
                 a: "We support 14 languages including Hindi, English, Chinese, Spanish, Arabic, Bengali, Urdu, Portuguese, and more. The app responds in your preferred language."
               },
               {
-                q: "Is Gluco Vital really free?",
-                a: "Yes, Gluco Vital is free to use. No credit card required, no hidden charges. We believe health tracking should be accessible to everyone."
+                q: "Is Gluco Vital free to use?",
+                a: "Yes. Gluco Vital is currently free to use, with no credit card required. We may introduce optional paid features in the future, but basic logging will always remain simple and accessible."
               },
               {
                 q: "Can I share my reports with my doctor?",
@@ -362,7 +362,7 @@ export default function Landing() {
             After signing up, connect WhatsApp to log your health data via messages
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6 mt-6 text-sm text-slate-500">
-            <span className="flex items-center gap-1"><Check className="w-4 h-4 text-green-500" /> Free forever</span>
+            <span className="flex items-center gap-1"><Check className="w-4 h-4 text-green-500" /> Free to use</span>
             <span className="flex items-center gap-1"><Check className="w-4 h-4 text-green-500" /> WhatsApp-based</span>
             <span className="flex items-center gap-1"><Check className="w-4 h-4 text-green-500" /> AI-assisted (not medical advice)</span>
           </div>
@@ -382,7 +382,8 @@ export default function Landing() {
             <a href="mailto:support@glucovital.fit" className="hover:text-[#5b9a8b] transition-colors">Contact</a>
           </div>
           <p className="text-xs text-slate-400 mb-2">
-            Gluco Vital supports awareness and self-tracking. It does not diagnose or replace medical care.
+            Gluco Vital supports awareness and self-tracking. It does not diagnose or replace medical care.<br />
+            Currently offered free during early access. Features may evolve over time.
           </p>
           <p>© 2025 Gluco Vital • Glucovital.fit 💚</p>
         </div>
