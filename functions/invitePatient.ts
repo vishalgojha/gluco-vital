@@ -67,12 +67,17 @@ Best regards,
 Gluco Vital Team
     `.trim();
 
-    await base44.asServiceRole.integrations.Core.SendEmail({
-      to: patient_email,
-      subject: `Dr. ${user.full_name} invites you to connect on Gluco Vital`,
-      body: emailBody,
-      from_name: "Gluco Vital"
-    });
+    try {
+      await base44.integrations.Core.SendEmail({
+        to: patient_email,
+        subject: `Dr. ${user.full_name} invites you to connect on Gluco Vital`,
+        body: emailBody,
+        from_name: "Gluco Vital"
+      });
+    } catch (emailError) {
+      console.error('Email send error:', emailError);
+      // Connection created, email might fail silently
+    }
 
     return Response.json({ 
       success: true, 
