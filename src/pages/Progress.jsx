@@ -130,12 +130,12 @@ export default function Progress() {
 
         {/* Charts Section */}
         <Tabs defaultValue="sugar" className="mt-8">
-          <TabsList className="grid w-full grid-cols-5 mb-6">
-            <TabsTrigger value="sugar">Blood Sugar</TabsTrigger>
-            <TabsTrigger value="bp">Blood Pressure</TabsTrigger>
-            <TabsTrigger value="medication">Medication</TabsTrigger>
-            <TabsTrigger value="wearables">Wearables</TabsTrigger>
-            <TabsTrigger value="activity">Activity</TabsTrigger>
+          <TabsList className="flex flex-wrap h-auto gap-1 p-1 mb-6">
+            <TabsTrigger value="sugar" className="flex-1 min-w-[80px] text-xs sm:text-sm">Sugar</TabsTrigger>
+            <TabsTrigger value="bp" className="flex-1 min-w-[80px] text-xs sm:text-sm">BP</TabsTrigger>
+            <TabsTrigger value="medication" className="flex-1 min-w-[80px] text-xs sm:text-sm">Meds</TabsTrigger>
+            <TabsTrigger value="wearables" className="flex-1 min-w-[80px] text-xs sm:text-sm">Wearables</TabsTrigger>
+            <TabsTrigger value="activity" className="flex-1 min-w-[80px] text-xs sm:text-sm">Activity</TabsTrigger>
           </TabsList>
 
           <TabsContent value="sugar" className="space-y-6">
