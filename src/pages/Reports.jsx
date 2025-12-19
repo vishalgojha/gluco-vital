@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { FileText, Plus } from "lucide-react";
+import { FileText, Plus, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import ReportGenerator from "@/components/reports/ReportGenerator";
 import ReportCard from "@/components/reports/ReportCard";
 import ReportViewer from "@/components/reports/ReportViewer";
+import DoctorQuestionsList from "@/components/reports/DoctorQuestionsList";
 
 export default function Reports() {
   const queryClient = useQueryClient();
@@ -99,6 +100,11 @@ export default function Reports() {
           onUpdate={() => queryClient.invalidateQueries({ queryKey: ['health-reports'] })}
         />
       )}
+
+      {/* Doctor Questions Section */}
+      <div className="max-w-4xl mx-auto px-4 pb-8">
+        <DoctorQuestionsList userEmail={user?.email} />
+      </div>
     </div>
   );
 }
