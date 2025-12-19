@@ -67,6 +67,9 @@ Best regards,
 Gluco Vital Team
     `.trim();
 
+    let emailSent = false;
+    let emailError = null;
+    
     try {
       await base44.integrations.Core.SendEmail({
         to: patient_email,
@@ -74,15 +77,18 @@ Gluco Vital Team
         body: emailBody,
         from_name: "Gluco Vital"
       });
-    } catch (emailError) {
-      console.error('Email send error:', emailError);
-      // Connection created, email might fail silently
+      emailSent = true;
+    } catch (err) {
+      console.error('Email send error:', err);
+      emailError = err.message;
     }
 
     return Response.json({ 
       success: true, 
       connection: connection,
-      message: 'Invitation sent successfully' 
+      message: emailSent ? 'Invitation sent successfully' : 'Connection created but email failed',
+      emailSent,
+      emailError
     });
   } catch (error) {
     console.error('Invite patient error:', error);
