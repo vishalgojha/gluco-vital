@@ -212,7 +212,7 @@ export default function Landing() {
                 Nurse Priya analyzes your data and gives personalized tips.
               </p>
               <div className="mt-4 p-3 bg-violet-50 rounded-lg text-left text-sm text-violet-700">
-                "Beta, dinner ke baad sugar thodi zyada hai. Roti ek kam kar ke dekho! 🙏"
+                "Your post-dinner sugar seems a bit high. Try reducing one roti and see how it goes! 💪"
               </div>
             </div>
 
