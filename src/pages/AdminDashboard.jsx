@@ -476,3 +476,293 @@ function StatBox({ label, value, icon: Icon, color = 'slate' }) {
     </div>
   );
 }
+
+function UserRow({ user, profile, logs, today }) {
+  const [expanded, setExpanded] = React.useState(false);
+  
+  const last7d = logs.filter(l => differenceInDays(today, new Date(l.created_date)) <= 7);
+  const lastLog = logs[0];
+  const daysSinceLog = lastLog ? differenceInDays(today, new Date(lastLog.created_date)) : null;
+  
+  // Calculate stats
+  const sugarLogs = logs.filter(l => l.log_type === 'sugar' && l.numeric_value);
+  const bpLogs = logs.filter(l => l.log_type === 'blood_pressure');
+  const mealLogs = logs.filter(l => l.log_type === 'meal');
+  const medLogs = logs.filter(l => l.log_type === 'medication');
+  
+  const lastSugar = sugarLogs[0]?.numeric_value;
+  const avgSugar = sugarLogs.length > 0 
+    ? Math.round(sugarLogs.slice(0, 7).reduce((a, b) => a + b.numeric_value, 0) / Math.min(sugarLogs.length, 7))
+    : null;
+  const lastBP = bpLogs[0]?.value;
+  
+  // Recent 7d breakdown
+  const sugar7d = sugarLogs.filter(l => differenceInDays(today, new Date(l.created_date)) <= 7);
+  const bp7d = bpLogs.filter(l => differenceInDays(today, new Date(l.created_date)) <= 7);
+  const meal7d = mealLogs.filter(l => differenceInDays(today, new Date(l.created_date)) <= 7);
+  const med7d = medLogs.filter(l => differenceInDays(today, new Date(l.created_date)) <= 7);
+
+  return (
+    <>
+      <tr 
+        className={`border-b hover:bg-slate-50 cursor-pointer ${expanded ? 'bg-blue-50' : ''}`}
+        onClick={() => setExpanded(!expanded)}
+      >
+        <td className="py-2">
+          <div className="flex items-center gap-2">
+            {expanded ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
+            <div>
+              <p className="font-medium text-slate-800">{user.full_name || '—'}</p>
+              <p className="text-xs text-slate-500">{user.email}</p>
+            </div>
+          </div>
+        </td>
+        <td className="py-2 text-slate-600">
+          {format(new Date(user.created_date), 'MMM d')}
+        </td>
+        <td className="py-2">
+          {lastLog ? (
+            <span className={daysSinceLog > 3 ? 'text-red-600' : 'text-slate-600'}>
+              {daysSinceLog === 0 ? 'Today' : `${daysSinceLog}d ago`}
+            </span>
+          ) : '—'}
+        </td>
+        <td className="py-2 text-slate-600">{last7d.length}</td>
+        <td className="py-2">
+          <div className="flex gap-1">
+            {profile?.is_on_insulin && (
+              <Badge variant="outline" className="text-xs bg-amber-50 text-amber-700 border-amber-200">INS</Badge>
+            )}
+            {profile?.whatsapp_connected && (
+              <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">WA</Badge>
+            )}
+            {profile?.prescription_image_url && (
+              <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">RX</Badge>
+            )}
+          </div>
+        </td>
+        <td className="py-2 text-slate-600 text-xs uppercase">
+          {profile?.language_preference?.slice(0, 2) || 'en'}
+        </td>
+      </tr>
+      
+      {/* Expanded Details Row */}
+      {expanded && (
+        <tr className="bg-slate-50 border-b">
+          <td colSpan={6} className="p-4">
+            <div className="grid md:grid-cols-3 gap-4">
+              {/* Profile Info */}
+              <div className="bg-white rounded-lg p-4 border">
+                <h4 className="font-medium text-slate-700 mb-3 flex items-center gap-2">
+                  <User className="w-4 h-4" />
+                  Profile Details
+                </h4>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Name</span>
+                    <span className="font-medium">{profile?.name || user.full_name || '—'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Age</span>
+                    <span className="font-medium">{profile?.age || '—'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Gender</span>
+                    <span className="font-medium capitalize">{profile?.gender || '—'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Conditions</span>
+                    <span className="font-medium">{profile?.conditions?.join(', ') || '—'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">On Insulin</span>
+                    <span className={`font-medium ${profile?.is_on_insulin ? 'text-amber-600' : ''}`}>
+                      {profile?.is_on_insulin ? 'Yes' : 'No'}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Language</span>
+                    <span className="font-medium capitalize">{profile?.language_preference || 'English'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">WhatsApp</span>
+                    <span className={`font-medium ${profile?.whatsapp_connected ? 'text-green-600' : 'text-slate-400'}`}>
+                      {profile?.whatsapp_connected ? 'Connected' : 'Not Connected'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Health Stats */}
+              <div className="bg-white rounded-lg p-4 border">
+                <h4 className="font-medium text-slate-700 mb-3 flex items-center gap-2">
+                  <Activity className="w-4 h-4" />
+                  Health Stats
+                </h4>
+                <div className="grid grid-cols-2 gap-2 mb-3">
+                  <div className="p-2 bg-blue-50 rounded text-center">
+                    <Droplet className="w-4 h-4 text-blue-500 mx-auto mb-1" />
+                    <p className="text-lg font-bold">{lastSugar || '—'}</p>
+                    <p className="text-xs text-slate-500">Last Sugar</p>
+                  </div>
+                  <div className="p-2 bg-purple-50 rounded text-center">
+                    <TrendingUp className="w-4 h-4 text-purple-500 mx-auto mb-1" />
+                    <p className="text-lg font-bold">{avgSugar || '—'}</p>
+                    <p className="text-xs text-slate-500">7d Avg</p>
+                  </div>
+                  <div className="p-2 bg-red-50 rounded text-center">
+                    <Heart className="w-4 h-4 text-red-500 mx-auto mb-1" />
+                    <p className="text-lg font-bold">{lastBP || '—'}</p>
+                    <p className="text-xs text-slate-500">Last BP</p>
+                  </div>
+                  <div className="p-2 bg-green-50 rounded text-center">
+                    <Clock className="w-4 h-4 text-green-500 mx-auto mb-1" />
+                    <p className="text-lg font-bold">{logs.length}</p>
+                    <p className="text-xs text-slate-500">Total Logs</p>
+                  </div>
+                </div>
+                <div className="text-xs text-slate-500 space-y-1">
+                  <p className="flex justify-between"><span>Target Fasting:</span> <span className="font-medium">{profile?.target_sugar_fasting || 100} mg/dL</span></p>
+                  <p className="flex justify-between"><span>Target Post-Meal:</span> <span className="font-medium">{profile?.target_sugar_post_meal || 140} mg/dL</span></p>
+                </div>
+              </div>
+              
+              {/* 7-Day Activity */}
+              <div className="bg-white rounded-lg p-4 border">
+                <h4 className="font-medium text-slate-700 mb-3 flex items-center gap-2">
+                  <Calendar className="w-4 h-4" />
+                  7-Day Breakdown
+                </h4>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between p-2 bg-slate-50 rounded">
+                    <div className="flex items-center gap-2">
+                      <Droplet className="w-3 h-3 text-blue-500" />
+                      <span className="text-sm">Sugar Logs</span>
+                    </div>
+                    <span className="font-mono font-medium">{sugar7d.length}</span>
+                  </div>
+                  <div className="flex items-center justify-between p-2 bg-slate-50 rounded">
+                    <div className="flex items-center gap-2">
+                      <Heart className="w-3 h-3 text-red-500" />
+                      <span className="text-sm">BP Logs</span>
+                    </div>
+                    <span className="font-mono font-medium">{bp7d.length}</span>
+                  </div>
+                  <div className="flex items-center justify-between p-2 bg-slate-50 rounded">
+                    <div className="flex items-center gap-2">
+                      <UtensilsCrossed className="w-3 h-3 text-orange-500" />
+                      <span className="text-sm">Meal Logs</span>
+                    </div>
+                    <span className="font-mono font-medium">{meal7d.length}</span>
+                  </div>
+                  <div className="flex items-center justify-between p-2 bg-slate-50 rounded">
+                    <div className="flex items-center gap-2">
+                      <Pill className="w-3 h-3 text-green-500" />
+                      <span className="text-sm">Medication Logs</span>
+                    </div>
+                    <span className="font-mono font-medium">{med7d.length}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Doctor/Prescription Info */}
+            {(profile?.doctor_name || profile?.prescription_image_url) && (
+              <div className="mt-4 grid md:grid-cols-2 gap-4">
+                {/* Doctor Info */}
+                {profile?.doctor_name && (
+                  <div className="bg-white rounded-lg p-4 border">
+                    <h4 className="font-medium text-slate-700 mb-3 flex items-center gap-2">
+                      <Stethoscope className="w-4 h-4" />
+                      Doctor Details
+                    </h4>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-slate-500">Doctor</span>
+                        <span className="font-medium">{profile.doctor_name}</span>
+                      </div>
+                      {profile.doctor_specialization && (
+                        <div className="flex justify-between">
+                          <span className="text-slate-500">Specialization</span>
+                          <span className="font-medium">{profile.doctor_specialization}</span>
+                        </div>
+                      )}
+                      {profile.doctor_phone && (
+                        <div className="flex justify-between">
+                          <span className="text-slate-500">Phone</span>
+                          <span className="font-medium">{profile.doctor_phone}</span>
+                        </div>
+                      )}
+                      {profile.prescription_clinic && (
+                        <div className="flex justify-between">
+                          <span className="text-slate-500">Clinic</span>
+                          <span className="font-medium">{profile.prescription_clinic}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+                
+                {/* Prescription Info */}
+                {profile?.prescription_image_url && (
+                  <div className="bg-white rounded-lg p-4 border">
+                    <h4 className="font-medium text-slate-700 mb-3 flex items-center gap-2">
+                      <FileText className="w-4 h-4" />
+                      Prescription
+                    </h4>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-slate-500">Date</span>
+                        <span className="font-medium">
+                          {profile.prescription_date ? format(new Date(profile.prescription_date), 'MMM d, yyyy') : '—'}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-slate-500">Valid For</span>
+                        <span className="font-medium">{profile.prescription_valid_months || 3} months</span>
+                      </div>
+                      {profile.prescription_diagnosis && (
+                        <div className="flex justify-between">
+                          <span className="text-slate-500">Diagnosis</span>
+                          <span className="font-medium">{profile.prescription_diagnosis}</span>
+                        </div>
+                      )}
+                      <a 
+                        href={profile.prescription_image_url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1 text-blue-600 hover:underline mt-2"
+                      >
+                        <Eye className="w-3 h-3" />
+                        View Prescription Image
+                      </a>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+            
+            {/* Medications */}
+            {profile?.medications?.length > 0 && (
+              <div className="mt-4 bg-white rounded-lg p-4 border">
+                <h4 className="font-medium text-slate-700 mb-3 flex items-center gap-2">
+                  <Pill className="w-4 h-4" />
+                  Current Medications
+                </h4>
+                <div className="grid md:grid-cols-3 gap-2">
+                  {profile.medications.map((med, idx) => (
+                    <div key={idx} className="p-2 bg-slate-50 rounded text-sm">
+                      <p className="font-medium text-slate-800">{med.name}</p>
+                      <p className="text-xs text-slate-500">{med.dosage} • {med.frequency}</p>
+                      {med.timing && <p className="text-xs text-slate-400">{med.timing}</p>}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </td>
+        </tr>
+      )}
+    </>
+  );
+}
