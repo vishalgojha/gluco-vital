@@ -83,19 +83,19 @@ export default function Progress() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-slate-800 flex items-center gap-3">
-              <Activity className="w-8 h-8 text-blue-600" />
+            <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 flex items-center gap-2 sm:gap-3">
+              <Activity className="w-6 h-6 sm:w-8 sm:h-8 text-blue-600" />
               Progress Tracking
             </h1>
-            <p className="text-slate-500 mt-1">Comprehensive view of your health trends</p>
+            <p className="text-slate-500 mt-1 text-sm sm:text-base">Comprehensive view of your health trends</p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <Select value={timeRange} onValueChange={setTimeRange}>
-              <SelectTrigger className="w-36">
+              <SelectTrigger className="w-28 sm:w-36">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -106,9 +106,9 @@ export default function Progress() {
                 <SelectItem value="90">Last 90 days</SelectItem>
               </SelectContent>
             </Select>
-            <Button onClick={handleExport} variant="outline">
-              <Download className="w-4 h-4 mr-2" />
-              Export CSV
+            <Button onClick={handleExport} variant="outline" size="sm" className="sm:size-default">
+              <Download className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Export CSV</span>
             </Button>
           </div>
         </div>
@@ -207,22 +207,22 @@ function BPSummaryStats({ logs, profile }) {
   const targetDiastolic = profile?.target_bp_diastolic || 80;
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-      <div className="bg-blue-50 rounded-xl p-4 text-center">
-        <p className="text-2xl font-bold text-blue-700">{avgSystolic}/{avgDiastolic}</p>
-        <p className="text-xs text-blue-600 mt-1">Average BP</p>
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4">
+      <div className="bg-blue-50 rounded-xl p-3 sm:p-4 text-center">
+        <p className="text-lg sm:text-2xl font-bold text-blue-700">{avgSystolic}/{avgDiastolic}</p>
+        <p className="text-[10px] sm:text-xs text-blue-600 mt-1">Average BP</p>
       </div>
-      <div className="bg-slate-50 rounded-xl p-4 text-center">
-        <p className="text-2xl font-bold text-slate-700">{maxSystolic}/{Math.max(...bpValues.map(v => v.diastolic))}</p>
-        <p className="text-xs text-slate-500 mt-1">Highest</p>
+      <div className="bg-slate-50 rounded-xl p-3 sm:p-4 text-center">
+        <p className="text-lg sm:text-2xl font-bold text-slate-700">{maxSystolic}/{Math.max(...bpValues.map(v => v.diastolic))}</p>
+        <p className="text-[10px] sm:text-xs text-slate-500 mt-1">Highest</p>
       </div>
-      <div className="bg-slate-50 rounded-xl p-4 text-center">
-        <p className="text-2xl font-bold text-slate-700">{minSystolic}/{Math.min(...bpValues.map(v => v.diastolic))}</p>
-        <p className="text-xs text-slate-500 mt-1">Lowest</p>
+      <div className="bg-slate-50 rounded-xl p-3 sm:p-4 text-center">
+        <p className="text-lg sm:text-2xl font-bold text-slate-700">{minSystolic}/{Math.min(...bpValues.map(v => v.diastolic))}</p>
+        <p className="text-[10px] sm:text-xs text-slate-500 mt-1">Lowest</p>
       </div>
-      <div className="bg-green-50 rounded-xl p-4 text-center">
-        <p className="text-2xl font-bold text-green-700">{targetSystolic}/{targetDiastolic}</p>
-        <p className="text-xs text-green-600 mt-1">Target</p>
+      <div className="bg-green-50 rounded-xl p-3 sm:p-4 text-center">
+        <p className="text-lg sm:text-2xl font-bold text-green-700">{targetSystolic}/{targetDiastolic}</p>
+        <p className="text-[10px] sm:text-xs text-green-600 mt-1">Target</p>
       </div>
     </div>
   );
@@ -250,13 +250,13 @@ function LoggingActivityChart({ logs }) {
   });
 
   return (
-    <Card className="p-6">
-      <h3 className="font-semibold text-slate-800 mb-4">Daily Logging Activity</h3>
-      <div className="grid grid-cols-7 gap-2">
+    <Card className="p-4 sm:p-6">
+      <h3 className="font-semibold text-slate-800 mb-4 text-sm sm:text-base">Daily Logging Activity</h3>
+      <div className="grid grid-cols-7 gap-1 sm:gap-2">
         {data.slice(-28).map((day, idx) => (
           <div key={idx} className="text-center">
             <div 
-              className={`h-12 rounded-lg flex items-center justify-center text-sm font-semibold ${
+              className={`h-8 sm:h-12 rounded-lg flex items-center justify-center text-xs sm:text-sm font-semibold ${
                 day.count === 0 ? 'bg-slate-100 text-slate-300' :
                 day.count < 3 ? 'bg-amber-100 text-amber-700' :
                 'bg-green-100 text-green-700'
@@ -264,19 +264,19 @@ function LoggingActivityChart({ logs }) {
             >
               {day.count}
             </div>
-            <p className="text-[10px] text-slate-400 mt-1">{format(new Date(day.date), 'd')}</p>
+            <p className="text-[8px] sm:text-[10px] text-slate-400 mt-1">{format(new Date(day.date), 'd')}</p>
           </div>
         ))}
       </div>
-      <div className="flex items-center gap-4 mt-4 text-xs text-slate-500">
+      <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-4 text-[10px] sm:text-xs text-slate-500">
         <div className="flex items-center gap-1">
-          <div className="w-3 h-3 rounded bg-slate-100" /> No logs
+          <div className="w-2 h-2 sm:w-3 sm:h-3 rounded bg-slate-100" /> No logs
         </div>
         <div className="flex items-center gap-1">
-          <div className="w-3 h-3 rounded bg-amber-100" /> 1-2 logs
+          <div className="w-2 h-2 sm:w-3 sm:h-3 rounded bg-amber-100" /> 1-2 logs
         </div>
         <div className="flex items-center gap-1">
-          <div className="w-3 h-3 rounded bg-green-100" /> 3+ logs
+          <div className="w-2 h-2 sm:w-3 sm:h-3 rounded bg-green-100" /> 3+ logs
         </div>
       </div>
     </Card>
@@ -288,19 +288,19 @@ function LoggingStreakCard({ achievements, logs }) {
   const longestStreak = achievements?.longest_streak || 0;
   
   return (
-    <Card className="p-6">
-      <h3 className="font-semibold text-slate-800 mb-4 flex items-center gap-2">
-        <Target className="w-5 h-5 text-orange-500" />
+    <Card className="p-4 sm:p-6">
+      <h3 className="font-semibold text-slate-800 mb-4 flex items-center gap-2 text-sm sm:text-base">
+        <Target className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500" />
         Logging Consistency
       </h3>
-      <div className="grid grid-cols-2 gap-4">
-        <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl p-5 text-center border border-orange-100">
-          <p className="text-4xl font-bold text-orange-600 mb-1">{currentStreak}</p>
-          <p className="text-sm text-orange-700">Current Streak (days)</p>
+      <div className="grid grid-cols-2 gap-2 sm:gap-4">
+        <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl p-3 sm:p-5 text-center border border-orange-100">
+          <p className="text-2xl sm:text-4xl font-bold text-orange-600 mb-1">{currentStreak}</p>
+          <p className="text-xs sm:text-sm text-orange-700">Current Streak</p>
         </div>
-        <div className="bg-gradient-to-br from-violet-50 to-purple-50 rounded-xl p-5 text-center border border-violet-100">
-          <p className="text-4xl font-bold text-violet-600 mb-1">{longestStreak}</p>
-          <p className="text-sm text-violet-700">Longest Streak (days)</p>
+        <div className="bg-gradient-to-br from-violet-50 to-purple-50 rounded-xl p-3 sm:p-5 text-center border border-violet-100">
+          <p className="text-2xl sm:text-4xl font-bold text-violet-600 mb-1">{longestStreak}</p>
+          <p className="text-xs sm:text-sm text-violet-700">Longest Streak</p>
         </div>
       </div>
     </Card>
