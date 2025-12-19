@@ -31,9 +31,13 @@ export default function DoctorDashboard() {
       const response = await base44.functions.invoke('invitePatient', data);
       return response.data;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['doctor-patients'] });
-      toast.success("Invitation sent to patient!");
+      if (data.emailSent) {
+        toast.success("Invitation email sent to patient!");
+      } else {
+        toast.warning(`Connection created but email failed: ${data.emailError || 'Unknown error'}`);
+      }
       setShowInviteDialog(false);
       setInviteForm({ patient_email: "", patient_name: "", message: "" });
     },
