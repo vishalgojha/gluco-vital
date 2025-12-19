@@ -29,8 +29,8 @@ export default function Landing() {
       { name: "viewport", content: "width=device-width, initial-scale=1.0" },
       
       // Open Graph
-      { property: "og:title", content: "Gluco Vital - Your Personal AI Nurse on WhatsApp" },
-      { property: "og:description", content: "Log sugar, BP & meals via WhatsApp. Get AI insights, medication reminders, and health reports in your language. Free diabetes management made simple." },
+      { property: "og:title", content: "Gluco Vital - Your Personal Health Companion on WhatsApp" },
+      { property: "og:description", content: "Log sugar, BP & meals via WhatsApp. Get gentle insights, reminders, and clear summaries in your language. Free health tracking made simple." },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://glucovital.fit" },
       { property: "og:site_name", content: "Gluco Vital" },
@@ -109,18 +109,18 @@ export default function Landing() {
     };
   }, []);
   const features = [
-    { icon: MessageCircle, title: "WhatsApp Logging", desc: "Log sugar, BP, meals via simple messages" },
-    { icon: TrendingUp, title: "AI Insights", desc: "Personalized health trends & recommendations" },
-    { icon: Bell, title: "Smart Reminders", desc: "Medication alerts that fit your schedule" },
-    { icon: Trophy, title: "Gamification", desc: "Earn points, badges & stay motivated" },
+    { icon: MessageCircle, title: "WhatsApp Logging", desc: "Log sugar, BP, meals or notes — no app learning curve" },
+    { icon: TrendingUp, title: "Pattern Insights", desc: "See trends over time and what influences your numbers" },
+    { icon: Bell, title: "Gentle Reminders", desc: "Timely nudges that fit your routine — never shaming" },
+    { icon: Trophy, title: "Consistency Signals", desc: "Simple streaks that reward showing up, not perfect numbers" },
     { icon: Globe, title: "14 Languages", desc: "Hindi, Chinese, Spanish, Arabic & more" },
-    { icon: Shield, title: "Doctor Reports", desc: "Share health summaries with your doctor" },
+    { icon: Shield, title: "Doctor-Ready Reports", desc: "Clear summaries for better doctor conversations" },
   ];
 
   const stats = [
     { value: "537M", label: "People with diabetes globally" },
     { value: "14", label: "Languages supported" },
-    { value: "24/7", label: "AI health companion" },
+    { value: "24/7", label: "Health companion" },
   ];
 
   return (
@@ -146,13 +146,13 @@ export default function Landing() {
           </div>
 
           <h1 className="text-4xl md:text-6xl font-bold text-slate-800 mb-6 leading-tight">
-            Your Personal <span className="text-[#5b9a8b]">AI Nurse</span><br />
+            Your Personal <span className="text-[#5b9a8b]">Health Companion</span><br />
             on WhatsApp
           </h1>
           
           <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto mb-8">
-            Log sugar, BP & meals via WhatsApp. Get personalized insights, medication reminders, 
-            and health reports in your language. Like having a caring nurse in your pocket! 🩺
+            Log your sugar, BP, and meals via WhatsApp.<br />
+            Get gentle insights, reminders, and clear summaries — in your language.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -214,12 +214,12 @@ export default function Landing() {
               <div className="w-14 h-14 bg-violet-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <TrendingUp className="w-7 h-7 text-violet-600" />
               </div>
-              <h3 className="font-semibold text-lg text-slate-800 mb-2">2. Get AI Insights</h3>
+              <h3 className="font-semibold text-lg text-slate-800 mb-2">2. Get Pattern Insights</h3>
               <p className="text-slate-500 text-sm">
-                Nurse Priya analyzes your data and gives personalized tips.
+                Gluco Vital analyzes your logs and highlights useful patterns.
               </p>
               <div className="mt-4 p-3 bg-violet-50 rounded-lg text-left text-sm text-violet-700">
-                "Your post-dinner sugar seems a bit high. Try reducing one roti and see how it goes! 💪"
+                "Your post-dinner readings have been higher than usual. You could try a lighter dinner and see how it goes."
               </div>
             </div>
 
@@ -229,11 +229,11 @@ export default function Landing() {
               </div>
               <h3 className="font-semibold text-lg text-slate-800 mb-2">3. Track Progress</h3>
               <p className="text-slate-500 text-sm">
-                Beautiful charts, reports & achievements on the app.
+                Clear summaries that help you notice progress over time.
               </p>
               <div className="mt-4 flex justify-center gap-2">
-                <div className="px-3 py-1.5 bg-amber-100 text-amber-700 rounded-full text-xs font-medium">🏆 7-day streak</div>
-                <div className="px-3 py-1.5 bg-green-100 text-green-700 rounded-full text-xs font-medium">✓ On target</div>
+                <div className="px-3 py-1.5 bg-amber-100 text-amber-700 rounded-full text-xs font-medium">🏆 7 days logged</div>
+                <div className="px-3 py-1.5 bg-green-100 text-green-700 rounded-full text-xs font-medium">✓ Within range</div>
               </div>
             </div>
           </div>
@@ -268,7 +268,7 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-4">Speaks Your Language</h2>
           <p className="text-white/80 mb-8 max-w-xl mx-auto">
-            Supporting the countries with highest diabetes populations
+            Designed for people managing health in everyday life — across languages and cultures.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             {["🇮🇳 Hindi", "🇨🇳 中文", "🇺🇸 English", "🇵🇰 اردو", "🇧🇷 Português", "🇸🇦 العربية", "🇮🇩 Bahasa", "🇯🇵 日本語", "🇷🇺 Русский", "🇹🇷 Türkçe", "🇧🇩 বাংলা", "🇩🇪 Deutsch", "🇪🇸 Español", "🇲🇽 Hinglish"].map((lang, idx) => (
@@ -284,10 +284,10 @@ export default function Landing() {
       <section className="py-20">
         <div className="max-w-2xl mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold text-slate-800 mb-4">
-            Start Your Health Journey Today
+            Start with One Simple Log
           </h2>
           <p className="text-slate-500 mb-8">
-            Free to use. No credit card required. Takes 30 seconds.
+            Free to use. No credit card. Takes less than 30 seconds to send your first message.
           </p>
           <Button 
             size="lg"
@@ -306,10 +306,10 @@ export default function Landing() {
           <p className="text-sm text-slate-500 mt-4">
             After signing up, connect WhatsApp to log your health data via messages
           </p>
-          <div className="flex items-center justify-center gap-6 mt-6 text-sm text-slate-500">
+          <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6 mt-6 text-sm text-slate-500">
             <span className="flex items-center gap-1"><Check className="w-4 h-4 text-green-500" /> Free forever</span>
-            <span className="flex items-center gap-1"><Check className="w-4 h-4 text-green-500" /> WhatsApp based</span>
-            <span className="flex items-center gap-1"><Check className="w-4 h-4 text-green-500" /> AI powered</span>
+            <span className="flex items-center gap-1"><Check className="w-4 h-4 text-green-500" /> WhatsApp-based</span>
+            <span className="flex items-center gap-1"><Check className="w-4 h-4 text-green-500" /> AI-assisted (not medical advice)</span>
           </div>
         </div>
       </section>
@@ -326,6 +326,9 @@ export default function Landing() {
             <span>•</span>
             <a href="mailto:support@glucovital.fit" className="hover:text-[#5b9a8b] transition-colors">Contact</a>
           </div>
+          <p className="text-xs text-slate-400 mb-2">
+            Gluco Vital supports awareness and self-tracking. It does not diagnose or replace medical care.
+          </p>
           <p>© 2025 Gluco Vital • Glucovital.fit 💚</p>
         </div>
       </footer>
