@@ -67,19 +67,44 @@ export default function DoctorShare() {
         throw new Error("This doctor is already connected or has a pending invitation");
       }
 
-      return base44.entities.DoctorConnection.create({
+      const connection = await base44.entities.DoctorConnection.create({
         ...data,
         patient_email: user.email,
         patient_name: user.full_name,
         status: "pending",
         invited_at: new Date().toISOString()
       });
+
+      // Send invitation email to doctor
+      await base44.integrations.Core.SendEmail({
+        to: data.doctor_email,
+        subject: `${user.full_name} has invited you to connect on Gluco Vital`,
+        body: `Hello${data.doctor_name ? ' ' + data.doctor_name : ''},
+
+${user.full_name} has invited you to connect on Gluco Vital for better diabetes care management.
+
+To accept this invitation:
+1. Sign up or log in at https://glucovital.fit
+2. Go to "Doctor Portal" in the menu
+3. You'll see the pending invitation from ${user.full_name}
+4. Click "Accept" to view their health data
+
+Shared access includes:
+${data.permissions.includes('view_logs') ? '• Health Logs (Sugar, BP, meals, medications)\n' : ''}${data.permissions.includes('view_reports') ? '• Health Reports (Weekly/monthly summaries)\n' : ''}${data.permissions.includes('view_insights') ? '• AI Insights (Patterns and recommendations)\n' : ''}${data.permissions.includes('send_feedback') ? '• Send Feedback (Provide recommendations)\n' : ''}
+If you did not expect this invitation, you can safely ignore this email.
+
+Best regards,
+Gluco Vital Team`,
+        from_name: "Gluco Vital"
+      });
+
+      return connection;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['doctor-connections'] });
       setShowInvite(false);
       setInviteForm({ doctor_email: "", doctor_name: "", permissions: ["view_logs", "view_reports", "view_insights", "send_feedback"] });
-      toast.success("Invitation sent to doctor!");
+      toast.success("Invitation email sent to doctor!");
     },
     onError: (error) => {
       toast.error(error.message || "Failed to send invitation");
