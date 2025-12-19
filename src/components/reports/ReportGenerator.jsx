@@ -75,15 +75,17 @@ Generate a warm, encouraging report with:
 2. 2-3 identified risks or concerns (if any)
 3. 3-4 actionable recommendations
 4. 2-3 achievements or positive observations
+5. 3-5 specific questions the patient should ask their doctor at the next visit based on their health data and patterns
 
-Be caring and supportive in tone.`,
+Be caring and supportive in tone. Questions for doctor should be practical and relevant to diabetes management.`,
         response_json_schema: {
           type: "object",
           properties: {
             summary: { type: "string" },
             risks: { type: "array", items: { type: "string" } },
             recommendations: { type: "array", items: { type: "string" } },
-            achievements: { type: "array", items: { type: "string" } }
+            achievements: { type: "array", items: { type: "string" } },
+            questions_for_doctor: { type: "array", items: { type: "string" } }
           }
         }
       });
@@ -99,7 +101,8 @@ Be caring and supportive in tone.`,
         medication_adherence: medLogs.length > 0 ? Math.min(100, Math.round((medLogs.length / (reportType === 'weekly' ? 14 : reportType === 'monthly' ? 60 : 180)) * 100)) : 0,
         risks_identified: aiResponse.risks || [],
         recommendations: aiResponse.recommendations || [],
-        achievements: aiResponse.achievements || []
+        achievements: aiResponse.achievements || [],
+        questions_for_doctor: aiResponse.questions_for_doctor || []
       });
 
       toast.success("Report generated successfully!");

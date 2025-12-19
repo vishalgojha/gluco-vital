@@ -25,8 +25,26 @@ export default function Achievements() {
   const { data: achievements, isLoading } = useQuery({
     queryKey: ['user-achievements', user?.email],
     queryFn: async () => {
-      const results = await base44.entities.UserAchievements.filter({ user_email: user?.email });
-      return results?.[0] || null;
+      // Try to find existing achievements
+      let results = await base44.entities.UserAchievements.filter({ user_email: user?.email });
+      
+      // If no achievements exist, create initial record
+      if (!results || results.length === 0) {
+        const newAchievements = await base44.entities.UserAchievements.create({
+          user_email: user.email,
+          total_points: 0,
+          current_streak: 0,
+          longest_streak: 0,
+          badges: [],
+          logs_count: 0,
+          targets_hit_count: 0,
+          weekly_challenge_progress: 0,
+          show_on_leaderboard: true,
+          display_name: user.full_name?.split(' ')[0] || 'User'
+        });
+        return newAchievements;
+      }
+      return results[0];
     },
     enabled: !!user?.email
   });
