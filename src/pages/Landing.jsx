@@ -158,7 +158,14 @@ export default function Landing() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button 
               size="lg"
-              onClick={() => base44.auth.redirectToLogin(createPageUrl("Home"))}
+              onClick={async () => {
+                const isAuth = await base44.auth.isAuthenticated();
+                if (isAuth) {
+                  window.location.href = createPageUrl("Home");
+                } else {
+                  base44.auth.redirectToLogin(createPageUrl("Home"));
+                }
+              }}
               className="bg-[#5b9a8b] hover:bg-[#4a8a7b] h-14 px-10 text-lg rounded-xl shadow-lg"
             >
               Get Started Free <ArrowRight className="w-5 h-5 ml-2" />
@@ -284,7 +291,14 @@ export default function Landing() {
           </p>
           <Button 
             size="lg"
-            onClick={() => base44.auth.redirectToLogin(createPageUrl("Home"))}
+            onClick={async () => {
+              const isAuth = await base44.auth.isAuthenticated();
+              if (isAuth) {
+                window.location.href = createPageUrl("Home");
+              } else {
+                base44.auth.redirectToLogin(createPageUrl("Home"));
+              }
+            }}
             className="bg-[#5b9a8b] hover:bg-[#4a8a7b] h-14 px-10 text-lg rounded-xl shadow-lg"
           >
             Get Started Free <ArrowRight className="w-5 h-5 ml-2" />
