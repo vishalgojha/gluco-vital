@@ -201,51 +201,15 @@ export default function AdminDashboard() {
                       </tr>
                     </thead>
                     <tbody>
-                      {filteredUsers.slice(0, 50).map(u => {
-                        const profile = getUserProfile(u.email);
-                        const logs = getUserLogs(u.email);
-                        const last7d = logs.filter(l => differenceInDays(today, new Date(l.created_date)) <= 7);
-                        const lastLog = logs[0];
-                        const daysSinceLog = lastLog ? differenceInDays(today, new Date(lastLog.created_date)) : null;
-                        
-                        return (
-                          <tr key={u.id} className="border-b hover:bg-slate-50">
-                            <td className="py-2">
-                              <div>
-                                <p className="font-medium text-slate-800">{u.full_name || '—'}</p>
-                                <p className="text-xs text-slate-500">{u.email}</p>
-                              </div>
-                            </td>
-                            <td className="py-2 text-slate-600">
-                              {format(new Date(u.created_date), 'MMM d')}
-                            </td>
-                            <td className="py-2">
-                              {lastLog ? (
-                                <span className={daysSinceLog > 3 ? 'text-red-600' : 'text-slate-600'}>
-                                  {daysSinceLog === 0 ? 'Today' : `${daysSinceLog}d ago`}
-                                </span>
-                              ) : '—'}
-                            </td>
-                            <td className="py-2 text-slate-600">{last7d.length}</td>
-                            <td className="py-2">
-                              <div className="flex gap-1">
-                                {profile?.is_on_insulin && (
-                                  <Badge variant="outline" className="text-xs bg-amber-50 text-amber-700 border-amber-200">INS</Badge>
-                                )}
-                                {profile?.whatsapp_connected && (
-                                  <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">WA</Badge>
-                                )}
-                                {profile?.prescription_image_url && (
-                                  <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">RX</Badge>
-                                )}
-                              </div>
-                            </td>
-                            <td className="py-2 text-slate-600 text-xs uppercase">
-                              {profile?.language_preference?.slice(0, 2) || 'en'}
-                            </td>
-                          </tr>
-                        );
-                      })}
+                      {filteredUsers.slice(0, 50).map(u => (
+                        <UserRow 
+                          key={u.id} 
+                          user={u} 
+                          profile={getUserProfile(u.email)} 
+                          logs={getUserLogs(u.email)} 
+                          today={today}
+                        />
+                      ))}
                     </tbody>
                   </table>
                   {filteredUsers.length > 50 && (
