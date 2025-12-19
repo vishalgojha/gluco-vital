@@ -9,9 +9,12 @@ import { Badge } from "@/components/ui/badge";
 import { 
   Users, Activity, FileText, MessageCircle, Shield, Search, 
   AlertTriangle, CheckCircle, XCircle, Loader2, RefreshCw,
-  Calendar, Syringe, Globe, Phone
+  Calendar, Syringe, Globe, Phone, ChevronDown, ChevronUp,
+  Droplet, Heart, Pill, UtensilsCrossed, TrendingUp, Clock,
+  Eye, Mail, User, MapPin, Stethoscope
 } from "lucide-react";
 import { format, subDays, differenceInDays } from "date-fns";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 export default function AdminDashboard() {
   const [user, setUser] = useState(null);
