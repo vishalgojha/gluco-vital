@@ -62,21 +62,13 @@ export default function Profile() {
 
   useEffect(() => {
     if (profile) {
-      // Convert medications from objects back to strings for display
-      const medicationsAsStrings = (profile.medications || []).map(med => {
-        if (typeof med === 'object' && med.name) {
-          return med.dosage ? `${med.name} ${med.dosage}` : med.name;
-        }
-        return med;
-      });
-      
       setFormData({
         name: profile.name || user?.full_name || "",
         age: profile.age || "",
         gender: profile.gender || "",
         timezone: profile.timezone || "Asia/Kolkata",
         conditions: profile.conditions || [],
-        medications: medicationsAsStrings,
+        medications: profile.medications || [], // Keep as objects with full data
         is_on_insulin: profile.is_on_insulin || false,
         disability_type: profile.disability_type || "",
         language_preference: profile.language_preference || "english",
