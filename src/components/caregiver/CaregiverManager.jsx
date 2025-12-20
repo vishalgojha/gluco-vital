@@ -74,18 +74,48 @@ export default function CaregiverManager({ userEmail, userName }) {
   const createMutation = useMutation({
     mutationFn: async (data) => {
       const inviteCode = Math.random().toString(36).substring(2, 8).toUpperCase();
-      return base44.entities.CaregiverAccess.create({
+      const caregiver = await base44.entities.CaregiverAccess.create({
         ...data,
         patient_email: userEmail,
         patient_name: userName,
         invite_code: inviteCode,
-        status: "pending",
+        status: data.caregiver_email ? "active" : "pending",
         granted_at: new Date().toISOString()
       });
+
+      // Send email notification if caregiver has email
+      if (data.caregiver_email) {
+        try {
+          await base44.integrations.Core.SendEmail({
+            to: data.caregiver_email,
+            subject: `${userName} added you as a caregiver on GlucoVital`,
+            body: `Hello ${data.caregiver_name},
+
+${userName} has added you as a trusted caregiver on GlucoVital.fit.
+
+You can now:
+${data.access_level === 'view_only' ? '• View their sugar readings and trends\n• See their medication schedule\n• Receive health alerts' : '• View their health data\n• Add logs on their behalf\n• Receive health alerts'}
+
+To access their health dashboard, log in to GlucoVital.fit with this email address.
+
+Access Level: ${data.access_level === 'view_only' ? 'View Only' : 'Assist Mode'}
+Relationship: ${relationLabels[data.relation]}
+
+Your privacy is protected - all your actions are logged and ${userName} can revoke access anytime.
+
+With care,
+GlucoVital.fit Team`
+          });
+        } catch (emailError) {
+          console.error('Failed to send caregiver email:', emailError);
+        }
+      }
+
+      return caregiver;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['caregiver-access'] });
-      toast.success("Caregiver invite sent!");
+      toast.success("Caregiver added successfully!");
       setShowAddDialog(false);
       resetForm();
     },
