@@ -248,7 +248,7 @@ export default function History() {
                 </div>
                 <div className="space-y-3">
                   {dayLogs.map(log => (
-                    <LogCard key={log.id} log={log} />
+                    <LogCard key={log.id} log={log} timezone={profile?.timezone || "Asia/Kolkata"} />
                   ))}
                 </div>
               </div>
