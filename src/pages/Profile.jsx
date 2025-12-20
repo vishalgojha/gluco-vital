@@ -164,10 +164,21 @@ export default function Profile() {
     }));
   };
 
-  if (!user) {
+  if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-slate-400" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-slate-500 mb-4">Please log in to view your profile</p>
+          <Button onClick={() => base44.auth.redirectToLogin()}>Log In</Button>
+        </div>
       </div>
     );
   }
