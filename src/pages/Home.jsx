@@ -39,10 +39,10 @@ export default function Home() {
     queryFn: async () => {
       // Fetch logs where user_email matches OR created_by matches
       const results = await base44.entities.HealthLog.list('-created_date', 200);
-      // Filter for this user's logs (by user_email or created_by)
+      // Filter for this user's logs (by user_email or created_by), exclude corrected/deleted
       return results.filter(log => 
-        log.user_email === user?.email || 
-        log.created_by === user?.email
+        (log.user_email === user?.email || log.created_by === user?.email) &&
+        log.status !== 'corrected' && log.status !== 'deleted'
       );
     },
     enabled: !!user?.email

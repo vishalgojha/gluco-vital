@@ -30,9 +30,10 @@ export default function History() {
     queryFn: async () => {
       // Fetch all logs and filter by user_email OR created_by (agent logs use created_by)
       const results = await base44.entities.HealthLog.list('-created_date', 500);
+      // Exclude corrected/deleted logs from display
       return results.filter(log => 
-        log.user_email === user?.email || 
-        log.created_by === user?.email
+        (log.user_email === user?.email || log.created_by === user?.email) &&
+        log.status !== 'corrected' && log.status !== 'deleted'
       );
     },
     enabled: !!user?.email
