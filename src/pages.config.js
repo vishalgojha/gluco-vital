@@ -15,6 +15,7 @@ import Progress from './pages/Progress';
 import Reports from './pages/Reports';
 import Terms from './pages/Terms';
 import AdminDashboard from './pages/AdminDashboard';
+import MarketingContent from './pages/MarketingContent';
 import __Layout from './Layout.jsx';
 
 
@@ -36,6 +37,7 @@ export const PAGES = {
     "Reports": Reports,
     "Terms": Terms,
     "AdminDashboard": AdminDashboard,
+    "MarketingContent": MarketingContent,
 }
 
 export const pagesConfig = {
