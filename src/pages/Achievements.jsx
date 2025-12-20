@@ -25,8 +25,11 @@ export default function Achievements() {
   const { data: achievements, isLoading } = useQuery({
     queryKey: ['user-achievements', user?.email],
     queryFn: async () => {
-      // Try to find existing achievements
-      let results = await base44.entities.UserAchievements.filter({ user_email: user?.email });
+      // Try to find existing achievements (check both user_email and created_by)
+      const allAchievements = await base44.entities.UserAchievements.list('-created_date', 100);
+      let results = allAchievements.filter(a => 
+        a.user_email === user?.email || a.created_by === user?.email
+      );
       
       // If no achievements exist, create initial record
       if (!results || results.length === 0) {

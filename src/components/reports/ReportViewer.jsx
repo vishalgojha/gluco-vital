@@ -25,9 +25,13 @@ export default function ReportViewer({ report, profile, onClose, onUpdate }) {
   useEffect(() => {
     if (report?.user_email) {
       setLoadingLogs(true);
-      base44.entities.HealthLog.filter({ user_email: report.user_email })
+      // Fetch all logs and filter by user_email OR created_by (agent logs use created_by)
+      base44.entities.HealthLog.list('-created_date', 500)
         .then(allLogs => {
-          const filtered = allLogs.filter(log => {
+          const userLogs = allLogs.filter(log => 
+            log.user_email === report.user_email || log.created_by === report.user_email
+          );
+          const filtered = userLogs.filter(log => {
             const logDate = new Date(log.created_date);
             return logDate >= new Date(report.start_date) && logDate <= new Date(report.end_date);
           });
