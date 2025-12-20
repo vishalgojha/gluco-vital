@@ -7,13 +7,16 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { User, Heart, Target, Globe, Plus, X, Save, Loader2, Pill, Watch, FileImage } from "lucide-react";
+import { User, Heart, Target, Globe, Plus, X, Save, Loader2, Pill, Watch, FileImage, FlaskConical } from "lucide-react";
 import { toast } from "sonner";
 import MedicationRemindersList from "@/components/medications/MedicationRemindersList";
 import AdherenceTracker from "@/components/medications/AdherenceTracker";
 import MedicationCalendar from "@/components/medications/MedicationCalendar";
 import WearableImport from "@/components/import/WearableImport";
 import PrescriptionUpload from "@/components/profile/PrescriptionUpload";
+import LabResultsList from "@/components/labs/LabResultsList";
+import LabReportUpload from "@/components/labs/LabReportUpload";
+import HbA1cTrendChart from "@/components/labs/HbA1cTrendChart";
 
 export default function Profile() {
   const queryClient = useQueryClient();
@@ -58,6 +61,15 @@ export default function Profile() {
   const { data: reminders = [], refetch: refetchReminders } = useQuery({
     queryKey: ['medication-reminders', user?.email],
     queryFn: () => base44.entities.MedicationReminder.filter({ user_email: user?.email }),
+    enabled: !!user?.email
+  });
+
+  const { data: labResults = [], refetch: refetchLabResults } = useQuery({
+    queryKey: ['lab-results', user?.email],
+    queryFn: async () => {
+      const results = await base44.entities.LabResult.list('-test_date', 100);
+      return results.filter(r => r.user_email === user?.email || r.created_by === user?.email);
+    },
     enabled: !!user?.email
   });
 
@@ -506,6 +518,41 @@ export default function Profile() {
                   </div>
                 </div>
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Lab Results & Reports Section */}
+          <Card className="border-slate-100 shadow-sm">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <FlaskConical className="w-5 h-5 text-purple-500" />
+                Lab Results & Blood Work
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* HbA1c Trend Chart */}
+              <HbA1cTrendChart labResults={labResults} targetHbA1c={7} />
+
+              {/* Lab Report Upload */}
+              <LabReportUpload 
+                userEmail={user?.email}
+                onReportUploaded={() => refetchLabResults()}
+                onResultsExtracted={() => refetchLabResults()}
+              />
+
+              {/* Lab Results List */}
+              <LabResultsList 
+                results={labResults}
+                userEmail={user?.email}
+                onAddResult={async (data) => {
+                  await base44.entities.LabResult.create(data);
+                  refetchLabResults();
+                }}
+                onUpdateResult={async (id, data) => {
+                  await base44.entities.LabResult.update(id, data);
+                  refetchLabResults();
+                }}
+              />
             </CardContent>
           </Card>
 

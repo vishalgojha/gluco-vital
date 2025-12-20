@@ -1,5 +1,6 @@
 import About from './pages/About';
 import Achievements from './pages/Achievements';
+import AdminDashboard from './pages/AdminDashboard';
 import CareHub from './pages/CareHub';
 import DoctorDashboard from './pages/DoctorDashboard';
 import DoctorFeedback from './pages/DoctorFeedback';
@@ -8,21 +9,21 @@ import DoctorShare from './pages/DoctorShare';
 import History from './pages/History';
 import Home from './pages/Home';
 import Landing from './pages/Landing';
+import MarketingContent from './pages/MarketingContent';
 import PatientDetail from './pages/PatientDetail';
+import PatientFeedback from './pages/PatientFeedback';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import Profile from './pages/Profile';
 import Progress from './pages/Progress';
 import Reports from './pages/Reports';
 import Terms from './pages/Terms';
-import AdminDashboard from './pages/AdminDashboard';
-import MarketingContent from './pages/MarketingContent';
-import PatientFeedback from './pages/PatientFeedback';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "About": About,
     "Achievements": Achievements,
+    "AdminDashboard": AdminDashboard,
     "CareHub": CareHub,
     "DoctorDashboard": DoctorDashboard,
     "DoctorFeedback": DoctorFeedback,
@@ -31,15 +32,14 @@ export const PAGES = {
     "History": History,
     "Home": Home,
     "Landing": Landing,
+    "MarketingContent": MarketingContent,
     "PatientDetail": PatientDetail,
+    "PatientFeedback": PatientFeedback,
     "PrivacyPolicy": PrivacyPolicy,
     "Profile": Profile,
     "Progress": Progress,
     "Reports": Reports,
     "Terms": Terms,
-    "AdminDashboard": AdminDashboard,
-    "MarketingContent": MarketingContent,
-    "PatientFeedback": PatientFeedback,
 }
 
 export const pagesConfig = {
