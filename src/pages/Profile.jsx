@@ -17,6 +17,7 @@ import PrescriptionUpload from "@/components/profile/PrescriptionUpload";
 import LabResultsList from "@/components/labs/LabResultsList";
 import LabReportUpload from "@/components/labs/LabReportUpload";
 import HbA1cTrendChart from "@/components/labs/HbA1cTrendChart";
+import CaregiverManager from "@/components/caregiver/CaregiverManager";
 
 export default function Profile() {
   const queryClient = useQueryClient();
@@ -568,6 +569,12 @@ export default function Profile() {
           <WearableImport 
             userEmail={user?.email} 
             onImportComplete={() => queryClient.invalidateQueries({ queryKey: ['health-logs'] })}
+          />
+
+          {/* Family & Caregivers */}
+          <CaregiverManager 
+            userEmail={user?.email} 
+            userName={formData.name || user?.full_name} 
           />
 
           {/* Doctor */}
