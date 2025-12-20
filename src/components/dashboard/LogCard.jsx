@@ -31,9 +31,17 @@ const logColors = {
   sleep: "bg-indigo-50 text-indigo-600 border-indigo-100"
 };
 
-export default function LogCard({ log }) {
+export default function LogCard({ log, timezone = "Asia/Kolkata" }) {
   const Icon = logIcons[log.log_type] || Activity;
   const colorClass = logColors[log.log_type] || "bg-slate-50 text-slate-600 border-slate-100";
+
+  const formatTime = (dateStr) => {
+    try {
+      return formatInTimeZone(new Date(dateStr), timezone, "h:mm a");
+    } catch {
+      return format(new Date(dateStr), "h:mm a");
+    }
+  };
 
   return (
     <div className="bg-white rounded-xl p-4 border border-slate-100 hover:border-slate-200 transition-all duration-200">
@@ -47,7 +55,7 @@ export default function LogCard({ log }) {
               {log.log_type.replace("_", " ")}
             </span>
             <span className="text-xs text-slate-400">
-              {format(new Date(log.created_date), "h:mm a")}
+              {formatTime(log.created_date)}
             </span>
           </div>
           <p className="text-lg font-bold text-slate-800 mt-0.5">{log.value}</p>
