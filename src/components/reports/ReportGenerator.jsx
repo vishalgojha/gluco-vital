@@ -27,9 +27,12 @@ export default function ReportGenerator({ userEmail, onReportGenerated }) {
   const generateReport = async () => {
     setGenerating(true);
     try {
-      // Fetch logs for the period
-      const logs = await base44.entities.HealthLog.filter({ user_email: userEmail });
-      const filteredLogs = logs.filter(log => {
+      // Fetch logs for the period (check both user_email and created_by for agent-created logs)
+      const allLogs = await base44.entities.HealthLog.list('-created_date', 500);
+      const userLogs = allLogs.filter(log => 
+        log.user_email === userEmail || log.created_by === userEmail
+      );
+      const filteredLogs = userLogs.filter(log => {
         const logDate = new Date(log.created_date);
         return logDate >= dateRange.from && logDate <= dateRange.to;
       });
