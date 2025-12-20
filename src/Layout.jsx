@@ -60,6 +60,8 @@ export default function Layout({ children, currentPageName }) {
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #f0f7f4; }
         ::-webkit-scrollbar-thumb { background: #8fc0b7; border-radius: 4px; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       ` }} />
       <div className="min-h-screen bg-[#f0f7f4]">
         {/* Mobile Header */}
