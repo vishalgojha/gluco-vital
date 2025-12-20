@@ -382,10 +382,13 @@ export default function Landing() {
             <a href="mailto:support@glucovital.fit" className="hover:text-[#5b9a8b] transition-colors">Contact</a>
           </div>
           <p className="text-xs text-slate-400 mb-2">
-            Gluco Vital supports awareness and self-tracking. It does not diagnose or replace medical care.<br />
-            Currently offered free during early access. Features may evolve over time.
+            GlucoVital.fit is an experimental health project by <a href="https://www.chaoscraftlabs.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-[#5b9a8b]">Chaos Craft Labs LLP</a>,<br/>
+            built to explore frictionless diabetes logging and care.
           </p>
-          <p>© 2025 Gluco Vital • Glucovital.fit 💚</p>
+          <p className="flex items-center justify-center gap-1 mb-1">
+            Made with <span className="text-red-500">❤️</span> in India 🇮🇳
+          </p>
+          <p>© 2025 GlucoVital.fit • All rights reserved</p>
         </div>
       </footer>
     </div>
