@@ -25,6 +25,7 @@ export default function Layout({ children, currentPageName }) {
     { name: "Progress", icon: Activity, page: "Progress" },
     { name: "Reports", icon: FileText, page: "Reports" },
     { name: "Share with Doctor", icon: Share2, page: "DoctorShare" },
+          { name: "Doctor's Feedback", icon: MessageCircle, page: "PatientFeedback" },
     { name: "Doctor Portal", icon: Stethoscope, page: "DoctorDashboard" },
     { name: "Achievements", icon: Trophy, page: "Achievements" },
     { name: "History", icon: History, page: "History" },
