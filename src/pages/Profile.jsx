@@ -23,6 +23,7 @@ export default function Profile() {
     name: "",
     age: "",
     gender: "",
+    timezone: "Asia/Kolkata",
     conditions: [],
     medications: [],
     is_on_insulin: false,
