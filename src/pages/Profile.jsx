@@ -134,19 +134,19 @@ export default function Profile() {
   };
 
   const addMedication = () => {
-    if (newMedication.trim() && !formData.medications.includes(newMedication.trim())) {
+    if (newMedication.trim() && !formData.medications.some(m => m.name === newMedication.trim())) {
       setFormData(prev => ({
         ...prev,
-        medications: [...prev.medications, newMedication.trim()]
+        medications: [...prev.medications, { name: newMedication.trim() }]
       }));
       setNewMedication("");
     }
   };
 
-  const removeMedication = (medication) => {
+  const removeMedication = (medicationName) => {
     setFormData(prev => ({
       ...prev,
-      medications: prev.medications.filter(m => m !== medication)
+      medications: prev.medications.filter(m => m.name !== medicationName)
     }));
   };
 
