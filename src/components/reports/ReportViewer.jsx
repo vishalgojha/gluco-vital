@@ -29,7 +29,8 @@ export default function ReportViewer({ report, profile, onClose, onUpdate }) {
       base44.entities.HealthLog.list('-created_date', 500)
         .then(allLogs => {
           const userLogs = allLogs.filter(log => 
-            log.user_email === report.user_email || log.created_by === report.user_email
+            (log.user_email === report.user_email || log.created_by === report.user_email) &&
+            log.status !== 'corrected' && log.status !== 'deleted'
           );
           const filtered = userLogs.filter(log => {
             const logDate = new Date(log.created_date);
