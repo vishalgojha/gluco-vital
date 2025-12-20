@@ -385,10 +385,12 @@ export default function Profile() {
                   </Button>
                 </div>
                 <div className="flex flex-wrap gap-2 mt-3">
-                  {formData.medications.map(medication => (
-                    <Badge key={medication} variant="secondary" className="pl-3 pr-1 py-1.5 bg-green-50 text-green-700 hover:bg-green-100">
-                      {medication}
-                      <button onClick={() => removeMedication(medication)} className="ml-1.5 hover:bg-green-200 rounded-full p-0.5">
+                  {formData.medications.map((medication, index) => (
+                    <Badge key={medication.name || index} variant="secondary" className="pl-3 pr-1 py-1.5 bg-green-50 text-green-700 hover:bg-green-100">
+                      <span className="font-medium">{medication.name}</span>
+                      {medication.dosage && <span className="ml-1 text-green-600">{medication.dosage}</span>}
+                      {medication.timing && <span className="ml-1 text-green-500 text-xs">• {medication.timing}</span>}
+                      <button onClick={() => removeMedication(medication.name)} className="ml-1.5 hover:bg-green-200 rounded-full p-0.5">
                         <X className="w-3 h-3" />
                       </button>
                     </Badge>
