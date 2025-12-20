@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Award, Flame, Target, Calendar, TrendingUp } from "lucide-react";
+import { Award, Flame, Target, Calendar, TrendingUp, RefreshCw } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,9 +18,25 @@ export default function Achievements() {
   const [user, setUser] = useState(null);
   const [displayName, setDisplayName] = useState("");
 
+  const [syncing, setSyncing] = useState(false);
+
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
   }, []);
+
+  const syncAchievements = async () => {
+    setSyncing(true);
+    try {
+      await base44.functions.invoke('syncAchievements', {});
+      queryClient.invalidateQueries({ queryKey: ['user-achievements'] });
+      queryClient.invalidateQueries({ queryKey: ['leaderboard'] });
+      toast.success("Achievements synced!");
+    } catch (error) {
+      toast.error("Failed to sync");
+    } finally {
+      setSyncing(false);
+    }
+  };
 
   const { data: achievements, isLoading } = useQuery({
     queryKey: ['user-achievements', user?.email],
@@ -143,9 +159,20 @@ export default function Achievements() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-amber-50">
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-800">Achievements</h1>
-          <p className="text-slate-500 mt-1">Track your progress and earn rewards!</p>
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-slate-800">Achievements</h1>
+            <p className="text-slate-500 mt-1">Track your progress and earn rewards!</p>
+          </div>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={syncAchievements}
+            disabled={syncing}
+          >
+            <RefreshCw className={`w-4 h-4 mr-1 ${syncing ? 'animate-spin' : ''}`} />
+            Sync
+          </Button>
         </div>
 
         <div className="space-y-6">
