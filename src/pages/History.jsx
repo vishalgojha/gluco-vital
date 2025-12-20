@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { format, subDays, startOfDay, endOfDay, isWithinInterval } from "date-fns";
-import { Calendar as CalendarIcon, Filter, Droplet, Heart, Utensils, Pill, Activity, Download } from "lucide-react";
+import { Calendar as CalendarIcon, Filter, Droplet, Heart, Utensils, Pill, Activity, Download, FlaskConical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -10,8 +10,11 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import LogCard from "@/components/dashboard/LogCard";
 import SugarChart from "@/components/dashboard/SugarChart";
+import LabResultsList from "@/components/labs/LabResultsList";
+import HbA1cTrendChart from "@/components/labs/HbA1cTrendChart";
 
 export default function History() {
   const [user, setUser] = useState(null);
@@ -44,6 +47,15 @@ export default function History() {
     queryFn: () => base44.entities.PatientProfile.filter({ user_email: user?.email }),
     enabled: !!user?.email,
     select: data => data?.[0]
+  });
+
+  const { data: labResults = [], refetch: refetchLabResults } = useQuery({
+    queryKey: ['lab-results-history', user?.email],
+    queryFn: async () => {
+      const results = await base44.entities.LabResult.list('-test_date', 200);
+      return results.filter(r => r.user_email === user?.email || r.created_by === user?.email);
+    },
+    enabled: !!user?.email
   });
 
   const filteredLogs = logs.filter(log => {
@@ -101,9 +113,51 @@ export default function History() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold text-slate-800">Health History</h1>
-            <p className="text-slate-500 mt-1">View and analyze your health logs</p>
+            <p className="text-slate-500 mt-1">View and analyze your health logs & lab results</p>
           </div>
         </div>
+
+        {/* Main Tabs for Daily Logs vs Lab Results */}
+        <Tabs defaultValue="daily" className="mb-6">
+          <TabsList className="mb-4">
+            <TabsTrigger value="daily" className="flex items-center gap-2">
+              <Activity className="w-4 h-4" /> Daily Logs
+            </TabsTrigger>
+            <TabsTrigger value="labs" className="flex items-center gap-2">
+              <FlaskConical className="w-4 h-4" /> Lab Results
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="labs" className="space-y-6">
+            {/* HbA1c Trend */}
+            <HbA1cTrendChart labResults={labResults} targetHbA1c={7} />
+
+            {/* All Lab Results */}
+            <Card className="border-slate-100 shadow-sm">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <FlaskConical className="w-5 h-5 text-purple-600" />
+                  All Lab Results
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <LabResultsList 
+                  results={labResults}
+                  userEmail={user?.email}
+                  onAddResult={async (data) => {
+                    await base44.entities.LabResult.create(data);
+                    refetchLabResults();
+                  }}
+                  onUpdateResult={async (id, data) => {
+                    await base44.entities.LabResult.update(id, data);
+                    refetchLabResults();
+                  }}
+                />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="daily">
 
         {/* Filters */}
         <Card className="border-slate-100 shadow-sm mb-6">
@@ -262,6 +316,8 @@ export default function History() {
             <p className="text-sm text-slate-400 mt-1">Try adjusting your date range or log type</p>
           </div>
         )}
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
