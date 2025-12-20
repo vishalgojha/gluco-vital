@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Switch } from "@/components/ui/switch";
 import { 
   Users, Plus, UserPlus, Eye, Edit3, Shield, Clock, 
-  Phone, Mail, Trash2, Pause, Play, AlertTriangle, X, Loader2, Check
+  Mail, Trash2, Pause, Play, AlertTriangle, X, Loader2, Check
 } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -160,6 +160,10 @@ GlucoVital.fit Team`
       toast.error("Please enter caregiver's name");
       return;
     }
+    if (!formData.caregiver_email.trim()) {
+      toast.error("Please enter caregiver's email");
+      return;
+    }
     createMutation.mutate(formData);
   };
 
@@ -254,7 +258,7 @@ GlucoVital.fit Team`
 
       {/* Add Caregiver Dialog */}
       <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Add a Caregiver</DialogTitle>
           </DialogHeader>
@@ -288,17 +292,7 @@ GlucoVital.fit Team`
             </div>
 
             <div>
-              <Label>Phone Number (for WhatsApp alerts)</Label>
-              <Input
-                value={formData.caregiver_phone}
-                onChange={(e) => setFormData(prev => ({ ...prev, caregiver_phone: e.target.value }))}
-                placeholder="+91 98765 43210"
-                className="mt-1.5"
-              />
-            </div>
-
-            <div>
-              <Label>Email (optional - for app access)</Label>
+              <Label>Email (for notifications & app access) *</Label>
               <Input
                 type="email"
                 value={formData.caregiver_email}
@@ -334,50 +328,10 @@ GlucoVital.fit Team`
               </div>
             </div>
 
-            <div>
-              <Label>Alert Preferences</Label>
-              <div className="space-y-3 mt-2 p-3 bg-slate-50 rounded-lg">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm">High sugar alerts</span>
-                  <Switch
-                    checked={formData.alert_preferences.high_sugar}
-                    onCheckedChange={(checked) => setFormData(prev => ({
-                      ...prev,
-                      alert_preferences: { ...prev.alert_preferences, high_sugar: checked }
-                    }))}
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm">Low sugar alerts</span>
-                  <Switch
-                    checked={formData.alert_preferences.low_sugar}
-                    onCheckedChange={(checked) => setFormData(prev => ({
-                      ...prev,
-                      alert_preferences: { ...prev.alert_preferences, low_sugar: checked }
-                    }))}
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm">Missed medication alerts</span>
-                  <Switch
-                    checked={formData.alert_preferences.missed_medication}
-                    onCheckedChange={(checked) => setFormData(prev => ({
-                      ...prev,
-                      alert_preferences: { ...prev.alert_preferences, missed_medication: checked }
-                    }))}
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm">Daily summary</span>
-                  <Switch
-                    checked={formData.alert_preferences.daily_summary}
-                    onCheckedChange={(checked) => setFormData(prev => ({
-                      ...prev,
-                      alert_preferences: { ...prev.alert_preferences, daily_summary: checked }
-                    }))}
-                  />
-                </div>
-              </div>
+            <div className="p-3 bg-blue-50 rounded-lg border border-blue-100">
+              <p className="text-xs text-blue-700">
+                📧 Caregiver will receive an email invite and can view your health data by logging into GlucoVital with their email.
+              </p>
             </div>
           </div>
 
@@ -443,20 +397,12 @@ function CaregiverCard({ caregiver, onToggleStatus, onRevoke, onEdit, compact })
                 {relationLabels[caregiver.relation]}
               </Badge>
             </div>
-            <div className="flex items-center gap-3 mt-1 text-xs text-slate-500">
-              {caregiver.caregiver_phone && (
-                <span className="flex items-center gap-1">
-                  <Phone className="w-3 h-3" />
-                  {caregiver.caregiver_phone}
-                </span>
-              )}
-              {caregiver.caregiver_email && (
-                <span className="flex items-center gap-1">
-                  <Mail className="w-3 h-3" />
-                  {caregiver.caregiver_email}
-                </span>
-              )}
-            </div>
+            {caregiver.caregiver_email && (
+              <div className="flex items-center gap-1 mt-1 text-xs text-slate-500">
+                <Mail className="w-3 h-3" />
+                {caregiver.caregiver_email}
+              </div>
+            )}
           </div>
         </div>
         
