@@ -279,6 +279,35 @@ export default function Profile() {
                   </Select>
                 </div>
                 <div>
+                  <Label>Timezone</Label>
+                  <Select
+                    value={formData.timezone}
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, timezone: value }))}
+                  >
+                    <SelectTrigger className="mt-1.5">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Asia/Kolkata">🇮🇳 India (IST)</SelectItem>
+                      <SelectItem value="Asia/Dubai">🇦🇪 Dubai (GST)</SelectItem>
+                      <SelectItem value="Asia/Singapore">🇸🇬 Singapore (SGT)</SelectItem>
+                      <SelectItem value="Asia/Shanghai">🇨🇳 China (CST)</SelectItem>
+                      <SelectItem value="Asia/Tokyo">🇯🇵 Japan (JST)</SelectItem>
+                      <SelectItem value="Asia/Jakarta">🇮🇩 Indonesia (WIB)</SelectItem>
+                      <SelectItem value="Asia/Karachi">🇵🇰 Pakistan (PKT)</SelectItem>
+                      <SelectItem value="Asia/Dhaka">🇧🇩 Bangladesh (BST)</SelectItem>
+                      <SelectItem value="Europe/London">🇬🇧 UK (GMT/BST)</SelectItem>
+                      <SelectItem value="Europe/Berlin">🇩🇪 Germany (CET)</SelectItem>
+                      <SelectItem value="America/New_York">🇺🇸 US East (EST)</SelectItem>
+                      <SelectItem value="America/Los_Angeles">🇺🇸 US West (PST)</SelectItem>
+                      <SelectItem value="America/Sao_Paulo">🇧🇷 Brazil (BRT)</SelectItem>
+                      <SelectItem value="Australia/Sydney">🇦🇺 Australia (AEST)</SelectItem>
+                      <SelectItem value="Africa/Cairo">🇪🇬 Egypt (EET)</SelectItem>
+                      <SelectItem value="Europe/Moscow">🇷🇺 Russia (MSK)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
                   <Label>Accessibility Needs</Label>
                   <Input
                     value={formData.disability_type}
