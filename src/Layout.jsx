@@ -207,6 +207,10 @@ export default function Layout({ children, currentPageName }) {
 
                       {/* Copyright & Made in India */}
                       <div className="flex flex-col items-center gap-2 text-xs text-[#7a9990] mb-3">
+                        <p className="text-center text-[10px] text-[#7a9990] leading-relaxed">
+                          GlucoVital.fit is an experimental health project by <a href="https://www.chaoscraftlabs.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-[#5b9a8b]">Chaos Craft Labs LLP</a>,<br/>
+                          built to explore frictionless diabetes logging and care.
+                        </p>
                         <div className="flex items-center gap-1">
                           Made with <span className="text-red-500">❤️</span> in India 🇮🇳
                         </div>
