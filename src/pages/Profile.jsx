@@ -37,8 +37,13 @@ export default function Profile() {
     doctor_email: ""
   });
 
+  const [authLoading, setAuthLoading] = useState(true);
+
   useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => {});
+    base44.auth.me()
+      .then(setUser)
+      .catch(() => setUser(null))
+      .finally(() => setAuthLoading(false));
   }, []);
 
   const { data: profile, isLoading } = useQuery({
