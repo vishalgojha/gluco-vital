@@ -17,6 +17,7 @@ import Profile from './pages/Profile';
 import Progress from './pages/Progress';
 import Reports from './pages/Reports';
 import Terms from './pages/Terms';
+import CaregiverDashboard from './pages/CaregiverDashboard';
 import __Layout from './Layout.jsx';
 
 
@@ -40,6 +41,7 @@ export const PAGES = {
     "Progress": Progress,
     "Reports": Reports,
     "Terms": Terms,
+    "CaregiverDashboard": CaregiverDashboard,
 }
 
 export const pagesConfig = {
