@@ -266,8 +266,8 @@ export default function Home() {
               ) : logs.length > 0 ? (
                 <div className="space-y-3">
                   {logs.slice(0, 10).map(log => (
-                    <LogCard key={log.id} log={log} />
-                  ))}
+                                            <LogCard key={log.id} log={log} timezone={profile?.timezone || "Asia/Kolkata"} />
+                                          ))}
                 </div>
               ) : (
                 <div className="text-center py-12 bg-white rounded-2xl border border-slate-100">
