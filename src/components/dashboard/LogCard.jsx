@@ -30,37 +30,19 @@ const logColors = {
   sleep: "bg-indigo-50 text-indigo-600 border-indigo-100"
 };
 
-// Timezone offsets in hours from UTC
-const timezoneOffsets = {
-  "Asia/Kolkata": 5.5,
-  "Asia/Dubai": 4,
-  "Asia/Singapore": 8,
-  "Asia/Shanghai": 8,
-  "Asia/Tokyo": 9,
-  "Asia/Jakarta": 7,
-  "Asia/Karachi": 5,
-  "Asia/Dhaka": 6,
-  "Europe/London": 0,
-  "Europe/Berlin": 1,
-  "America/New_York": -5,
-  "America/Los_Angeles": -8,
-  "America/Sao_Paulo": -3,
-  "Australia/Sydney": 11,
-  "Africa/Cairo": 2,
-  "Europe/Moscow": 3
-};
-
 export default function LogCard({ log, timezone = "Asia/Kolkata" }) {
   const Icon = logIcons[log.log_type] || Activity;
   const colorClass = logColors[log.log_type] || "bg-slate-50 text-slate-600 border-slate-100";
 
-  const formatTimeInTimezone = (dateStr) => {
+  const formatTime = (dateStr) => {
     try {
       const date = new Date(dateStr);
-      const offset = timezoneOffsets[timezone] || 5.5; // Default to IST
-      const utcTime = date.getTime() + (date.getTimezoneOffset() * 60000);
-      const tzTime = new Date(utcTime + (offset * 3600000));
-      return format(tzTime, "h:mm a");
+      return date.toLocaleTimeString('en-US', { 
+        hour: 'numeric', 
+        minute: '2-digit', 
+        hour12: true,
+        timeZone: timezone 
+      });
     } catch {
       return format(new Date(dateStr), "h:mm a");
     }
@@ -78,7 +60,7 @@ export default function LogCard({ log, timezone = "Asia/Kolkata" }) {
               {log.log_type.replace("_", " ")}
             </span>
             <span className="text-xs text-slate-400">
-              {formatTimeInTimezone(log.created_date)}
+              {formatTime(log.created_date)}
             </span>
           </div>
           <p className="text-lg font-bold text-slate-800 mt-0.5">{log.value}</p>
