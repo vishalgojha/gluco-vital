@@ -11,6 +11,7 @@ import { User, Heart, Target, Globe, Plus, X, Save, Loader2, Pill, Watch, FileIm
 import { toast } from "sonner";
 import MedicationRemindersList from "@/components/medications/MedicationRemindersList";
 import AdherenceTracker from "@/components/medications/AdherenceTracker";
+import MedicationCalendar from "@/components/medications/MedicationCalendar";
 import WearableImport from "@/components/import/WearableImport";
 import PrescriptionUpload from "@/components/profile/PrescriptionUpload";
 
@@ -429,6 +430,12 @@ export default function Profile() {
               />
             </CardContent>
           </Card>
+
+          {/* Medication Calendar View */}
+          <MedicationCalendar 
+            userEmail={user?.email}
+            reminders={reminders}
+          />
 
           {/* Medication Adherence Tracking */}
           <Card className="border-slate-100 shadow-sm">

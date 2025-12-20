@@ -108,13 +108,53 @@ export default function MedicationReminderForm({ reminder, onSave, onCancel, exi
         )}
       </div>
 
-      {/* Dosage */}
+      {/* Dosage with Unit Selection */}
       <div className="space-y-2">
         <Label>Dosage</Label>
+        <div className="flex gap-2">
+          <Input
+            type="number"
+            value={form.dosage_amount || ""}
+            onChange={(e) => setForm({ ...form, dosage_amount: e.target.value, dosage: `${e.target.value}${form.dosage_unit || 'mg'}` })}
+            placeholder="Amount"
+            className="w-24"
+          />
+          <Select 
+            value={form.dosage_unit || "mg"} 
+            onValueChange={(v) => setForm({ ...form, dosage_unit: v, dosage: `${form.dosage_amount || ''}${v}` })}
+          >
+            <SelectTrigger className="w-28">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="mg">mg</SelectItem>
+              <SelectItem value="mcg">mcg</SelectItem>
+              <SelectItem value="g">g</SelectItem>
+              <SelectItem value="ml">ml</SelectItem>
+              <SelectItem value="units">units</SelectItem>
+              <SelectItem value="IU">IU</SelectItem>
+              <SelectItem value="tablets">tablets</SelectItem>
+              <SelectItem value="capsules">capsules</SelectItem>
+              <SelectItem value="drops">drops</SelectItem>
+              <SelectItem value="puffs">puffs</SelectItem>
+            </SelectContent>
+          </Select>
+          <Input
+            value={form.dosage || ""}
+            onChange={(e) => setForm({ ...form, dosage: e.target.value })}
+            placeholder="Or type custom"
+            className="flex-1"
+          />
+        </div>
+      </div>
+
+      {/* Strength/Concentration */}
+      <div className="space-y-2">
+        <Label>Strength/Concentration (optional)</Label>
         <Input
-          value={form.dosage}
-          onChange={(e) => setForm({ ...form, dosage: e.target.value })}
-          placeholder="e.g., 500mg, 10 units"
+          value={form.strength || ""}
+          onChange={(e) => setForm({ ...form, strength: e.target.value })}
+          placeholder="e.g., 500mg/5ml, 100 units/ml"
         />
       </div>
 
@@ -289,6 +329,73 @@ export default function MedicationReminderForm({ reminder, onSave, onCancel, exi
           placeholder="e.g., Avoid dairy products, take on empty stomach"
           rows={2}
         />
+      </div>
+
+      {/* Food Requirements */}
+      <div className="space-y-2">
+        <Label>Food Requirements</Label>
+        <Select 
+          value={form.food_requirement || "none"} 
+          onValueChange={(v) => setForm({ ...form, food_requirement: v })}
+        >
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="none">No specific requirement</SelectItem>
+            <SelectItem value="empty_stomach">Take on empty stomach</SelectItem>
+            <SelectItem value="with_food">Take with food</SelectItem>
+            <SelectItem value="with_water">Take with full glass of water</SelectItem>
+            <SelectItem value="avoid_dairy">Avoid dairy products</SelectItem>
+            <SelectItem value="avoid_antacids">Avoid antacids</SelectItem>
+            <SelectItem value="avoid_caffeine">Avoid caffeine</SelectItem>
+            <SelectItem value="avoid_alcohol">Avoid alcohol</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Refill Tracking */}
+      <div className="space-y-3 p-3 bg-amber-50 rounded-lg border border-amber-200">
+        <Label className="text-amber-800">Refill Tracking (optional)</Label>
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <Label className="text-xs text-slate-600">Pills remaining</Label>
+            <Input
+              type="number"
+              value={form.pills_remaining || ""}
+              onChange={(e) => setForm({ ...form, pills_remaining: parseInt(e.target.value) || 0 })}
+              placeholder="e.g., 30"
+              min="0"
+            />
+          </div>
+          <div>
+            <Label className="text-xs text-slate-600">Pills per strip/pack</Label>
+            <Input
+              type="number"
+              value={form.pills_per_strip || 10}
+              onChange={(e) => setForm({ ...form, pills_per_strip: parseInt(e.target.value) || 10 })}
+              placeholder="e.g., 10"
+              min="1"
+            />
+          </div>
+        </div>
+        <div>
+          <Label className="text-xs text-slate-600">Alert when days remaining</Label>
+          <Select 
+            value={String(form.refill_threshold || 7)} 
+            onValueChange={(v) => setForm({ ...form, refill_threshold: parseInt(v) })}
+          >
+            <SelectTrigger className="mt-1">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="3">3 days</SelectItem>
+              <SelectItem value="5">5 days</SelectItem>
+              <SelectItem value="7">7 days (1 week)</SelectItem>
+              <SelectItem value="14">14 days (2 weeks)</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {/* Active Toggle */}
