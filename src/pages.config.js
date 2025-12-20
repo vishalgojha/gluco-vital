@@ -16,6 +16,7 @@ import Reports from './pages/Reports';
 import Terms from './pages/Terms';
 import AdminDashboard from './pages/AdminDashboard';
 import MarketingContent from './pages/MarketingContent';
+import PatientFeedback from './pages/PatientFeedback';
 import __Layout from './Layout.jsx';
 
 
@@ -38,6 +39,7 @@ export const PAGES = {
     "Terms": Terms,
     "AdminDashboard": AdminDashboard,
     "MarketingContent": MarketingContent,
+    "PatientFeedback": PatientFeedback,
 }
 
 export const pagesConfig = {
