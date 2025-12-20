@@ -74,6 +74,7 @@ export default function Profile() {
         name: profile.name || user?.full_name || "",
         age: profile.age || "",
         gender: profile.gender || "",
+        timezone: profile.timezone || "Asia/Kolkata",
         conditions: profile.conditions || [],
         medications: medicationsAsStrings,
         is_on_insulin: profile.is_on_insulin || false,
