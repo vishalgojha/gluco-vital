@@ -30,7 +30,8 @@ export default function ReportGenerator({ userEmail, onReportGenerated }) {
       // Fetch logs for the period (check both user_email and created_by for agent-created logs)
       const allLogs = await base44.entities.HealthLog.list('-created_date', 500);
       const userLogs = allLogs.filter(log => 
-        log.user_email === userEmail || log.created_by === userEmail
+        (log.user_email === userEmail || log.created_by === userEmail) &&
+        log.status !== 'corrected' && log.status !== 'deleted'
       );
       const filteredLogs = userLogs.filter(log => {
         const logDate = new Date(log.created_date);
@@ -44,6 +45,8 @@ export default function ReportGenerator({ userEmail, onReportGenerated }) {
       const sugarLogs = filteredLogs.filter(l => l.log_type === "sugar" && l.numeric_value);
       const bpLogs = filteredLogs.filter(l => l.log_type === "blood_pressure");
       const medLogs = filteredLogs.filter(l => l.log_type === "medication");
+      const mealLogs = filteredLogs.filter(l => l.log_type === "meal");
+      const symptomLogs = filteredLogs.filter(l => l.log_type === "symptom");
 
       const sugarStats = sugarLogs.length > 0 ? {
         average: Math.round(sugarLogs.reduce((a, b) => a + b.numeric_value, 0) / sugarLogs.length),
@@ -53,34 +56,100 @@ export default function ReportGenerator({ userEmail, onReportGenerated }) {
         in_target_percent: Math.round((sugarLogs.filter(l => l.numeric_value <= (patientProfile?.target_sugar_post_meal || 140)).length / sugarLogs.length) * 100)
       } : null;
 
-      // Generate AI summary
+      // Prepare detailed log data with full context for AI analysis
+      const detailedSugarLogs = sugarLogs.slice(0, 50).map(log => ({
+        date: format(new Date(log.created_date), "MMM d, h:mm a"),
+        value: log.numeric_value,
+        time_of_day: log.time_of_day?.replace(/_/g, ' ') || 'unknown',
+        context: log.notes || 'no context provided',
+        source: log.source || 'manual'
+      }));
+
+      const detailedMealLogs = mealLogs.slice(0, 30).map(log => ({
+        date: format(new Date(log.created_date), "MMM d, h:mm a"),
+        meal: log.value,
+        notes: log.notes || ''
+      }));
+
+      const detailedSymptomLogs = symptomLogs.slice(0, 20).map(log => ({
+        date: format(new Date(log.created_date), "MMM d"),
+        symptom: log.value,
+        notes: log.notes || ''
+      }));
+
+      // Analyze patterns
+      const highReadings = sugarLogs.filter(l => l.numeric_value > 180);
+      const lowReadings = sugarLogs.filter(l => l.numeric_value < 70);
+      const fastingLogs = sugarLogs.filter(l => l.time_of_day === 'morning_fasting');
+      const postMealLogs = sugarLogs.filter(l => l.time_of_day?.includes('after'));
+
+      const patterns = {
+        high_reading_count: highReadings.length,
+        low_reading_count: lowReadings.length,
+        avg_fasting: fastingLogs.length > 0 ? Math.round(fastingLogs.reduce((a, b) => a + b.numeric_value, 0) / fastingLogs.length) : null,
+        avg_post_meal: postMealLogs.length > 0 ? Math.round(postMealLogs.reduce((a, b) => a + b.numeric_value, 0) / postMealLogs.length) : null,
+        high_readings_with_context: highReadings.slice(0, 10).map(l => ({
+          value: l.numeric_value,
+          time: l.time_of_day?.replace(/_/g, ' '),
+          context: l.notes || 'no context'
+        }))
+      };
+
+      // Generate AI summary with FULL LOG DATA
       const aiResponse = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are a caring health analyst. Generate a health report summary for a diabetes patient.
+        prompt: `You are a caring health analyst reviewing ACTUAL patient health logs. Generate a detailed, personalized health report.
 
 Patient: ${patientProfile?.name || 'Patient'}
 Period: ${format(dateRange.from, "MMM d")} to ${format(dateRange.to, "MMM d, yyyy")}
 Report Type: ${reportType}
+Conditions: ${patientProfile?.conditions?.join(', ') || 'Diabetes'}
+On Insulin: ${patientProfile?.is_on_insulin ? 'Yes' : 'No'}
 
-Health Data:
-- Sugar readings: ${sugarLogs.length} (Avg: ${sugarStats?.average || 'N/A'} mg/dL, Range: ${sugarStats?.lowest || 'N/A'}-${sugarStats?.highest || 'N/A'})
-- BP readings: ${bpLogs.length}
-- Medication logs: ${medLogs.length}
-- Total logs: ${filteredLogs.length}
+=== ACTUAL SUGAR READINGS WITH CONTEXT ===
+${JSON.stringify(detailedSugarLogs, null, 2)}
+
+=== MEAL LOGS ===
+${JSON.stringify(detailedMealLogs, null, 2)}
+
+=== SYMPTOMS REPORTED ===
+${JSON.stringify(detailedSymptomLogs, null, 2)}
+
+=== PATTERN ANALYSIS ===
+- Total readings: ${sugarLogs.length}
+- High readings (>180): ${patterns.high_reading_count}
+- Low readings (<70): ${patterns.low_reading_count}
+- Average fasting: ${patterns.avg_fasting || 'N/A'} mg/dL
+- Average post-meal: ${patterns.avg_post_meal || 'N/A'} mg/dL
+- In-target percentage: ${sugarStats?.in_target_percent || 0}%
+
+=== HIGH READINGS WITH THEIR CONTEXT ===
+${JSON.stringify(patterns.high_readings_with_context, null, 2)}
+
+=== BP READINGS ===
+${bpLogs.slice(0, 20).map(l => `${format(new Date(l.created_date), "MMM d")}: ${l.value}`).join('\n')}
+
+=== MEDICATION LOGS ===
+Count: ${medLogs.length}
+Prescribed: ${patientProfile?.medications?.map(m => `${m.name} ${m.dosage || ''}`).join(', ') || 'Not specified'}
 
 Patient Targets:
 - Fasting Sugar: ${patientProfile?.target_sugar_fasting || 100} mg/dL
 - Post-meal Sugar: ${patientProfile?.target_sugar_post_meal || 140} mg/dL
 
-Medications: ${patientProfile?.medications?.map(m => m.name).join(', ') || 'Not specified'}
+IMPORTANT: Analyze the ACTUAL data above. Look for:
+1. Specific patterns (which times are readings highest?)
+2. Context correlation (what meals/activities precede high readings?)
+3. Symptom patterns
+4. Medication adherence gaps
 
-Generate a warm, encouraging report with:
-1. A brief summary (2-3 sentences)
-2. 2-3 identified risks or concerns (if any)
-3. 3-4 actionable recommendations
-4. 2-3 achievements or positive observations
-5. 3-5 specific questions the patient should ask their doctor at the next visit based on their health data and patterns
+Generate a personalized report with:
+1. A brief summary (2-3 sentences) referencing SPECIFIC data points
+2. 2-3 identified risks WITH specific examples from the logs
+3. 3-4 actionable recommendations based on ACTUAL patterns found
+4. 2-3 achievements or positive observations with data evidence
+5. 3-5 specific questions for doctor based on THIS patient's actual data
 
-Be caring and supportive in tone. Questions for doctor should be practical and relevant to diabetes management.`,
+Be specific - reference actual readings, dates, and contexts. No generic advice.`,
         response_json_schema: {
           type: "object",
           properties: {

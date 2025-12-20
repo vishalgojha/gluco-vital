@@ -24,11 +24,11 @@ export default function Progress() {
   const { data: logs = [], isLoading } = useQuery({
     queryKey: ['health-logs-progress', user?.email],
     queryFn: async () => {
-      // Fetch logs and filter for this user (by user_email or created_by)
+      // Fetch logs and filter for this user (by user_email or created_by), exclude corrected/deleted
       const results = await base44.entities.HealthLog.list('-created_date', 500);
       return results.filter(log => 
-        log.user_email === user?.email || 
-        log.created_by === user?.email
+        (log.user_email === user?.email || log.created_by === user?.email) &&
+        log.status !== 'corrected' && log.status !== 'deleted'
       );
     },
     enabled: !!user?.email
