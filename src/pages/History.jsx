@@ -103,21 +103,23 @@ export default function History() {
 
         {/* Filters */}
         <Card className="border-slate-100 shadow-sm mb-6">
-          <CardContent className="pt-6">
-            <div className="flex flex-wrap gap-4 items-end">
-              <div>
+          <CardContent className="pt-4 sm:pt-6">
+            <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 sm:items-end">
+              <div className="flex-1 min-w-0">
                 <label className="text-sm font-medium text-slate-600 block mb-1.5">Date Range</label>
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button variant="outline" className="w-[260px] justify-start text-left font-normal">
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {dateRange.from && dateRange.to ? (
-                        <>
-                          {format(dateRange.from, "MMM d")} - {format(dateRange.to, "MMM d, yyyy")}
-                        </>
-                      ) : (
-                        <span>Pick a date range</span>
-                      )}
+                    <Button variant="outline" className="w-full sm:w-[260px] justify-start text-left font-normal text-sm">
+                      <CalendarIcon className="mr-2 h-4 w-4 flex-shrink-0" />
+                      <span className="truncate">
+                        {dateRange.from && dateRange.to ? (
+                          <>
+                            {format(dateRange.from, "MMM d")} - {format(dateRange.to, "MMM d")}
+                          </>
+                        ) : (
+                          <span>Pick a date range</span>
+                        )}
+                      </span>
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
@@ -127,16 +129,26 @@ export default function History() {
                       defaultMonth={dateRange.from}
                       selected={dateRange}
                       onSelect={(range) => range && setDateRange(range)}
+                      numberOfMonths={1}
+                      className="sm:hidden"
+                    />
+                    <Calendar
+                      initialFocus
+                      mode="range"
+                      defaultMonth={dateRange.from}
+                      selected={dateRange}
+                      onSelect={(range) => range && setDateRange(range)}
                       numberOfMonths={2}
+                      className="hidden sm:block"
                     />
                   </PopoverContent>
                 </Popover>
               </div>
 
-              <div>
+              <div className="flex-1 min-w-0 sm:flex-none">
                 <label className="text-sm font-medium text-slate-600 block mb-1.5">Log Type</label>
                 <Select value={logType} onValueChange={setLogType}>
-                  <SelectTrigger className="w-[180px]">
+                  <SelectTrigger className="w-full sm:w-[160px]">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -152,18 +164,22 @@ export default function History() {
                 </Select>
               </div>
 
-              <div className="flex gap-2 ml-auto">
+              <div className="flex gap-2 w-full sm:w-auto sm:ml-auto">
                 <Button 
                   variant="outline"
+                  size="sm"
+                  className="flex-1 sm:flex-none text-xs sm:text-sm"
                   onClick={() => setDateRange({ from: subDays(new Date(), 7), to: new Date() })}
                 >
-                  Last 7 Days
+                  7 Days
                 </Button>
                 <Button 
                   variant="outline"
+                  size="sm"
+                  className="flex-1 sm:flex-none text-xs sm:text-sm"
                   onClick={() => setDateRange({ from: subDays(new Date(), 30), to: new Date() })}
                 >
-                  Last 30 Days
+                  30 Days
                 </Button>
               </div>
             </div>

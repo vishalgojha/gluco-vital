@@ -41,34 +41,34 @@ export default function CareHub() {
         </div>
 
         <Tabs defaultValue="habits" className="space-y-6">
-          <TabsList className="grid grid-cols-4 gap-2 bg-transparent h-auto p-0">
+          <TabsList className="flex w-full overflow-x-auto gap-2 bg-transparent h-auto p-0 no-scrollbar">
             <TabsTrigger 
               value="habits" 
-              className="flex flex-col items-center gap-1 p-3 data-[state=active]:bg-[#5b9a8b]/10 data-[state=active]:text-[#5b9a8b] rounded-xl border border-slate-200 data-[state=active]:border-[#5b9a8b]/30"
+              className="flex-1 min-w-[70px] flex flex-col items-center gap-1 p-2 sm:p-3 data-[state=active]:bg-[#5b9a8b]/10 data-[state=active]:text-[#5b9a8b] rounded-xl border border-slate-200 data-[state=active]:border-[#5b9a8b]/30"
             >
-              <Flame className="w-5 h-5" />
-              <span className="text-xs">Habits</span>
+              <Flame className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="text-[10px] sm:text-xs">Habits</span>
             </TabsTrigger>
             <TabsTrigger 
               value="refills"
-              className="flex flex-col items-center gap-1 p-3 data-[state=active]:bg-orange-50 data-[state=active]:text-orange-600 rounded-xl border border-slate-200 data-[state=active]:border-orange-200"
+              className="flex-1 min-w-[70px] flex flex-col items-center gap-1 p-2 sm:p-3 data-[state=active]:bg-orange-50 data-[state=active]:text-orange-600 rounded-xl border border-slate-200 data-[state=active]:border-orange-200"
             >
-              <Package className="w-5 h-5" />
-              <span className="text-xs">Refills</span>
+              <Package className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="text-[10px] sm:text-xs">Refills</span>
             </TabsTrigger>
             <TabsTrigger 
               value="visits"
-              className="flex flex-col items-center gap-1 p-3 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-600 rounded-xl border border-slate-200 data-[state=active]:border-blue-200"
+              className="flex-1 min-w-[70px] flex flex-col items-center gap-1 p-2 sm:p-3 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-600 rounded-xl border border-slate-200 data-[state=active]:border-blue-200"
             >
-              <Calendar className="w-5 h-5" />
-              <span className="text-xs">Visits</span>
+              <Calendar className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="text-[10px] sm:text-xs">Visits</span>
             </TabsTrigger>
             <TabsTrigger 
               value="support"
-              className="flex flex-col items-center gap-1 p-3 data-[state=active]:bg-purple-50 data-[state=active]:text-purple-600 rounded-xl border border-slate-200 data-[state=active]:border-purple-200"
+              className="flex-1 min-w-[70px] flex flex-col items-center gap-1 p-2 sm:p-3 data-[state=active]:bg-purple-50 data-[state=active]:text-purple-600 rounded-xl border border-slate-200 data-[state=active]:border-purple-200"
             >
-              <MapPin className="w-5 h-5" />
-              <span className="text-xs">Support</span>
+              <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="text-[10px] sm:text-xs">Support</span>
             </TabsTrigger>
           </TabsList>
 

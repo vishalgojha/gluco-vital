@@ -136,10 +136,10 @@ export default function MarketingContent() {
   const template = FLYER_TEMPLATES.find(t => t.id === selectedTemplate);
 
   const sizeClasses = {
-    instagram: "w-[400px] h-[400px]",
-    story: "w-[270px] h-[480px]",
-    landscape: "w-[500px] h-[280px]",
-    whatsapp: "w-[300px] h-[300px]"
+    instagram: "w-[280px] sm:w-[400px] h-[280px] sm:h-[400px]",
+    story: "w-[200px] sm:w-[270px] h-[355px] sm:h-[480px]",
+    landscape: "w-[300px] sm:w-[500px] h-[170px] sm:h-[280px]",
+    whatsapp: "w-[240px] sm:w-[300px] h-[240px] sm:h-[300px]"
   };
 
   return (
@@ -184,21 +184,21 @@ export default function MarketingContent() {
             {/* Size Selection */}
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Smartphone className="w-5 h-5 text-violet-500" />
+                <CardTitle className="text-base sm:text-lg flex items-center gap-2">
+                  <Smartphone className="w-4 h-4 sm:w-5 sm:h-5 text-violet-500" />
                   Flyer Size
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <Select value={flyerSize} onValueChange={setFlyerSize}>
-                  <SelectTrigger>
+                  <SelectTrigger className="text-sm">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="instagram">Instagram Post (1:1)</SelectItem>
-                    <SelectItem value="story">Instagram Story (9:16)</SelectItem>
-                    <SelectItem value="landscape">Facebook/Twitter (16:9)</SelectItem>
-                    <SelectItem value="whatsapp">WhatsApp Status (1:1 small)</SelectItem>
+                    <SelectItem value="instagram">Instagram (1:1)</SelectItem>
+                    <SelectItem value="story">Story (9:16)</SelectItem>
+                    <SelectItem value="landscape">Landscape (16:9)</SelectItem>
+                    <SelectItem value="whatsapp">WhatsApp (1:1)</SelectItem>
                   </SelectContent>
                 </Select>
               </CardContent>
@@ -258,11 +258,11 @@ export default function MarketingContent() {
             </Card>
 
             {/* Actions */}
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
               <Button
                 onClick={downloadFlyer}
                 disabled={generating}
-                className="flex-1 bg-blue-600 hover:bg-blue-700"
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-sm"
               >
                 {generating ? (
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -274,14 +274,14 @@ export default function MarketingContent() {
               <Button
                 onClick={copyShareText}
                 variant="outline"
-                className="flex-1"
+                className="flex-1 text-sm"
               >
                 {copied ? (
                   <Check className="w-4 h-4 mr-2 text-green-500" />
                 ) : (
                   <Copy className="w-4 h-4 mr-2" />
                 )}
-                Copy Share Text
+                Copy Text
               </Button>
             </div>
           </div>
