@@ -1,5 +1,4 @@
 import { format } from "date-fns";
-import { formatInTimeZone } from "date-fns-tz";
 import { Droplet, Heart, Utensils, Pill, Activity, Weight, Smile, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
