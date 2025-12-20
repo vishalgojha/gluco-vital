@@ -8,10 +8,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
-import { UserPlus, Shield, Eye, FileText, Sparkles, Trash2, MessageCircle, Send, Loader2, CheckCircle, Clock, XCircle } from "lucide-react";
+import { UserPlus, Shield, Eye, FileText, Sparkles, Trash2, MessageCircle, Send, Loader2, CheckCircle, Clock, XCircle, Download, Calendar } from "lucide-react";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
+import { format, isPast, addDays } from "date-fns";
+import TimeBoundAccessSelector, { calculateExpiryDate } from "@/components/sharing/TimeBoundAccessSelector";
 
 const PERMISSIONS = [
   { id: "view_logs", label: "Health Logs", description: "Sugar, BP, meals, medications" },
@@ -26,7 +28,9 @@ export default function DoctorShare() {
   const [inviteForm, setInviteForm] = useState({
     doctor_email: "",
     doctor_name: "",
-    permissions: ["view_logs", "view_reports", "view_insights", "send_feedback"]
+    permissions: ["view_logs", "view_reports", "view_insights", "send_feedback"],
+    access_duration: "permanent",
+    custom_expiry_date: ""
   });
   const queryClient = useQueryClient();
 
@@ -67,11 +71,17 @@ export default function DoctorShare() {
         throw new Error("This doctor is already connected or has a pending invitation");
       }
 
+      const expiryDate = calculateExpiryDate(data.access_duration, data.custom_expiry_date);
+      
       const connection = await base44.entities.DoctorConnection.create({
-        ...data,
+        doctor_email: data.doctor_email,
+        doctor_name: data.doctor_name,
+        permissions: data.permissions,
         patient_email: user.email,
         patient_name: user.full_name,
         status: "pending",
+        access_type: data.access_duration === "permanent" ? "permanent" : "time_bound",
+        access_expires_at: expiryDate,
         invited_at: new Date().toISOString()
       });
 
@@ -103,7 +113,13 @@ Gluco Vital Team`,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['doctor-connections'] });
       setShowInvite(false);
-      setInviteForm({ doctor_email: "", doctor_name: "", permissions: ["view_logs", "view_reports", "view_insights", "send_feedback"] });
+      setInviteForm({ 
+        doctor_email: "", 
+        doctor_name: "", 
+        permissions: ["view_logs", "view_reports", "view_insights", "send_feedback"],
+        access_duration: "permanent",
+        custom_expiry_date: ""
+      });
       toast.success("Invitation email sent to doctor!");
     },
     onError: (error) => {
@@ -148,11 +164,24 @@ Gluco Vital Team`,
     }));
   };
 
-  const getStatusBadge = (status) => {
+  const getStatusBadge = (status, conn) => {
+    // Check if time-bound access has expired
+    if (status === "active" && conn?.access_type === "time_bound" && conn?.access_expires_at) {
+      if (isPast(new Date(conn.access_expires_at))) {
+        return (
+          <Badge className="bg-slate-100 text-slate-700 gap-1">
+            <Clock className="w-3 h-3" />
+            Expired
+          </Badge>
+        );
+      }
+    }
+    
     const styles = {
       pending: { bg: "bg-amber-100", text: "text-amber-700", icon: Clock },
       active: { bg: "bg-green-100", text: "text-green-700", icon: CheckCircle },
-      revoked: { bg: "bg-red-100", text: "text-red-700", icon: XCircle }
+      revoked: { bg: "bg-red-100", text: "text-red-700", icon: XCircle },
+      expired: { bg: "bg-slate-100", text: "text-slate-700", icon: Clock }
     };
     const s = styles[status] || styles.pending;
     const Icon = s.icon;
@@ -228,6 +257,15 @@ Gluco Vital Team`,
                     ))}
                   </div>
                 </div>
+                
+                {/* Time-bound access selector */}
+                <TimeBoundAccessSelector
+                  value={inviteForm.access_duration}
+                  onChange={(v) => setInviteForm(prev => ({ ...prev, access_duration: v }))}
+                  customDate={inviteForm.custom_expiry_date}
+                  onCustomDateChange={(v) => setInviteForm(prev => ({ ...prev, custom_expiry_date: v }))}
+                />
+                
                 <Button
                   onClick={() => inviteMutation.mutate(inviteForm)}
                   disabled={!inviteForm.doctor_email || inviteMutation.isPending}
@@ -243,6 +281,27 @@ Gluco Vital Team`,
               </div>
             </DialogContent>
           </Dialog>
+        </div>
+
+        {/* Export & View Feedback Buttons */}
+        <div className="flex flex-wrap gap-3 mb-6">
+          <Link to={createPageUrl("Reports")}>
+            <Button variant="outline" className="gap-2">
+              <Download className="w-4 h-4" />
+              Export PDF Report
+            </Button>
+          </Link>
+          <Link to={createPageUrl("PatientFeedback")}>
+            <Button variant="outline" className="gap-2 relative">
+              <MessageCircle className="w-4 h-4" />
+              View Doctor's Feedback
+              {unreadFeedback.length > 0 && (
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-violet-500 text-white text-xs rounded-full flex items-center justify-center">
+                  {unreadFeedback.length}
+                </span>
+              )}
+            </Button>
+          </Link>
         </div>
 
         {/* Unread Feedback Alert */}
@@ -320,8 +379,14 @@ Gluco Vital Team`,
                         <div>
                           <h3 className="font-semibold text-slate-800">{conn.doctor_name || "Doctor"}</h3>
                           <p className="text-sm text-slate-500">{conn.doctor_email}</p>
-                          <div className="flex items-center gap-2 mt-2">
-                            {getStatusBadge(conn.status)}
+                          <div className="flex items-center gap-2 mt-2 flex-wrap">
+                            {getStatusBadge(conn.status, conn)}
+                            {conn.access_type === "time_bound" && conn.access_expires_at && (
+                              <Badge variant="outline" className="text-xs gap-1">
+                                <Calendar className="w-3 h-3" />
+                                Expires: {format(new Date(conn.access_expires_at), "MMM d, yyyy")}
+                              </Badge>
+                            )}
                             {conn.invited_at && (
                               <span className="text-xs text-slate-400">
                                 Invited {new Date(conn.invited_at).toLocaleDateString()}
