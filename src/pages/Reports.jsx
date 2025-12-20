@@ -4,9 +4,9 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { FileText, Plus, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import ReportGenerator from "@/components/reports/ReportGenerator";
+import EnhancedReportGenerator from "@/components/reports/EnhancedReportGenerator";
 import ReportCard from "@/components/reports/ReportCard";
-import ReportViewer from "@/components/reports/ReportViewer";
+import EnhancedReportViewer from "@/components/reports/EnhancedReportViewer";
 import DoctorQuestionsList from "@/components/reports/DoctorQuestionsList";
 
 export default function Reports() {
@@ -56,7 +56,7 @@ export default function Reports() {
 
         {showGenerator && (
           <div className="mb-8">
-            <ReportGenerator 
+            <EnhancedReportGenerator 
               userEmail={user?.email} 
               onReportGenerated={handleReportGenerated}
             />
@@ -93,7 +93,7 @@ export default function Reports() {
       </div>
 
       {selectedReport && (
-        <ReportViewer 
+        <EnhancedReportViewer 
           report={selectedReport}
           profile={profile}
           onClose={() => setSelectedReport(null)}

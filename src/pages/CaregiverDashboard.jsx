@@ -12,6 +12,7 @@ import {
   AlertTriangle, Clock, Activity, RefreshCw, ChevronRight
 } from "lucide-react";
 import SugarChart from "@/components/dashboard/SugarChart";
+import EnhancedReportViewer from "@/components/reports/EnhancedReportViewer";
 
 export default function CaregiverDashboard() {
   const [user, setUser] = useState(null);
@@ -64,6 +65,21 @@ export default function CaregiverDashboard() {
     }),
     enabled: !!selectedPatient?.patient_email
   });
+
+  // Get patient's reports (accessible to caregivers)
+  const { data: patientReports = [] } = useQuery({
+    queryKey: ['patient-reports-caregiver', selectedPatient?.patient_email],
+    queryFn: async () => {
+      const reports = await base44.entities.HealthReport.list('-created_date', 20);
+      return reports.filter(r => 
+        r.user_email === selectedPatient?.patient_email && 
+        r.accessible_to_caregivers !== false
+      );
+    },
+    enabled: !!selectedPatient?.patient_email
+  });
+
+  const [selectedReport, setSelectedReport] = useState(null);
 
   // Log activity when viewing
   useEffect(() => {
@@ -346,6 +362,34 @@ export default function CaregiverDashboard() {
                 </CardContent>
               </Card>
 
+              {/* Patient Reports */}
+              {patientReports.length > 0 && (
+                <Card className="border-slate-100 shadow-sm">
+                  <CardHeader>
+                    <CardTitle className="text-lg">Health Reports</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      {patientReports.slice(0, 5).map(report => (
+                        <button
+                          key={report.id}
+                          onClick={() => setSelectedReport(report)}
+                          className="w-full p-3 bg-slate-50 rounded-lg text-left hover:bg-slate-100 transition-colors"
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="font-medium text-sm capitalize">{report.report_type}</span>
+                            <ChevronRight className="w-4 h-4 text-slate-400" />
+                          </div>
+                          <p className="text-xs text-slate-500">
+                            {format(new Date(report.start_date), "MMM d")} - {format(new Date(report.end_date), "MMM d")}
+                          </p>
+                        </button>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
               {/* Quick Tips */}
               <Card className="border-violet-100 bg-violet-50/50">
                 <CardContent className="pt-6">
@@ -360,6 +404,16 @@ export default function CaregiverDashboard() {
               </Card>
             </div>
           </div>
+        )}
+
+        {/* Report Viewer for Caregivers */}
+        {selectedReport && (
+          <EnhancedReportViewer
+            report={selectedReport}
+            profile={patientProfile}
+            onClose={() => setSelectedReport(null)}
+            isCaregiver={true}
+          />
         )}
       </div>
     </div>
