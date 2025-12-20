@@ -87,18 +87,10 @@ export default function Profile() {
 
   const saveMutation = useMutation({
     mutationFn: async (data) => {
-      // Convert medications array of strings to array of objects
-      const medicationsAsObjects = (data.medications || []).map(med => {
-        if (typeof med === 'string') {
-          return { name: med };
-        }
-        return med;
-      });
-      
       const payload = { 
         ...data, 
         user_email: user.email,
-        medications: medicationsAsObjects
+        medications: data.medications || [] // medications are already objects
       };
       
       // Use backend function for reliable upsert
