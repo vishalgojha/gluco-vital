@@ -542,10 +542,6 @@ export default function Landing() {
             <span>•</span>
             <a href={createPageUrl("Terms")} className="hover:text-[#5b9a8b] transition-colors">Terms of Service</a>
             <span>•</span>
-            <a href={createPageUrl("ShippingPolicy")} className="hover:text-[#5b9a8b] transition-colors">Shipping Policy</a>
-            <span>•</span>
-            <a href={createPageUrl("CancellationRefund")} className="hover:text-[#5b9a8b] transition-colors">Refund Policy</a>
-            <span>•</span>
             <a href="mailto:support@glucovital.fit" className="hover:text-[#5b9a8b] transition-colors">Contact</a>
           </div>
           <p className="text-xs text-slate-400 mb-2">
