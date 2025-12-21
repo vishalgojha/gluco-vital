@@ -237,11 +237,50 @@ export default function Landing() {
                     <div className="max-w-6xl mx-auto px-4">
                       <div className="flex flex-col md:flex-row items-center gap-8 mb-12">
                         <div className="md:w-1/3">
-                          <img 
-                            src="https://images.unsplash.com/photo-1434494878577-86c23bcb06b9?w=400&h=400&fit=crop&q=80"
-                            alt="Person using smartphone for health tracking"
-                            className="rounded-2xl shadow-lg w-full max-w-xs mx-auto"
-                          />
+                          {/* WhatsApp Chat Mockup */}
+                          <div className="bg-[#e5ddd5] rounded-2xl shadow-lg w-full max-w-xs mx-auto overflow-hidden">
+                            {/* WhatsApp Header */}
+                            <div className="bg-[#075e54] text-white px-4 py-3 flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#5b9a8b] to-[#7eb8a8] flex items-center justify-center">
+                                <Heart className="w-5 h-5 text-white" />
+                              </div>
+                              <div>
+                                <p className="font-semibold text-sm">Gluco Vital</p>
+                                <p className="text-xs text-green-200">online</p>
+                              </div>
+                            </div>
+                            {/* Chat Messages */}
+                            <div className="p-3 space-y-2">
+                              {/* User message */}
+                              <div className="flex justify-end">
+                                <div className="bg-[#dcf8c6] rounded-lg px-3 py-2 max-w-[80%] shadow-sm">
+                                  <p className="text-sm text-slate-800">Fasting sugar 118</p>
+                                  <p className="text-[10px] text-slate-500 text-right mt-1">9:15 AM ✓✓</p>
+                                </div>
+                              </div>
+                              {/* Bot response */}
+                              <div className="flex justify-start">
+                                <div className="bg-white rounded-lg px-3 py-2 max-w-[85%] shadow-sm">
+                                  <p className="text-sm text-slate-800">✅ Logged! Fasting sugar 118 mg/dL — within your target range. Great start to the day! 🌅</p>
+                                  <p className="text-[10px] text-slate-500 text-right mt-1">9:15 AM</p>
+                                </div>
+                              </div>
+                              {/* User message */}
+                              <div className="flex justify-end">
+                                <div className="bg-[#dcf8c6] rounded-lg px-3 py-2 max-w-[80%] shadow-sm">
+                                  <p className="text-sm text-slate-800">Took metformin</p>
+                                  <p className="text-[10px] text-slate-500 text-right mt-1">9:16 AM ✓✓</p>
+                                </div>
+                              </div>
+                              {/* Bot response */}
+                              <div className="flex justify-start">
+                                <div className="bg-white rounded-lg px-3 py-2 max-w-[85%] shadow-sm">
+                                  <p className="text-sm text-slate-800">💊 Medication logged! Keep up the consistency.</p>
+                                  <p className="text-[10px] text-slate-500 text-right mt-1">9:16 AM</p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                         <div className="md:w-2/3 text-center md:text-left">
                           <h2 className="text-3xl font-bold text-slate-800 mb-4">
