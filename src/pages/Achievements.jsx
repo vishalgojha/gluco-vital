@@ -12,16 +12,30 @@ import BadgesGrid, { BADGES } from "@/components/gamification/BadgesGrid";
 import WeeklyChallenge from "@/components/gamification/WeeklyChallenge";
 import Leaderboard from "@/components/gamification/Leaderboard";
 import { toast } from "sonner";
+import { generateDemoData } from "@/components/demo/DemoDataGenerator";
+import DemoBanner from "@/components/demo/DemoBanner";
 
 export default function Achievements() {
   const queryClient = useQueryClient();
   const [user, setUser] = useState(null);
   const [displayName, setDisplayName] = useState("");
+  const [isDemo, setIsDemo] = useState(false);
+  const [demoData, setDemoData] = useState(null);
 
   const [syncing, setSyncing] = useState(false);
 
   useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => {});
+    const urlParams = new URLSearchParams(window.location.search);
+    const demoMode = urlParams.get('demo') === 'true';
+    
+    if (demoMode) {
+      setIsDemo(true);
+      const data = generateDemoData();
+      setDemoData(data);
+      setUser(data.user);
+    } else {
+      base44.auth.me().then(setUser).catch(() => {});
+    }
   }, []);
 
   const syncAchievements = async () => {
