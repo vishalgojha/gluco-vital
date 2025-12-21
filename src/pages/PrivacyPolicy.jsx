@@ -1,10 +1,21 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Shield, Database, Eye, Lock, UserCheck, Mail, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Button } from "@/components/ui/button";
 
 export default function PrivacyPolicy() {
+  useEffect(() => {
+    document.title = "Privacy Policy - GlucoVital | Your Health Data Protected";
+    
+    const metaDesc = document.querySelector('meta[name="description"]') || document.createElement('meta');
+    metaDesc.setAttribute('name', 'description');
+    metaDesc.setAttribute('content', 'GlucoVital.fit Privacy Policy. Learn how we collect, use, and protect your personal health data. Your privacy and data security are our priority.');
+    if (!document.querySelector('meta[name="description"]')) document.head.appendChild(metaDesc);
+
+    return () => { document.title = "Gluco Vital"; };
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
       <div className="max-w-3xl mx-auto px-4 py-8">

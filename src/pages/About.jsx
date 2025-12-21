@@ -1,10 +1,21 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Heart, MessageCircle, Globe, Shield, Users, Sparkles, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Button } from "@/components/ui/button";
 
 export default function About() {
+  useEffect(() => {
+    document.title = "About GlucoVital - AI Diabetes Management App | Our Mission";
+    
+    const metaDesc = document.querySelector('meta[name="description"]') || document.createElement('meta');
+    metaDesc.setAttribute('name', 'description');
+    metaDesc.setAttribute('content', 'Learn about GlucoVital.fit - your AI-powered diabetes companion. We help people track, understand, and manage diabetes through WhatsApp. Made in India, supporting 14 languages worldwide.');
+    if (!document.querySelector('meta[name="description"]')) document.head.appendChild(metaDesc);
+
+    return () => { document.title = "Gluco Vital"; };
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
       <div className="max-w-3xl mx-auto px-4 py-8">

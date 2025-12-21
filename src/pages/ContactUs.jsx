@@ -1,10 +1,21 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Mail, MessageCircle, Clock, MapPin } from "lucide-react";
 
 export default function ContactUs() {
+  useEffect(() => {
+    document.title = "Contact Us - GlucoVital | Get Support & Help";
+    
+    const metaDesc = document.querySelector('meta[name="description"]') || document.createElement('meta');
+    metaDesc.setAttribute('name', 'description');
+    metaDesc.setAttribute('content', 'Contact GlucoVital.fit for support, questions, or feedback. Email us at support@glucovital.fit. We typically respond within 24-48 hours.');
+    if (!document.querySelector('meta[name="description"]')) document.head.appendChild(metaDesc);
+
+    return () => { document.title = "Gluco Vital"; };
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#f0f7f4] via-white to-[#e8f4f0]">
       <div className="max-w-3xl mx-auto px-4 py-8">

@@ -1,10 +1,21 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, RefreshCcw, XCircle, AlertCircle } from "lucide-react";
 
 export default function CancellationRefund() {
+  useEffect(() => {
+    document.title = "Cancellation & Refund Policy - GlucoVital";
+    
+    const metaDesc = document.querySelector('meta[name="description"]') || document.createElement('meta');
+    metaDesc.setAttribute('name', 'description');
+    metaDesc.setAttribute('content', 'GlucoVital.fit cancellation and refund policy. Learn how to cancel your subscription and understand our refund terms. Free plan available forever.');
+    if (!document.querySelector('meta[name="description"]')) document.head.appendChild(metaDesc);
+
+    return () => { document.title = "Gluco Vital"; };
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#f0f7f4] via-white to-[#e8f4f0]">
       <div className="max-w-3xl mx-auto px-4 py-8">
