@@ -18,6 +18,7 @@ import LabResultsList from "@/components/labs/LabResultsList";
 import LabReportUpload from "@/components/labs/LabReportUpload";
 import HbA1cTrendChart from "@/components/labs/HbA1cTrendChart";
 import CaregiverManager from "@/components/caregiver/CaregiverManager";
+import { NotificationSettings } from "@/components/notifications/NotificationManager";
 
 export default function Profile() {
   const queryClient = useQueryClient();
@@ -564,6 +565,9 @@ export default function Profile() {
               await saveMutation.mutateAsync({ ...formData, ...data });
             }}
           />
+
+          {/* Notification Settings */}
+          <NotificationSettings user={user} />
 
           {/* Wearable Import */}
           <WearableImport 
