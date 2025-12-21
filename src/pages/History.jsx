@@ -15,17 +15,31 @@ import LogCard from "@/components/dashboard/LogCard";
 import SugarChart from "@/components/dashboard/SugarChart";
 import LabResultsList from "@/components/labs/LabResultsList";
 import HbA1cTrendChart from "@/components/labs/HbA1cTrendChart";
+import { generateDemoData } from "@/components/demo/DemoDataGenerator";
+import DemoBanner from "@/components/demo/DemoBanner";
 
 export default function History() {
   const [user, setUser] = useState(null);
   const [dateRange, setDateRange] = useState({
-    from: subDays(new Date(), 7),
+    from: subDays(new Date(), 30),
     to: new Date()
   });
   const [logType, setLogType] = useState("all");
+  const [isDemo, setIsDemo] = useState(false);
+  const [demoData, setDemoData] = useState(null);
 
   useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => {});
+    const urlParams = new URLSearchParams(window.location.search);
+    const demoMode = urlParams.get('demo') === 'true';
+    
+    if (demoMode) {
+      setIsDemo(true);
+      const data = generateDemoData();
+      setDemoData(data);
+      setUser(data.user);
+    } else {
+      base44.auth.me().then(setUser).catch(() => {});
+    }
   }, []);
 
   const { data: logs = [], isLoading } = useQuery({
