@@ -31,9 +31,11 @@ export default function Progress() {
       setDemoData(data);
       setUser(data.user);
     } else {
+      setIsDemo(false);
+      setDemoData(null);
       base44.auth.me().then(setUser).catch(() => {});
     }
-  }, []);
+  }, [window.location.search]);
 
   const { data: logs = [], isLoading } = useQuery({
     queryKey: ['health-logs-progress', user?.email, isDemo],
