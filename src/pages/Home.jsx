@@ -25,16 +25,29 @@ export default function Home() {
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showQuickLog, setShowQuickLog] = useState(false);
   const [showMedicationModal, setShowMedicationModal] = useState(false);
+  const [isDemo, setIsDemo] = useState(false);
+  const [demoData, setDemoData] = useState(null);
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    base44.auth.me().then((userData) => {
-      setUser(userData);
-      // Show onboarding for new users who haven't completed it
-      if (!userData?.onboarding_completed) {
-        setShowOnboarding(true);
-      }
-    }).catch(() => {});
+    // Check for demo mode
+    const urlParams = new URLSearchParams(window.location.search);
+    const demoMode = urlParams.get('demo') === 'true';
+    
+    if (demoMode) {
+      setIsDemo(true);
+      const data = generateDemoData();
+      setDemoData(data);
+      setUser(data.user);
+    } else {
+      base44.auth.me().then((userData) => {
+        setUser(userData);
+        // Show onboarding for new users who haven't completed it
+        if (!userData?.onboarding_completed) {
+          setShowOnboarding(true);
+        }
+      }).catch(() => {});
+    }
   }, []);
 
   const { data: logs = [], isLoading: logsLoading } = useQuery({
