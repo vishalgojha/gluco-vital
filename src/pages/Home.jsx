@@ -21,6 +21,7 @@ import QuickMedicationModal from "@/components/onboarding/QuickMedicationModal";
 import { generateDemoData, DEMO_USER_EMAIL } from "@/components/demo/DemoDataGenerator";
 import DemoBanner from "@/components/demo/DemoBanner";
 import DemoAIChat from "@/components/demo/DemoAIChat";
+import { useReminderScheduler } from "@/components/notifications/ReminderScheduler";
 
 export default function Home() {
   const [user, setUser] = useState(null);
