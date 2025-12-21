@@ -1,10 +1,10 @@
 import { format } from "date-fns";
-import { FileText, Calendar, Share2, ChevronRight } from "lucide-react";
+import { FileText, Calendar, Share2, ChevronRight, Users, Mail, TrendingUp, TrendingDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-export default function ReportCard({ report, onClick }) {
+export default function ReportCard({ report, onClick, showSharedBadge = false }) {
   const typeColors = {
     weekly: "bg-blue-50 text-blue-700 border-blue-200",
     monthly: "bg-violet-50 text-violet-700 border-violet-200",
@@ -21,14 +21,31 @@ export default function ReportCard({ report, onClick }) {
           <FileText className="w-5 h-5 text-slate-600" />
         </div>
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <Badge className={cn("capitalize", typeColors[report.report_type])}>
+          <div className="flex items-center gap-2 mb-1 flex-wrap">
+            <Badge className={cn("capitalize", typeColors[report.report_type] || "bg-slate-50 text-slate-700")}>
               {report.report_type}
             </Badge>
-            {report.shared_with_doctor && (
-              <Badge variant="outline" className="text-green-600 border-green-200">
-                <Share2 className="w-3 h-3 mr-1" />
+            {(showSharedBadge || report.shared_with_doctor) && (
+              <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200 text-xs">
+                <Mail className="w-3 h-3 mr-1" />
                 Shared
+              </Badge>
+            )}
+            {report.accessible_to_caregivers && (
+              <Badge className="bg-violet-100 text-violet-700 border-violet-200 text-xs">
+                <Users className="w-3 h-3 mr-1" />
+                Family
+              </Badge>
+            )}
+            {report.sugar_stats?.trend && (
+              <Badge className={cn("text-xs", 
+                report.sugar_stats.trend === 'improving' ? "bg-green-100 text-green-700" :
+                report.sugar_stats.trend === 'worsening' ? "bg-red-100 text-red-700" :
+                "bg-slate-100 text-slate-600"
+              )}>
+                {report.sugar_stats.trend === 'improving' && <TrendingUp className="w-3 h-3 mr-1" />}
+                {report.sugar_stats.trend === 'worsening' && <TrendingDown className="w-3 h-3 mr-1" />}
+                {report.sugar_stats.trend}
               </Badge>
             )}
           </div>
