@@ -542,7 +542,9 @@ export default function Landing() {
             <span>•</span>
             <a href={createPageUrl("Terms")} className="hover:text-[#5b9a8b] transition-colors">Terms of Service</a>
             <span>•</span>
-            <a href="mailto:support@glucovital.fit" className="hover:text-[#5b9a8b] transition-colors">Contact</a>
+            <a href={createPageUrl("CancellationRefund")} className="hover:text-[#5b9a8b] transition-colors">Refund Policy</a>
+            <span>•</span>
+            <a href={createPageUrl("ContactUs")} className="hover:text-[#5b9a8b] transition-colors">Contact Us</a>
           </div>
           <p className="text-xs text-slate-400 mb-2">
             GlucoVital.fit is an experimental health project by <a href="https://www.chaoscraftlabs.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-[#5b9a8b]">Chaos Craft Labs LLP</a>,<br/>
