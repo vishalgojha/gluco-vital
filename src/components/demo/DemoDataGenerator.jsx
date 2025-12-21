@@ -8,6 +8,10 @@ export function generateDemoData() {
   const adherenceRecords = [];
   const labResults = [];
   const habits = [];
+  const doctorVisits = [];
+  const reports = [];
+  const caregiverAccess = [];
+  const aiConversations = [];
   
   // Demo user profile
   const profile = {
@@ -25,14 +29,20 @@ export function generateDemoData() {
     target_bp_diastolic: 85,
     doctor_name: "Dr. Priya Sharma",
     doctor_specialization: "Diabetologist",
+    doctor_phone: "+91 98765 43210",
+    doctor_registration_no: "KA-12345",
     prescription_clinic: "HealthFirst Diabetes Center",
     prescription_clinic_address: "456 MG Road, Bangalore 560001",
+    prescription_clinic_phone: "+91 80 2345 6789",
+    prescription_date: format(subDays(now, 45), "yyyy-MM-dd"),
+    prescription_valid_months: 3,
     whatsapp_connected: true,
     medications: [
       { name: "Metformin", dosage: "500mg", frequency: "twice_daily", timing: "after meals" },
       { name: "Glimepiride", dosage: "1mg", frequency: "once_daily", timing: "before breakfast" },
       { name: "Telmisartan", dosage: "40mg", frequency: "once_daily", timing: "morning" }
-    ]
+    ],
+    recommended_readings: ["morning_fasting", "after_breakfast", "after_lunch", "after_dinner"]
   };
 
   // Demo achievements
@@ -41,13 +51,114 @@ export function generateDemoData() {
     total_points: 1250,
     current_streak: 12,
     longest_streak: 18,
-    badges: ["first_log", "week_streak", "consistent_logger", "meal_tracker", "medication_master"],
+    last_log_date: format(now, "yyyy-MM-dd"),
+    badges: ["first_log", "week_streak", "consistent_logger", "meal_tracker", "medication_master", "bp_tracker"],
     logs_count: 127,
     targets_hit_count: 89,
     weekly_challenge_progress: 5,
     show_on_leaderboard: true,
     display_name: "Mr. Gluco"
   };
+
+  // Caregiver access (family member monitoring)
+  caregiverAccess.push({
+    id: "demo-caregiver-1",
+    patient_email: "demo@glucovital.fit",
+    patient_name: "Mr. Gluco",
+    caregiver_email: "family@example.com",
+    caregiver_name: "Mrs. Gluco",
+    caregiver_phone: "+91 98765 12345",
+    relation: "spouse",
+    access_level: "view_only",
+    permissions: ["view_readings", "view_trends", "view_medications", "receive_alerts"],
+    status: "active",
+    granted_at: subDays(now, 25).toISOString(),
+    last_viewed_at: subDays(now, 1).toISOString(),
+    alert_preferences: {
+      high_sugar: true,
+      low_sugar: true,
+      missed_medication: false,
+      daily_summary: true
+    }
+  });
+
+  // Doctor visits
+  doctorVisits.push(
+    {
+      id: "demo-visit-1",
+      user_email: "demo@glucovital.fit",
+      doctor_name: "Dr. Priya Sharma",
+      doctor_specialty: "diabetologist",
+      visit_type: "routine_checkup",
+      visit_date: subDays(now, 45).toISOString(),
+      status: "completed",
+      clinic_name: "HealthFirst Diabetes Center",
+      summary: "HbA1c at 7.8%. Started on Metformin 500mg BD. Advised diet modification and 30 min daily walk.",
+      prescriptions_updated: true,
+      hba1c_result: 7.8,
+      next_visit_recommended: format(subDays(now, -15), "yyyy-MM-dd")
+    },
+    {
+      id: "demo-visit-2",
+      user_email: "demo@glucovital.fit",
+      doctor_name: "Dr. Priya Sharma",
+      doctor_specialty: "diabetologist",
+      visit_type: "follow_up",
+      visit_date: subDays(now, 7).toISOString(),
+      status: "completed",
+      clinic_name: "HealthFirst Diabetes Center",
+      summary: "Good progress! HbA1c improved to 7.2%. Continue current medications. Keep up the morning walks.",
+      prescriptions_updated: false,
+      hba1c_result: 7.2,
+      tests_ordered: ["Lipid Profile", "Kidney Function"],
+      next_visit_recommended: format(subDays(now, -60), "yyyy-MM-dd")
+    },
+    {
+      id: "demo-visit-3",
+      user_email: "demo@glucovital.fit",
+      doctor_name: "Dr. Priya Sharma",
+      doctor_specialty: "diabetologist",
+      visit_type: "follow_up",
+      visit_date: subDays(now, -15).toISOString(),
+      status: "scheduled",
+      clinic_name: "HealthFirst Diabetes Center",
+      notes: "Review lipid profile results. Discuss exercise routine.",
+      reminder_days_before: 2
+    }
+  );
+
+  // Sample AI conversations/interactions
+  aiConversations.push(
+    {
+      id: "demo-ai-1",
+      timestamp: subDays(now, 2).toISOString(),
+      trigger: "high_reading",
+      reading_value: 198,
+      user_message: "Sugar 198 after lunch",
+      ai_response: "That's higher than usual for you after lunch. Did you have something different today? Any extra rice or sweets?",
+      user_followup: "Yes, had gulab jamun at office party",
+      ai_insight: "Occasional treats are okay! Your fasting readings have been good. Maybe balance it with a longer walk this evening?",
+      resolved: true
+    },
+    {
+      id: "demo-ai-2", 
+      timestamp: subDays(now, 5).toISOString(),
+      trigger: "missed_medication",
+      ai_response: "I noticed you haven't logged your evening Metformin today. Everything okay?",
+      user_message: "Forgot, taking it now",
+      ai_insight: "No worries! Logged. You've been consistent 85% of the time this week - that's great!",
+      resolved: true
+    },
+    {
+      id: "demo-ai-3",
+      timestamp: subDays(now, 1).toISOString(),
+      trigger: "pattern_detected",
+      ai_response: "I've noticed your post-dinner readings are consistently higher than other times. Would you like some tips for managing evening sugars?",
+      user_message: "Yes please",
+      ai_insight: "Try having dinner by 8 PM and take a 15-min walk after. Also, reducing rice portion at dinner by 1/4 can help significantly.",
+      resolved: true
+    }
+  );
 
   // Generate 30 days of health logs
   for (let daysAgo = 29; daysAgo >= 0; daysAgo--) {
