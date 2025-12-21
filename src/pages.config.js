@@ -19,6 +19,7 @@ import Reports from './pages/Reports';
 import Terms from './pages/Terms';
 import Landing from './pages/Landing';
 import ContactUs from './pages/ContactUs';
+import CancellationRefund from './pages/CancellationRefund';
 import __Layout from './Layout.jsx';
 
 
@@ -44,6 +45,7 @@ export const PAGES = {
     "Terms": Terms,
     "Landing": Landing,
     "ContactUs": ContactUs,
+    "CancellationRefund": CancellationRefund,
 }
 
 export const pagesConfig = {
