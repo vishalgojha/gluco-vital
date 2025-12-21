@@ -365,7 +365,7 @@ export function generateDemoData() {
     }
   }
 
-  // Lab results (HbA1c every 3 months)
+  // Lab results (comprehensive)
   labResults.push(
     {
       id: "demo-lab-1",
@@ -379,7 +379,8 @@ export function generateDemoData() {
       status: "high",
       test_date: format(subDays(now, 90), "yyyy-MM-dd"),
       lab_name: "Apollo Diagnostics",
-      verified: true
+      verified: true,
+      notes: "Initial diagnosis reading"
     },
     {
       id: "demo-lab-2",
@@ -394,7 +395,7 @@ export function generateDemoData() {
       test_date: format(subDays(now, 7), "yyyy-MM-dd"),
       lab_name: "Apollo Diagnostics",
       verified: true,
-      ai_insight: "Your HbA1c has improved by 0.6% in 3 months. Keep up the good work!"
+      ai_insight: "Your HbA1c has improved by 0.6% in 3 months. This shows your lifestyle changes are working!"
     },
     {
       id: "demo-lab-3",
@@ -409,8 +410,103 @@ export function generateDemoData() {
       test_date: format(subDays(now, 7), "yyyy-MM-dd"),
       lab_name: "Apollo Diagnostics",
       verified: true
+    },
+    {
+      id: "demo-lab-4",
+      user_email: "demo@glucovital.fit",
+      test_type: "total_cholesterol",
+      test_name: "Total Cholesterol",
+      value: 195,
+      unit: "mg/dL",
+      reference_range_low: 0,
+      reference_range_high: 200,
+      status: "normal",
+      test_date: format(subDays(now, 7), "yyyy-MM-dd"),
+      lab_name: "Apollo Diagnostics",
+      verified: true
+    },
+    {
+      id: "demo-lab-5",
+      user_email: "demo@glucovital.fit",
+      test_type: "creatinine",
+      test_name: "Creatinine",
+      value: 0.9,
+      unit: "mg/dL",
+      reference_range_low: 0.7,
+      reference_range_high: 1.3,
+      status: "normal",
+      test_date: format(subDays(now, 7), "yyyy-MM-dd"),
+      lab_name: "Apollo Diagnostics",
+      verified: true,
+      ai_insight: "Kidney function is normal. Important to monitor regularly with diabetes."
     }
   );
+
+  // Weekly health report
+  reports.push({
+    id: "demo-report-1",
+    user_email: "demo@glucovital.fit",
+    report_type: "weekly",
+    start_date: format(subDays(now, 7), "yyyy-MM-dd"),
+    end_date: format(now, "yyyy-MM-dd"),
+    created_date: now.toISOString(),
+    summary: "Good week overall! Your fasting sugars have been consistently in the 95-115 range, showing improvement. Post-meal readings are slightly elevated after dinner - consider lighter evening meals. Medication adherence was 92% this week. Keep up the morning walks!",
+    personal_notes: "Feeling more energetic this week. The evening walks are helping.",
+    sugar_stats: {
+      average: 128,
+      highest: 198,
+      lowest: 92,
+      readings_count: 24,
+      in_target_percent: 71,
+      fasting_avg: 105,
+      post_meal_avg: 148,
+      trend: "improving"
+    },
+    bp_stats: {
+      avg_systolic: 128,
+      avg_diastolic: 82,
+      readings_count: 5,
+      highest_systolic: 138,
+      lowest_systolic: 122,
+      in_target_percent: 80
+    },
+    medication_adherence: 92,
+    adherence_details: {
+      total_expected: 14,
+      total_taken: 13,
+      missed_count: 1,
+      by_medication: [
+        { name: "Metformin", taken: 13, expected: 14 },
+        { name: "Glimepiride", taken: 7, expected: 7 }
+      ]
+    },
+    risks_identified: [
+      "Post-dinner readings consistently above 160 mg/dL",
+      "One missed medication dose on Thursday"
+    ],
+    recommendations: [
+      "Try having dinner before 8 PM",
+      "Reduce rice portion at dinner by 25%",
+      "Continue morning walks - they're helping your fasting numbers",
+      "Set a phone alarm for evening medication"
+    ],
+    achievements: [
+      "12-day logging streak! 🔥",
+      "Fasting average improved by 8 mg/dL from last week",
+      "Completed 5 out of 7 exercise goals"
+    ],
+    questions_for_doctor: [
+      "Should I adjust my dinner timing?",
+      "Is my HbA1c improvement on track?",
+      "When should I schedule my next lipid profile?"
+    ],
+    chart_preferences: {
+      sugar_chart_type: "line",
+      bp_chart_type: "line",
+      show_targets: true
+    },
+    accessible_to_caregivers: true
+  });
 
   // Medication reminders
   medications.push(
