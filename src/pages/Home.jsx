@@ -97,6 +97,20 @@ export default function Home() {
     enabled: !!user?.email || isDemo
   });
 
+  const { data: medicationReminders = [] } = useQuery({
+    queryKey: ['medication-reminders', user?.email, isDemo],
+    queryFn: async () => {
+      if (isDemo && demoData) {
+        return demoData.medicationReminders || [];
+      }
+      return base44.entities.MedicationReminder.filter({ user_email: user?.email, is_active: true });
+    },
+    enabled: !!user?.email || isDemo
+  });
+
+  // Initialize reminder scheduler for browser notifications
+  useReminderScheduler(medicationReminders, profile, isDemo);
+
   const todayLogs = logs.filter(log => isToday(new Date(log.created_date)));
   const sugarLogs = logs.filter(log => log.log_type === "sugar" && log.numeric_value);
   const lastSugar = sugarLogs[0]?.numeric_value;
