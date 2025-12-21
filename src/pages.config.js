@@ -9,7 +9,6 @@ import DoctorMessages from './pages/DoctorMessages';
 import DoctorShare from './pages/DoctorShare';
 import History from './pages/History';
 import Home from './pages/Home';
-import Landing from './pages/Landing';
 import MarketingContent from './pages/MarketingContent';
 import PatientDetail from './pages/PatientDetail';
 import PatientFeedback from './pages/PatientFeedback';
@@ -18,6 +17,8 @@ import Profile from './pages/Profile';
 import Progress from './pages/Progress';
 import Reports from './pages/Reports';
 import Terms from './pages/Terms';
+import Landing from './pages/Landing';
+import ContactUs from './pages/ContactUs';
 import __Layout from './Layout.jsx';
 
 
@@ -33,7 +34,6 @@ export const PAGES = {
     "DoctorShare": DoctorShare,
     "History": History,
     "Home": Home,
-    "Landing": Landing,
     "MarketingContent": MarketingContent,
     "PatientDetail": PatientDetail,
     "PatientFeedback": PatientFeedback,
@@ -42,6 +42,8 @@ export const PAGES = {
     "Progress": Progress,
     "Reports": Reports,
     "Terms": Terms,
+    "Landing": Landing,
+    "ContactUs": ContactUs,
 }
 
 export const pagesConfig = {
