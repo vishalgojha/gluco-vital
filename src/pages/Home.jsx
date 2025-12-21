@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { format, subDays, isToday } from "date-fns";
-import { Droplet, Heart, Utensils, Activity, TrendingUp, Calendar, Sparkles, AlertCircle } from "lucide-react";
+import { Droplet, Heart, Utensils, Activity, TrendingUp, Calendar, Sparkles, AlertCircle, MessageCircle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { createPageUrl } from "@/utils";
@@ -179,14 +179,23 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
       {/* Demo Mode Banner */}
-      {isDemo && <DemoBanner />}
-
-      {/* Demo AI Chat */}
       {isDemo && (
-        <DemoAIChat 
-          isOpen={showDemoChat} 
-          onClose={() => setShowDemoChat(false)} 
-        />
+        <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-3 sticky top-0 z-50">
+          <div className="max-w-6xl mx-auto flex items-center justify-between flex-wrap gap-3">
+            <div className="flex items-center gap-2">
+              <AlertCircle className="w-5 h-5" />
+              <span className="font-medium">Demo Mode</span>
+              <span className="text-amber-100 text-sm hidden sm:inline">— Viewing 30 days of sample data for Mr. Gluco</span>
+            </div>
+            <Button
+              size="sm"
+              onClick={() => base44.auth.redirectToLogin(createPageUrl("Home"))}
+              className="bg-white text-amber-600 hover:bg-amber-50"
+            >
+              Create Your Account
+            </Button>
+          </div>
+        </div>
       )}
 
       {/* Onboarding Flow */}
