@@ -7,18 +7,37 @@ import RefillTracker from "@/components/care/RefillTracker";
 import SupportPoints from "@/components/care/SupportPoints";
 import DoctorVisitTracker from "@/components/care/DoctorVisitTracker";
 import HabitTracker from "@/components/care/HabitTracker";
+import { generateDemoData } from "@/components/demo/DemoDataGenerator";
+import DemoBanner from "@/components/demo/DemoBanner";
 
 export default function CareHub() {
   const [user, setUser] = useState(null);
+  const [isDemo, setIsDemo] = useState(false);
+  const [demoData, setDemoData] = useState(null);
 
   useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => {});
+    const urlParams = new URLSearchParams(window.location.search);
+    const demoMode = urlParams.get('demo') === 'true';
+    
+    if (demoMode) {
+      setIsDemo(true);
+      const data = generateDemoData();
+      setDemoData(data);
+      setUser(data.user);
+    } else {
+      base44.auth.me().then(setUser).catch(() => {});
+    }
   }, []);
 
   const { data: reminders = [], refetch: refetchReminders } = useQuery({
-    queryKey: ['medication-reminders', user?.email],
-    queryFn: () => base44.entities.MedicationReminder.filter({ user_email: user?.email }),
-    enabled: !!user?.email
+    queryKey: ['medication-reminders', user?.email, isDemo],
+    queryFn: async () => {
+      if (isDemo && demoData) {
+        return demoData.medications;
+      }
+      return base44.entities.MedicationReminder.filter({ user_email: user?.email });
+    },
+    enabled: !!user?.email || isDemo
   });
 
   if (!user) {
