@@ -7,7 +7,7 @@ import { Pill, Clock, Bell, BellRing, BellOff, Plus, Pencil, Trash2, Check, X } 
 import { format } from "date-fns";
 import { toast } from "sonner";
 import MedicationReminderForm from "./MedicationReminderForm";
-import { CalendarExportButton, ExportAllRemindersButton } from "./CalendarExport";
+import CalendarExportButton, { ExportAllRemindersButton } from "./CalendarExport";
 
 const TIMING_LABELS = {
   specific_time: "At set times",
