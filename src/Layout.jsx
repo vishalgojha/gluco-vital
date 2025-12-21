@@ -94,30 +94,30 @@ export default function Layout({ children, currentPageName }) {
 
           {/* Mobile Menu */}
           {mobileMenuOpen && (
-            <div className="absolute top-16 left-0 right-0 bg-[#f8faf9] border-b border-[#5b9a8b]/10 shadow-lg">
-              <nav className="p-4 space-y-2">
+            <div className="absolute top-16 left-0 right-0 bg-[#f8faf9] border-b border-[#5b9a8b]/10 shadow-lg max-h-[calc(100vh-4rem)] overflow-y-auto">
+              <nav className="p-4 space-y-1">
                 {navItems.map((item) => (
                   <Link
                     key={item.page}
                     to={createPageUrl(item.page)}
                     onClick={() => setMobileMenuOpen(false)}
                     className={cn(
-                      "flex items-center gap-3 px-4 py-3 rounded-xl transition-all",
+                      "flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all",
                       currentPageName === item.page
                         ? "bg-[#5b9a8b]/10 text-[#3d6b5f]"
                         : "text-[#5a6b66] hover:bg-[#5b9a8b]/5"
                     )}
                   >
-                    <item.icon className="w-5 h-5" />
-                    <span className="font-medium">{item.name}</span>
+                    <item.icon className="w-5 h-5 flex-shrink-0" />
+                    <span className="font-medium text-sm">{item.name}</span>
                   </Link>
                 ))}
                 <button
                   onClick={() => base44.auth.logout()}
-                  className="flex items-center gap-3 px-4 py-3 rounded-xl text-[#c47c7c] hover:bg-[#c47c7c]/10 w-full"
+                  className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-[#c47c7c] hover:bg-[#c47c7c]/10 w-full"
                 >
-                  <LogOut className="w-5 h-5" />
-                  <span className="font-medium">Logout</span>
+                  <LogOut className="w-5 h-5 flex-shrink-0" />
+                  <span className="font-medium text-sm">Logout</span>
                 </button>
               </nav>
             </div>
