@@ -546,8 +546,80 @@ export function generateDemoData() {
     }
   );
 
+  // Add a corrected entry to demonstrate the feature
+  logs.push({
+    id: "demo-corrected-1",
+    user_email: "demo@glucovital.fit",
+    created_by: "demo@glucovital.fit",
+    log_type: "sugar",
+    value: "250 mg/dL",
+    numeric_value: 250,
+    time_of_day: "after_lunch",
+    measured_at: subDays(now, 3).toISOString(),
+    created_date: subDays(now, 3).toISOString(),
+    status: "corrected", // This entry was corrected
+    source: "whatsapp",
+    notes: "Wrong reading - meter error. Corrected to 150."
+  });
+
+  // The corrected value
+  logs.push({
+    id: "demo-corrected-1-fixed",
+    user_email: "demo@glucovital.fit",
+    created_by: "demo@glucovital.fit",
+    log_type: "sugar",
+    value: "150 mg/dL",
+    numeric_value: 150,
+    time_of_day: "after_lunch",
+    measured_at: subDays(now, 3).toISOString(),
+    created_date: subDays(now, 3).toISOString(),
+    status: "active",
+    source: "whatsapp",
+    notes: "Corrected reading"
+  });
+
   // Sort logs by date descending
   logs.sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
+
+  // Daily habits for tracking
+  habits.push(
+    {
+      id: "demo-habit-1",
+      user_email: "demo@glucovital.fit",
+      habit_type: "walking",
+      habit_name: "Morning Walk",
+      target_value: 30,
+      target_unit: "minutes",
+      frequency: "daily",
+      is_active: true,
+      current_streak: 8,
+      longest_streak: 12
+    },
+    {
+      id: "demo-habit-2",
+      user_email: "demo@glucovital.fit",
+      habit_type: "water_intake",
+      habit_name: "Drink Water",
+      target_value: 8,
+      target_unit: "glasses",
+      frequency: "daily",
+      is_active: true,
+      current_streak: 5,
+      longest_streak: 10
+    },
+    {
+      id: "demo-habit-3",
+      user_email: "demo@glucovital.fit",
+      habit_type: "foot_check",
+      habit_name: "Foot Check",
+      target_value: 1,
+      target_unit: "times",
+      frequency: "daily",
+      is_active: true,
+      current_streak: 3,
+      longest_streak: 7
+    }
+  );
 
   return {
     profile,
@@ -556,6 +628,11 @@ export function generateDemoData() {
     medications,
     adherenceRecords,
     labResults,
+    habits,
+    doctorVisits,
+    reports,
+    caregiverAccess,
+    aiConversations,
     user: {
       email: "demo@glucovital.fit",
       full_name: "Mr. Gluco",
