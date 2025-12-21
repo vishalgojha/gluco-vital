@@ -170,6 +170,16 @@ export default function Landing() {
             >
               Get Started Free <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
+            <Button 
+              size="lg"
+              variant="outline"
+              onClick={() => {
+                window.location.href = createPageUrl("Home") + "?demo=true";
+              }}
+              className="h-14 px-10 text-lg rounded-xl border-2 border-[#5b9a8b] text-[#5b9a8b] hover:bg-[#5b9a8b]/10"
+            >
+              Try Demo 👀
+            </Button>
           </div>
 
           {/* Stats */}
