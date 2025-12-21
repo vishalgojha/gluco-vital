@@ -13,7 +13,15 @@ export default function Layout({ children, currentPageName }) {
 
   useEffect(() => {
     if (currentPageName !== "Landing") {
-      base44.auth.me().then(setUser).catch(() => {});
+      // Check for demo mode
+      const urlParams = new URLSearchParams(window.location.search);
+      const demoMode = urlParams.get('demo') === 'true';
+      
+      if (demoMode) {
+        setUser({ full_name: "Mr. Gluco", email: "demo@glucovital.fit", role: "user" });
+      } else {
+        base44.auth.me().then(setUser).catch(() => {});
+      }
     }
   }, [currentPageName]);
 
