@@ -123,29 +123,6 @@ const downloadICS = (content, filename) => {
   URL.revokeObjectURL(url);
 };
 
-export function CalendarExportButton({ reminder }) {
-  const handleExport = () => {
-    const icsContent = generateICSContent(reminder);
-    const filename = `${reminder.medication_name.replace(/\s+/g, "_")}_reminders.ics`;
-    downloadICS(icsContent, filename);
-    toast.success("Calendar file downloaded!", {
-      description: "Open the .ics file to add reminders to your calendar"
-    });
-  };
-  
-  return (
-    <Button
-      size="sm"
-      variant="outline"
-      onClick={handleExport}
-      className="gap-1.5 text-blue-600 border-blue-200 hover:bg-blue-50"
-    >
-      <Calendar className="w-3.5 h-3.5" />
-      Add to Calendar
-    </Button>
-  );
-}
-
 export default function CalendarExportButton({ reminder }) {
   const handleExport = () => {
     const icsContent = generateICSContent(reminder);
