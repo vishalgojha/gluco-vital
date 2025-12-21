@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { format, subDays, isToday } from "date-fns";
-import { Droplet, Heart, Utensils, Activity, TrendingUp, Calendar, Sparkles, AlertCircle } from "lucide-react";
+import { Droplet, Heart, Utensils, Activity, TrendingUp, Calendar, Sparkles, AlertCircle, MessageCircle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { createPageUrl } from "@/utils";
@@ -29,7 +29,6 @@ export default function Home() {
   const [showMedicationModal, setShowMedicationModal] = useState(false);
   const [isDemo, setIsDemo] = useState(false);
   const [demoData, setDemoData] = useState(null);
-  const [showDemoChat, setShowDemoChat] = useState(false);
   const queryClient = useQueryClient();
 
   useEffect(() => {
