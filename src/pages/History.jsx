@@ -43,8 +43,11 @@ export default function History() {
   }, []);
 
   const { data: logs = [], isLoading } = useQuery({
-    queryKey: ['health-logs-history', user?.email],
+    queryKey: ['health-logs-history', user?.email, isDemo],
     queryFn: async () => {
+      if (isDemo && demoData) {
+        return demoData.logs.filter(log => log.status !== 'corrected' && log.status !== 'deleted');
+      }
       // Fetch all logs and filter by user_email OR created_by (agent logs use created_by)
       const results = await base44.entities.HealthLog.list('-created_date', 500);
       // Exclude corrected/deleted logs from display
@@ -53,23 +56,31 @@ export default function History() {
         log.status !== 'corrected' && log.status !== 'deleted'
       );
     },
-    enabled: !!user?.email
+    enabled: !!user?.email || isDemo
   });
 
   const { data: profile } = useQuery({
-    queryKey: ['patient-profile'],
-    queryFn: () => base44.entities.PatientProfile.filter({ user_email: user?.email }),
-    enabled: !!user?.email,
-    select: data => data?.[0]
+    queryKey: ['patient-profile', isDemo],
+    queryFn: async () => {
+      if (isDemo && demoData) {
+        return demoData.profile;
+      }
+      const results = await base44.entities.PatientProfile.filter({ user_email: user?.email });
+      return results?.[0];
+    },
+    enabled: !!user?.email || isDemo
   });
 
   const { data: labResults = [], refetch: refetchLabResults } = useQuery({
-    queryKey: ['lab-results-history', user?.email],
+    queryKey: ['lab-results-history', user?.email, isDemo],
     queryFn: async () => {
+      if (isDemo && demoData) {
+        return demoData.labResults;
+      }
       const results = await base44.entities.LabResult.list('-test_date', 200);
       return results.filter(r => r.user_email === user?.email || r.created_by === user?.email);
     },
-    enabled: !!user?.email
+    enabled: !!user?.email || isDemo
   });
 
   const filteredLogs = logs.filter(log => {
