@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { format, subDays, isToday } from "date-fns";
-import { Droplet, Heart, Utensils, Activity, TrendingUp, Calendar, Sparkles } from "lucide-react";
+import { Droplet, Heart, Utensils, Activity, TrendingUp, Calendar, Sparkles, AlertCircle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { createPageUrl } from "@/utils";
 import StatCard from "@/components/dashboard/StatCard";
 import LogCard from "@/components/dashboard/LogCard";
 import SugarChart from "@/components/dashboard/SugarChart";
@@ -16,6 +18,7 @@ import NurseCoach from "@/components/coaching/NurseCoach";
 import OnboardingFlow from "@/components/onboarding/OnboardingFlow";
 import QuickLogModal from "@/components/onboarding/QuickLogModal";
 import QuickMedicationModal from "@/components/onboarding/QuickMedicationModal";
+import { generateDemoData, DEMO_USER_EMAIL } from "@/components/demo/DemoDataGenerator";
 
 export default function Home() {
   const [user, setUser] = useState(null);
