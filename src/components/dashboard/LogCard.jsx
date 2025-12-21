@@ -34,19 +34,32 @@ export default function LogCard({ log, timezone = "Asia/Kolkata" }) {
   const Icon = logIcons[log.log_type] || Activity;
   const colorClass = logColors[log.log_type] || "bg-slate-50 text-slate-600 border-slate-100";
 
-  const formatTime = (dateStr) => {
+  const formatDateTime = (dateStr) => {
     try {
       const date = new Date(dateStr);
-      return date.toLocaleTimeString('en-US', { 
+      const tz = timezone || "Asia/Kolkata";
+      const time = date.toLocaleTimeString('en-US', { 
         hour: 'numeric', 
         minute: '2-digit', 
         hour12: true,
-        timeZone: timezone 
+        timeZone: tz 
       });
-    } catch {
-      return format(new Date(dateStr), "h:mm a");
+      const day = date.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        timeZone: tz
+      });
+      return { time, day };
+    } catch (e) {
+      console.error("Timezone error:", e, timezone);
+      return { 
+        time: format(new Date(dateStr), "h:mm a"),
+        day: format(new Date(dateStr), "MMM d")
+      };
     }
   };
+
+  const { time, day } = formatDateTime(log.created_date);
 
   return (
     <div className="bg-white rounded-xl p-4 border border-slate-100 hover:border-slate-200 transition-all duration-200">
@@ -60,7 +73,7 @@ export default function LogCard({ log, timezone = "Asia/Kolkata" }) {
               {log.log_type.replace("_", " ")}
             </span>
             <span className="text-xs text-slate-400">
-              {formatTime(log.created_date)}
+              {day} • {time}
             </span>
           </div>
           <p className="text-lg font-bold text-slate-800 mt-0.5">{log.value}</p>
