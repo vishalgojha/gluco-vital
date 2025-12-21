@@ -70,6 +70,20 @@ export default function About() {
             </ul>
           </div>
 
+          {/* Before Advanced Monitoring */}
+          <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2 bg-amber-100 rounded-lg">
+                <Sparkles className="w-5 h-5 text-amber-600" />
+              </div>
+              <h2 className="text-xl font-semibold text-slate-800">Before Advanced Monitoring</h2>
+            </div>
+            <p className="text-slate-600 leading-relaxed">
+              GlucoVital helps you build consistent logs, capture context, and generate longitudinal summaries — often before considering advanced glucose monitoring like CGMs. 
+              Many users find this leads to more informed monitoring decisions and better readiness for conversations with their healthcare provider.
+            </p>
+          </div>
+
           {/* Global Reach */}
           <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
             <div className="flex items-center gap-3 mb-4">
