@@ -138,24 +138,24 @@ export default function Layout({ children, currentPageName }) {
                               </Link>
           </div>
 
-          <nav className="flex-1 px-4">
+          <nav className="flex-1 px-4 overflow-y-auto">
             <div className="space-y-1">
               {navItems.map((item) => (
                 <Link
                   key={item.page}
                   to={createPageUrl(item.page)}
                   className={cn(
-                    "flex items-center gap-3 px-4 py-3 rounded-xl transition-all",
+                    "flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all",
                     currentPageName === item.page
                       ? "bg-gradient-to-r from-[#5b9a8b]/15 to-[#7eb8a8]/10 text-[#3d6b5f] shadow-sm"
                       : "text-[#5a6b66] hover:bg-[#5b9a8b]/5"
                   )}
                 >
                   <item.icon className={cn(
-                    "w-5 h-5",
+                    "w-5 h-5 flex-shrink-0",
                     currentPageName === item.page ? "text-[#5b9a8b]" : ""
                   )} />
-                  <span className="font-medium">{item.name}</span>
+                  <span className="font-medium text-sm">{item.name}</span>
                 </Link>
               ))}
             </div>
