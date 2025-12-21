@@ -603,16 +603,15 @@ export default function Landing() {
             Get Started Free <ArrowRight className="w-5 h-5 ml-2" />
           </Button>
           <p className="text-sm text-slate-500 mt-4">
-                            After signing up, connect WhatsApp to log your health data via messages
-                          </p>
-                          <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6 mt-6 text-sm text-slate-500">
-                            <span className="flex items-center gap-1"><Check className="w-4 h-4 text-green-500" /> Free to use</span>
-                            <span className="flex items-center gap-1"><Check className="w-4 h-4 text-green-500" /> WhatsApp-based</span>
-                            <span className="flex items-center gap-1"><Check className="w-4 h-4 text-green-500" /> AI-assisted (not medical advice)</span>
-                          </div>
-                          </div>
-                        </div>
-                      </section>
+            After signing up, connect WhatsApp to log your health data via messages
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6 mt-6 text-sm text-slate-500">
+            <span className="flex items-center gap-1"><Check className="w-4 h-4 text-green-500" /> Free to use</span>
+            <span className="flex items-center gap-1"><Check className="w-4 h-4 text-green-500" /> WhatsApp-based</span>
+            <span className="flex items-center gap-1"><Check className="w-4 h-4 text-green-500" /> AI-assisted (not medical advice)</span>
+          </div>
+        </div>
+      </section>
 
       {/* Footer */}
       <footer className="py-8 border-t border-slate-200">
