@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { format, subDays, isToday } from "date-fns";
-import { Droplet, Heart, Utensils, Activity, TrendingUp, Calendar, Sparkles, AlertCircle } from "lucide-react";
+import { Droplet, Heart, Utensils, Activity, TrendingUp, Calendar, Sparkles, AlertCircle, MessageCircle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { createPageUrl } from "@/utils";
@@ -342,54 +342,18 @@ export default function Home() {
             {!isDemo && <WhatsAppConnect isConnected={profile?.whatsapp_connected} />}
             
             {isDemo && (
-              <>
-                <DemoBanner compact />
-                
-                {/* Demo AI Chat Trigger */}
-                <div className="bg-gradient-to-br from-violet-50 to-purple-50 rounded-2xl p-5 border border-violet-200">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Sparkles className="w-5 h-5 text-violet-600" />
-                    <h3 className="font-semibold text-violet-800">Try Health Buddy AI</h3>
-                  </div>
-                  <p className="text-sm text-violet-700 mb-4">
-                    See how our AI companion responds to health questions and logs.
-                  </p>
-                  <Button
-                    onClick={() => setShowDemoChat(true)}
-                    variant="outline"
-                    className="w-full border-violet-300 text-violet-700 hover:bg-violet-50"
-                  >
-                    Chat with Health Buddy
-                  </Button>
-                </div>
-
-                {/* Demo Features Showcase */}
-                <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
-                  <h3 className="font-semibold text-slate-800 mb-3">✨ Demo Highlights</h3>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex items-center gap-2 text-slate-600">
-                      <span className="w-2 h-2 rounded-full bg-green-500"></span>
-                      30 days of realistic data
-                    </div>
-                    <div className="flex items-center gap-2 text-slate-600">
-                      <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-                      Sugar, BP, meals & meds
-                    </div>
-                    <div className="flex items-center gap-2 text-slate-600">
-                      <span className="w-2 h-2 rounded-full bg-purple-500"></span>
-                      AI-powered insights
-                    </div>
-                    <div className="flex items-center gap-2 text-slate-600">
-                      <span className="w-2 h-2 rounded-full bg-amber-500"></span>
-                      Improving HbA1c trend
-                    </div>
-                    <div className="flex items-center gap-2 text-slate-600">
-                      <span className="w-2 h-2 rounded-full bg-rose-500"></span>
-                      Weekly reports
-                    </div>
-                  </div>
-                </div>
-              </>
+              <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-5 border border-amber-200">
+                <h3 className="font-semibold text-amber-800 mb-2">👋 You're viewing a demo</h3>
+                <p className="text-sm text-amber-700 mb-4">
+                  This is sample data for "Mr. Gluco". Create your free account to start tracking your own health.
+                </p>
+                <Button
+                  onClick={() => base44.auth.redirectToLogin(createPageUrl("Home"))}
+                  className="w-full bg-amber-600 hover:bg-amber-700"
+                >
+                  Get Started Free
+                </Button>
+              </div>
             )}
 
             {/* Quick Tips */}
