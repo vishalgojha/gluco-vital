@@ -354,7 +354,7 @@ export default function Landing() {
               <h3 className="text-2xl font-bold mb-2">Premium</h3>
               <p className="text-white/80 text-sm mb-4">Advanced insights & AI</p>
               <div className="mb-2">
-                <span className="text-4xl font-bold">₹199</span>
+                <span className="text-4xl font-bold">₹299</span>
                 <span className="text-white/80"> / month</span>
               </div>
               <p className="text-white/60 text-xs mb-6">or $5/month international</p>
@@ -400,7 +400,7 @@ export default function Landing() {
               <h3 className="text-2xl font-bold text-slate-800 mb-2">Family Care</h3>
               <p className="text-slate-500 text-sm mb-4">Care for your loved ones</p>
               <div className="mb-2">
-                <span className="text-4xl font-bold text-slate-800">₹349</span>
+                <span className="text-4xl font-bold text-slate-800">₹499</span>
                 <span className="text-slate-500"> / month</span>
               </div>
               <p className="text-slate-400 text-xs mb-6">or $9/month international</p>
