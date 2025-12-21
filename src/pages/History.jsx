@@ -38,9 +38,11 @@ export default function History() {
       setDemoData(data);
       setUser(data.user);
     } else {
+      setIsDemo(false);
+      setDemoData(null);
       base44.auth.me().then(setUser).catch(() => {});
     }
-  }, []);
+  }, [window.location.search]);
 
   const { data: logs = [], isLoading } = useQuery({
     queryKey: ['health-logs-history', user?.email, isDemo],
