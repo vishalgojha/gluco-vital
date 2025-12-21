@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { FileText, Plus, HelpCircle } from "lucide-react";
+import { FileText, Plus, HelpCircle, Filter, Share2, Download, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 import EnhancedReportGenerator from "@/components/reports/EnhancedReportGenerator";
 import ReportCard from "@/components/reports/ReportCard";
 import EnhancedReportViewer from "@/components/reports/EnhancedReportViewer";
@@ -19,6 +22,8 @@ export default function Reports() {
   const [selectedReport, setSelectedReport] = useState(null);
   const [isDemo, setIsDemo] = useState(false);
   const [demoData, setDemoData] = useState(null);
+  const [filterType, setFilterType] = useState("all");
+  const [sortOrder, setSortOrder] = useState("newest");
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -63,6 +68,18 @@ export default function Reports() {
     setSelectedReport(report);
   };
 
+  // Filter and sort reports
+  const filteredReports = reports
+    .filter(r => filterType === "all" || r.report_type === filterType)
+    .sort((a, b) => {
+      if (sortOrder === "newest") return new Date(b.created_date) - new Date(a.created_date);
+      if (sortOrder === "oldest") return new Date(a.created_date) - new Date(b.created_date);
+      return 0;
+    });
+
+  const sharedReports = reports.filter(r => r.shared_with_doctor);
+  const recentReports = reports.slice(0, 3);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
       {isDemo && <DemoBanner />}
@@ -101,33 +118,121 @@ export default function Reports() {
           </div>
         )}
 
-        <div className="space-y-4">
-          <h2 className="font-semibold text-slate-700">Previous Reports</h2>
+        {/* Report Stats Summary */}
+        {!isLoading && reports.length > 0 && (
+          <div className="grid grid-cols-3 gap-4 mb-6">
+            <div className="bg-white rounded-xl p-4 border border-slate-100 text-center">
+              <p className="text-2xl font-bold text-slate-800">{reports.length}</p>
+              <p className="text-xs text-slate-500">Total Reports</p>
+            </div>
+            <div className="bg-white rounded-xl p-4 border border-slate-100 text-center">
+              <p className="text-2xl font-bold text-emerald-600">{sharedReports.length}</p>
+              <p className="text-xs text-slate-500">Shared with Doctor</p>
+            </div>
+            <div className="bg-white rounded-xl p-4 border border-slate-100 text-center">
+              <p className="text-2xl font-bold text-blue-600">
+                {reports.filter(r => r.report_type === 'weekly').length}
+              </p>
+              <p className="text-xs text-slate-500">Weekly Reports</p>
+            </div>
+          </div>
+        )}
+
+        <Tabs defaultValue="all" className="space-y-4">
+          <div className="flex items-center justify-between">
+            <TabsList>
+              <TabsTrigger value="all">All Reports</TabsTrigger>
+              <TabsTrigger value="shared">Shared</TabsTrigger>
+              <TabsTrigger value="recent">Recent</TabsTrigger>
+            </TabsList>
+            
+            <div className="flex items-center gap-2">
+              <Select value={filterType} onValueChange={setFilterType}>
+                <SelectTrigger className="w-32 h-8">
+                  <Filter className="w-3 h-3 mr-1" />
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Types</SelectItem>
+                  <SelectItem value="weekly">Weekly</SelectItem>
+                  <SelectItem value="monthly">Monthly</SelectItem>
+                  <SelectItem value="quarterly">Quarterly</SelectItem>
+                  <SelectItem value="custom">Custom</SelectItem>
+                </SelectContent>
+              </Select>
+              
+              <Select value={sortOrder} onValueChange={setSortOrder}>
+                <SelectTrigger className="w-28 h-8">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="newest">Newest</SelectItem>
+                  <SelectItem value="oldest">Oldest</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
           
-          {isLoading ? (
-            <div className="space-y-3">
-              {[1, 2, 3].map(i => (
-                <Skeleton key={i} className="h-24 w-full rounded-xl" />
-              ))}
-            </div>
-          ) : reports.length === 0 ? (
-            <div className="text-center py-12 bg-white rounded-2xl border border-slate-100">
-              <FileText className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-              <p className="text-slate-500">No reports yet</p>
-              <p className="text-sm text-slate-400 mt-1">Generate your first health report above</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {reports.map(report => (
+          <TabsContent value="all" className="space-y-3">
+            {isLoading ? (
+              <div className="space-y-3">
+                {[1, 2, 3].map(i => (
+                  <Skeleton key={i} className="h-24 w-full rounded-xl" />
+                ))}
+              </div>
+            ) : filteredReports.length === 0 ? (
+              <div className="text-center py-12 bg-white rounded-2xl border border-slate-100">
+                <FileText className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                <p className="text-slate-500">No reports yet</p>
+                <p className="text-sm text-slate-400 mt-1">Generate your first health report above</p>
+              </div>
+            ) : (
+              filteredReports.map(report => (
                 <ReportCard 
                   key={report.id} 
                   report={report} 
                   onClick={() => setSelectedReport(report)}
                 />
-              ))}
-            </div>
-          )}
-        </div>
+              ))
+            )}
+          </TabsContent>
+          
+          <TabsContent value="shared" className="space-y-3">
+            {sharedReports.length === 0 ? (
+              <div className="text-center py-12 bg-white rounded-2xl border border-slate-100">
+                <Share2 className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                <p className="text-slate-500">No shared reports yet</p>
+                <p className="text-sm text-slate-400 mt-1">Share your reports with your doctor from the report viewer</p>
+              </div>
+            ) : (
+              sharedReports.map(report => (
+                <ReportCard 
+                  key={report.id} 
+                  report={report} 
+                  onClick={() => setSelectedReport(report)}
+                  showSharedBadge
+                />
+              ))
+            )}
+          </TabsContent>
+          
+          <TabsContent value="recent" className="space-y-3">
+            {recentReports.length === 0 ? (
+              <div className="text-center py-12 bg-white rounded-2xl border border-slate-100">
+                <Calendar className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                <p className="text-slate-500">No recent reports</p>
+              </div>
+            ) : (
+              recentReports.map(report => (
+                <ReportCard 
+                  key={report.id} 
+                  report={report} 
+                  onClick={() => setSelectedReport(report)}
+                />
+              ))
+            )}
+          </TabsContent>
+        </Tabs>
       </div>
 
       {selectedReport && (
