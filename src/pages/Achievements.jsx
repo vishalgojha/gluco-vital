@@ -186,15 +186,17 @@ export default function Achievements() {
             <h1 className="text-3xl font-bold text-slate-800">Achievements</h1>
             <p className="text-slate-500 mt-1">Track your progress and earn rewards!</p>
           </div>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={syncAchievements}
-            disabled={syncing}
-          >
-            <RefreshCw className={`w-4 h-4 mr-1 ${syncing ? 'animate-spin' : ''}`} />
-            Sync
-          </Button>
+          {!isDemo && (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={syncAchievements}
+              disabled={syncing}
+            >
+              <RefreshCw className={`w-4 h-4 mr-1 ${syncing ? 'animate-spin' : ''}`} />
+              Sync
+            </Button>
+          )}
         </div>
 
         <div className="space-y-6">
