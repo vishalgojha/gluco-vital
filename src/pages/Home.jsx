@@ -29,6 +29,7 @@ export default function Home() {
   const [showMedicationModal, setShowMedicationModal] = useState(false);
   const [isDemo, setIsDemo] = useState(false);
   const [demoData, setDemoData] = useState(null);
+  const [showDemoChat, setShowDemoChat] = useState(false);
   const queryClient = useQueryClient();
 
   useEffect(() => {
