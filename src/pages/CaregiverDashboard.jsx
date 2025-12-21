@@ -120,9 +120,9 @@ export default function CaregiverDashboard() {
 
   const [selectedReport, setSelectedReport] = useState(null);
 
-  // Log activity when viewing
+  // Log activity when viewing (skip in demo mode)
   useEffect(() => {
-    if (selectedPatient) {
+    if (selectedPatient && !isDemo) {
       base44.entities.CaregiverActivityLog.create({
         caregiver_access_id: selectedPatient.id,
         patient_email: selectedPatient.patient_email,
@@ -136,7 +136,7 @@ export default function CaregiverDashboard() {
         last_viewed_at: new Date().toISOString()
       }).catch(() => {});
     }
-  }, [selectedPatient?.id]);
+  }, [selectedPatient?.id, isDemo]);
 
   // Calculate stats
   const todayLogs = patientLogs.filter(log => isToday(new Date(log.created_date)));
