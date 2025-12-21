@@ -13,17 +13,19 @@ export default function Layout({ children, currentPageName }) {
 
   useEffect(() => {
     if (currentPageName !== "Landing") {
-      // Check for demo mode
+      // Check for demo mode from URL
       const urlParams = new URLSearchParams(window.location.search);
       const demoMode = urlParams.get('demo') === 'true';
       
       if (demoMode) {
+        // In demo mode, always show demo user regardless of actual auth
         setUser({ full_name: "Mr. Gluco", email: "demo@glucovital.fit", role: "user" });
       } else {
+        // Only fetch real user if not in demo mode
         base44.auth.me().then(setUser).catch(() => {});
       }
     }
-  }, [currentPageName]);
+  }, [currentPageName, window.location.search]);
 
   const isAdmin = user?.role === 'admin';
   
