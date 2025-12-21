@@ -123,7 +123,7 @@ const downloadICS = (content, filename) => {
   URL.revokeObjectURL(url);
 };
 
-export default function CalendarExportButton({ reminder }) {
+function CalendarExportButton({ reminder }) {
   const handleExport = () => {
     const icsContent = generateICSContent(reminder);
     const filename = `${reminder.medication_name.replace(/\s+/g, "_")}_reminders.ics`;
@@ -146,7 +146,7 @@ export default function CalendarExportButton({ reminder }) {
   );
 }
 
-export function ExportAllRemindersButton({ reminders }) {
+function ExportAllRemindersButton({ reminders }) {
   const activeReminders = reminders.filter(r => r.is_active);
   
   const handleExport = () => {
