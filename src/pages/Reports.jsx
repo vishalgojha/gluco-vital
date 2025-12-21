@@ -78,7 +78,7 @@ export default function Reports() {
           </Button>
         </div>
 
-        {showGenerator && (
+        {showGenerator && !isDemo && (
           <div className="mb-8 space-y-6">
             <EnhancedReportGenerator 
               userEmail={user?.email} 
@@ -89,6 +89,15 @@ export default function Reports() {
               patientName={profile?.name || user?.full_name}
               profile={profile}
             />
+          </div>
+        )}
+
+        {isDemo && showGenerator && (
+          <div className="mb-8 p-6 bg-amber-50 rounded-xl border border-amber-200">
+            <p className="text-amber-800 text-center">
+              ✨ In the real app, you can generate custom reports for any date range. 
+              Below are sample reports from the demo data.
+            </p>
           </div>
         )}
 
