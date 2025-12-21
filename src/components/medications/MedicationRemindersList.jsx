@@ -7,6 +7,7 @@ import { Pill, Clock, Bell, BellRing, BellOff, Plus, Pencil, Trash2, Check, X } 
 import { format } from "date-fns";
 import { toast } from "sonner";
 import MedicationReminderForm from "./MedicationReminderForm";
+import { CalendarExportButton, ExportAllRemindersButton } from "./CalendarExport";
 
 const TIMING_LABELS = {
   specific_time: "At set times",
@@ -150,14 +151,17 @@ export default function MedicationRemindersList({ reminders = [], profile, onUpd
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-2">
         <h3 className="font-semibold text-slate-800 flex items-center gap-2">
           <Pill className="w-5 h-5 text-violet-500" />
           Medication Reminders
         </h3>
-        <Button size="sm" onClick={() => { setEditingReminder(null); setShowForm(true); }}>
-          <Plus className="w-4 h-4 mr-1" /> Add
-        </Button>
+        <div className="flex items-center gap-2">
+          <ExportAllRemindersButton reminders={reminders} />
+          <Button size="sm" onClick={() => { setEditingReminder(null); setShowForm(true); }}>
+            <Plus className="w-4 h-4 mr-1" /> Add
+          </Button>
+        </div>
       </div>
 
       {reminders.length === 0 ? (
@@ -213,7 +217,7 @@ export default function MedicationRemindersList({ reminders = [], profile, onUpd
                     onCheckedChange={() => toggleActive(reminder)}
                   />
                 </div>
-                <div className="flex items-center gap-2 mt-3 pt-3 border-t border-slate-100">
+                <div className="flex items-center gap-2 mt-3 pt-3 border-t border-slate-100 flex-wrap">
                   <Button
                     size="sm"
                     variant="outline"
@@ -230,6 +234,7 @@ export default function MedicationRemindersList({ reminders = [], profile, onUpd
                   >
                     <X className="w-4 h-4 mr-1" /> Skip
                   </Button>
+                  <CalendarExportButton reminder={reminder} />
                   <Button
                     size="icon"
                     variant="ghost"
