@@ -342,17 +342,54 @@ export default function Home() {
             {!isDemo && <WhatsAppConnect isConnected={profile?.whatsapp_connected} />}
             
             {isDemo && (
-              <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-5 border border-amber-200">
-                <h3 className="font-semibold text-amber-800 mb-2">👋 You're viewing a demo</h3>
-                <p className="text-sm text-amber-700 mb-4">
-                  This is sample data for "Mr. Gluco". Create your free account to start tracking your own health.
-                </p>
-                <Button
-                  onClick={() => base44.auth.redirectToLogin(createPageUrl("Home"))}
-                  className="w-full bg-amber-600 hover:bg-amber-700"
-                >
-                  Get Started Free
-                </Button>
+              <div className="space-y-4">
+                {/* Demo CTA */}
+                <DemoBanner compact />
+                
+                {/* Try AI Health Buddy */}
+                <div className="bg-gradient-to-br from-violet-50 to-purple-50 rounded-2xl p-5 border border-violet-200">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
+                      <Sparkles className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-violet-800">Health Buddy AI</h3>
+                      <p className="text-xs text-violet-600">Try a sample conversation</p>
+                    </div>
+                  </div>
+                  <p className="text-sm text-violet-700 mb-4">
+                    See how the AI responds to your health logs with gentle insights and context-aware follow-ups.
+                  </p>
+                  <Button
+                    onClick={() => setShowDemoChat(true)}
+                    className="w-full bg-violet-600 hover:bg-violet-700"
+                  >
+                    <MessageCircle className="w-4 h-4 mr-2" />
+                    Try Demo Chat
+                  </Button>
+                </div>
+
+                {/* Demo Features Guide */}
+                <div className="bg-white rounded-2xl p-5 border border-slate-200">
+                  <h3 className="font-semibold text-slate-800 mb-3">🎯 Explore Demo Features</h3>
+                  <div className="space-y-2 text-sm">
+                    <a href={createPageUrl("Reports") + "?demo=true"} className="block p-2 rounded-lg hover:bg-slate-50 transition-colors">
+                      📊 <span className="text-slate-700">Reports</span> — Weekly summaries & insights
+                    </a>
+                    <a href={createPageUrl("Progress") + "?demo=true"} className="block p-2 rounded-lg hover:bg-slate-50 transition-colors">
+                      📈 <span className="text-slate-700">Progress</span> — Trends over time
+                    </a>
+                    <a href={createPageUrl("CareHub") + "?demo=true"} className="block p-2 rounded-lg hover:bg-slate-50 transition-colors">
+                      💊 <span className="text-slate-700">Care Hub</span> — Medications & reminders
+                    </a>
+                    <a href={createPageUrl("CaregiverDashboard") + "?demo=true"} className="block p-2 rounded-lg hover:bg-slate-50 transition-colors">
+                      👥 <span className="text-slate-700">Caregiver View</span> — What family sees
+                    </a>
+                    <a href={createPageUrl("Achievements") + "?demo=true"} className="block p-2 rounded-lg hover:bg-slate-50 transition-colors">
+                      🏆 <span className="text-slate-700">Achievements</span> — Streaks & badges
+                    </a>
+                  </div>
+                </div>
               </div>
             )}
 
