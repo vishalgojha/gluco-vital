@@ -232,7 +232,7 @@ export default function Achievements() {
             {/* Display Name Settings */}
             <Card className="border-slate-100">
               <CardHeader className="pb-3">
-                <CardTitle className="text-lg">Leaderboard Settings</CardTitle>
+                <CardTitle className="text-lg">Community Settings</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>

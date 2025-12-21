@@ -33,7 +33,7 @@ export default function Leaderboard({
             <div className="p-2 bg-amber-50 rounded-lg">
               <Medal className="w-5 h-5 text-amber-600" />
             </div>
-            <h3 className="font-semibold text-slate-800">Leaderboard</h3>
+            <h3 className="font-semibold text-slate-800">Community Progress</h3>
           </div>
           
           {onToggleVisibility && (
