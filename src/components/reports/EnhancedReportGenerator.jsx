@@ -8,8 +8,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Calendar as CalendarIcon, Loader2, FileText, Sparkles, BarChart3, LineChart, Users } from "lucide-react";
+import { Calendar as CalendarIcon, Loader2, FileText, Sparkles, BarChart3, LineChart, Users, Settings2, Droplet, Heart, Pill, Activity } from "lucide-react";
 import { toast } from "sonner";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default function EnhancedReportGenerator({ userEmail, onReportGenerated }) {
   const [reportType, setReportType] = useState("weekly");
@@ -22,6 +23,15 @@ export default function EnhancedReportGenerator({ userEmail, onReportGenerated }
     show_targets: true
   });
   const [accessibleToCaregivers, setAccessibleToCaregivers] = useState(true);
+  const [dataPoints, setDataPoints] = useState({
+    sugar: true,
+    bloodPressure: true,
+    medications: true,
+    meals: true,
+    symptoms: true,
+    exercise: true
+  });
+  const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
 
   const quickRanges = {
     weekly: { from: startOfWeek(new Date()), to: endOfWeek(new Date()) },
@@ -297,6 +307,71 @@ Be specific and personalized - reference actual readings, dates, and patterns fo
           </Popover>
         </div>
 
+        {/* Data Points Selection */}
+        <div className="p-4 bg-white rounded-lg border border-slate-100">
+          <div className="flex items-center justify-between mb-3">
+            <Label className="text-sm font-medium text-slate-700 flex items-center gap-2">
+              <Settings2 className="w-4 h-4" /> Data Points to Include
+            </Label>
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => setShowAdvancedOptions(!showAdvancedOptions)}
+              className="text-xs"
+            >
+              {showAdvancedOptions ? 'Simple' : 'Advanced'}
+            </Button>
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            <DataPointToggle 
+              icon={Droplet} 
+              label="Blood Sugar" 
+              checked={dataPoints.sugar}
+              onChange={(checked) => setDataPoints(p => ({ ...p, sugar: checked }))}
+              color="blue"
+            />
+            <DataPointToggle 
+              icon={Heart} 
+              label="Blood Pressure" 
+              checked={dataPoints.bloodPressure}
+              onChange={(checked) => setDataPoints(p => ({ ...p, bloodPressure: checked }))}
+              color="red"
+            />
+            <DataPointToggle 
+              icon={Pill} 
+              label="Medications" 
+              checked={dataPoints.medications}
+              onChange={(checked) => setDataPoints(p => ({ ...p, medications: checked }))}
+              color="green"
+            />
+            {showAdvancedOptions && (
+              <>
+                <DataPointToggle 
+                  icon={Activity} 
+                  label="Meals" 
+                  checked={dataPoints.meals}
+                  onChange={(checked) => setDataPoints(p => ({ ...p, meals: checked }))}
+                  color="amber"
+                />
+                <DataPointToggle 
+                  icon={Activity} 
+                  label="Symptoms" 
+                  checked={dataPoints.symptoms}
+                  onChange={(checked) => setDataPoints(p => ({ ...p, symptoms: checked }))}
+                  color="violet"
+                />
+                <DataPointToggle 
+                  icon={Activity} 
+                  label="Exercise" 
+                  checked={dataPoints.exercise}
+                  onChange={(checked) => setDataPoints(p => ({ ...p, exercise: checked }))}
+                  color="cyan"
+                />
+              </>
+            )}
+          </div>
+        </div>
+
         {/* Personal Notes */}
         <div>
           <Label className="text-sm font-medium text-slate-700 mb-1.5 block">Personal Notes (Optional)</Label>
@@ -440,4 +515,28 @@ function calculateAdherenceStats(adherenceRecords, medLogs, dateRange) {
     total_taken: taken.length,
     missed_count: missed.length
   };
+}
+
+function DataPointToggle({ icon: Icon, label, checked, onChange, color }) {
+  const colors = {
+    blue: 'bg-blue-50 border-blue-200 text-blue-700',
+    red: 'bg-red-50 border-red-200 text-red-700',
+    green: 'bg-green-50 border-green-200 text-green-700',
+    amber: 'bg-amber-50 border-amber-200 text-amber-700',
+    violet: 'bg-violet-50 border-violet-200 text-violet-700',
+    cyan: 'bg-cyan-50 border-cyan-200 text-cyan-700'
+  };
+  
+  return (
+    <div 
+      onClick={() => onChange(!checked)}
+      className={`flex items-center gap-2 p-2 rounded-lg border cursor-pointer transition-all ${
+        checked ? colors[color] : 'bg-slate-50 border-slate-200 text-slate-500'
+      }`}
+    >
+      <Checkbox checked={checked} className="pointer-events-none" />
+      <Icon className="w-4 h-4" />
+      <span className="text-xs font-medium">{label}</span>
+    </div>
+  );
 }
