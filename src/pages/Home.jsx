@@ -345,7 +345,22 @@ export default function Home() {
               progress={achievements?.weekly_challenge_progress || 0}
             />
 
-            <WhatsAppConnect isConnected={profile?.whatsapp_connected} />
+            {!isDemo && <WhatsAppConnect isConnected={profile?.whatsapp_connected} />}
+            
+            {isDemo && (
+              <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-5 border border-amber-200">
+                <h3 className="font-semibold text-amber-800 mb-2">👋 You're viewing a demo</h3>
+                <p className="text-sm text-amber-700 mb-4">
+                  This is sample data for "Mr. Gluco". Create your free account to start tracking your own health.
+                </p>
+                <Button
+                  onClick={() => base44.auth.redirectToLogin(createPageUrl("Home"))}
+                  className="w-full bg-amber-600 hover:bg-amber-700"
+                >
+                  Get Started Free
+                </Button>
+              </div>
+            )}
 
             {/* Quick Tips */}
             <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
