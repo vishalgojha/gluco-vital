@@ -192,8 +192,7 @@ export default function Landing() {
                         </div>
 
                         <div className="text-center mt-8">
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button 
               size="lg"
               onClick={async () => {
@@ -228,6 +227,7 @@ export default function Landing() {
                 <p className="text-xs md:text-sm text-slate-500">{stat.label}</p>
               </div>
             ))}
+          </div>
           </div>
         </div>
       </header>
