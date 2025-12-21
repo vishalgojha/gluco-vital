@@ -174,3 +174,6 @@ function ExportAllRemindersButton({ reminders }) {
     </Button>
   );
 }
+
+export default CalendarExportButton;
+export { ExportAllRemindersButton };
