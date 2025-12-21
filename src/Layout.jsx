@@ -65,7 +65,7 @@ export default function Layout({ children, currentPageName }) {
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       ` }} />
-      <div className="min-h-screen bg-[#f0f7f4]">
+      <div className="min-h-screen bg-[#f0f7f4] flex flex-col">
         {/* Mobile Header */}
         <header className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-[#f8faf9]/90 backdrop-blur-lg border-b border-[#5b9a8b]/10">
           <div className="flex items-center justify-between px-4 h-16">
@@ -181,12 +181,12 @@ export default function Layout({ children, currentPageName }) {
         </aside>
 
         {/* Main Content */}
-                  <main className="lg:ml-64 pt-16 lg:pt-0 pb-20 lg:pb-16">
+                  <main className="lg:ml-64 pt-16 lg:pt-0 flex-1 overflow-y-auto">
                     {children}
                   </main>
 
-                  {/* Footer */}
-                  <footer className="lg:ml-64 bg-white/80 backdrop-blur border-t border-[#5b9a8b]/10 py-4 px-4">
+                  {/* Footer - Fixed at bottom */}
+                  <footer className="lg:ml-64 bg-white/80 backdrop-blur border-t border-[#5b9a8b]/10 py-4 px-4 flex-shrink-0">
                     <div className="max-w-4xl mx-auto">
                       {/* Contextual Footer Tips */}
                       <div className="mb-3 p-3 bg-[#5b9a8b]/5 rounded-lg border border-[#5b9a8b]/10">
