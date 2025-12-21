@@ -34,9 +34,11 @@ export default function Achievements() {
       setDemoData(data);
       setUser(data.user);
     } else {
+      setIsDemo(false);
+      setDemoData(null);
       base44.auth.me().then(setUser).catch(() => {});
     }
-  }, []);
+  }, [window.location.search]);
 
   const syncAchievements = async () => {
     setSyncing(true);
