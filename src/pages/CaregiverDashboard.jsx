@@ -42,28 +42,41 @@ export default function CaregiverDashboard() {
 
   // Get all patients this user is caregiver for
   const { data: caregiverAccess = [], isLoading: accessLoading } = useQuery({
-    queryKey: ['my-caregiver-access', user?.email],
-    queryFn: () => base44.entities.CaregiverAccess.filter({ 
-      caregiver_email: user?.email,
-      status: "active"
-    }),
-    enabled: !!user?.email
+    queryKey: ['my-caregiver-access', user?.email, isDemo],
+    queryFn: async () => {
+      if (isDemo && demoData) {
+        return demoData.caregiverAccess;
+      }
+      return base44.entities.CaregiverAccess.filter({ 
+        caregiver_email: user?.email,
+        status: "active"
+      });
+    },
+    enabled: !!user?.email || isDemo
   });
 
   // Get selected patient's profile
   const { data: patientProfile } = useQuery({
-    queryKey: ['patient-profile-caregiver', selectedPatient?.patient_email],
-    queryFn: () => base44.entities.PatientProfile.filter({ 
-      user_email: selectedPatient?.patient_email 
-    }),
-    enabled: !!selectedPatient?.patient_email,
-    select: data => data?.[0]
+    queryKey: ['patient-profile-caregiver', selectedPatient?.patient_email, isDemo],
+    queryFn: async () => {
+      if (isDemo && demoData) {
+        return demoData.profile;
+      }
+      const results = await base44.entities.PatientProfile.filter({ 
+        user_email: selectedPatient?.patient_email 
+      });
+      return results?.[0];
+    },
+    enabled: !!selectedPatient?.patient_email || isDemo
   });
 
   // Get selected patient's logs
   const { data: patientLogs = [], isLoading: logsLoading, refetch: refetchLogs } = useQuery({
-    queryKey: ['patient-logs-caregiver', selectedPatient?.patient_email],
+    queryKey: ['patient-logs-caregiver', selectedPatient?.patient_email, isDemo],
     queryFn: async () => {
+      if (isDemo && demoData) {
+        return demoData.logs.filter(log => log.status !== 'corrected' && log.status !== 'deleted');
+      }
       const logs = await base44.entities.HealthLog.list('-created_date', 100);
       return logs.filter(log => 
         (log.user_email === selectedPatient?.patient_email || 
@@ -71,30 +84,38 @@ export default function CaregiverDashboard() {
         log.status !== 'corrected' && log.status !== 'deleted'
       );
     },
-    enabled: !!selectedPatient?.patient_email
+    enabled: !!selectedPatient?.patient_email || isDemo
   });
 
   // Get patient's medication reminders
   const { data: medications = [] } = useQuery({
-    queryKey: ['patient-meds-caregiver', selectedPatient?.patient_email],
-    queryFn: () => base44.entities.MedicationReminder.filter({
-      user_email: selectedPatient?.patient_email,
-      is_active: true
-    }),
-    enabled: !!selectedPatient?.patient_email
+    queryKey: ['patient-meds-caregiver', selectedPatient?.patient_email, isDemo],
+    queryFn: async () => {
+      if (isDemo && demoData) {
+        return demoData.medications;
+      }
+      return base44.entities.MedicationReminder.filter({
+        user_email: selectedPatient?.patient_email,
+        is_active: true
+      });
+    },
+    enabled: !!selectedPatient?.patient_email || isDemo
   });
 
   // Get patient's reports (accessible to caregivers)
   const { data: patientReports = [] } = useQuery({
-    queryKey: ['patient-reports-caregiver', selectedPatient?.patient_email],
+    queryKey: ['patient-reports-caregiver', selectedPatient?.patient_email, isDemo],
     queryFn: async () => {
+      if (isDemo && demoData) {
+        return demoData.reports;
+      }
       const reports = await base44.entities.HealthReport.list('-created_date', 20);
       return reports.filter(r => 
         r.user_email === selectedPatient?.patient_email && 
         r.accessible_to_caregivers !== false
       );
     },
-    enabled: !!selectedPatient?.patient_email
+    enabled: !!selectedPatient?.patient_email || isDemo
   });
 
   const [selectedReport, setSelectedReport] = useState(null);
