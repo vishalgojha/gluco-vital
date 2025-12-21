@@ -233,16 +233,27 @@ export default function Landing() {
       </header>
 
       {/* How it Works */}
-      <section className="py-16 bg-white/50">
-        <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center text-slate-800 mb-4">
-            Simple as Sending a Message
-          </h2>
-          <p className="text-center text-slate-500 mb-12 max-w-xl mx-auto">
-            No complex apps to learn. Just text your health data on WhatsApp.
-          </p>
+                  <section className="py-16 bg-white/50">
+                    <div className="max-w-6xl mx-auto px-4">
+                      <div className="flex flex-col md:flex-row items-center gap-8 mb-12">
+                        <div className="md:w-1/3">
+                          <img 
+                            src="https://images.unsplash.com/photo-1434494878577-86c23bcb06b9?w=400&h=400&fit=crop&q=80"
+                            alt="Person using smartphone for health tracking"
+                            className="rounded-2xl shadow-lg w-full max-w-xs mx-auto"
+                          />
+                        </div>
+                        <div className="md:w-2/3 text-center md:text-left">
+                          <h2 className="text-3xl font-bold text-slate-800 mb-4">
+                            Simple as Sending a Message
+                          </h2>
+                          <p className="text-slate-500 max-w-xl">
+                            No complex apps to learn. Just text your health data on WhatsApp. Our AI understands natural language in 14 languages.
+                          </p>
+                        </div>
+                      </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
+                      <div className="grid md:grid-cols-3 gap-6">
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 text-center">
               <div className="w-14 h-14 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <MessageCircle className="w-7 h-7 text-green-600" />
