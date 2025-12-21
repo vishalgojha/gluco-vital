@@ -18,6 +18,8 @@ import Profile from './pages/Profile';
 import Progress from './pages/Progress';
 import Reports from './pages/Reports';
 import Terms from './pages/Terms';
+import ShippingPolicy from './pages/ShippingPolicy';
+import CancellationRefund from './pages/CancellationRefund';
 import __Layout from './Layout.jsx';
 
 
@@ -42,6 +44,8 @@ export const PAGES = {
     "Progress": Progress,
     "Reports": Reports,
     "Terms": Terms,
+    "ShippingPolicy": ShippingPolicy,
+    "CancellationRefund": CancellationRefund,
 }
 
 export const pagesConfig = {
