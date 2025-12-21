@@ -13,13 +13,31 @@ import {
 } from "lucide-react";
 import SugarChart from "@/components/dashboard/SugarChart";
 import EnhancedReportViewer from "@/components/reports/EnhancedReportViewer";
+import { generateDemoData } from "@/components/demo/DemoDataGenerator";
+import DemoBanner from "@/components/demo/DemoBanner";
 
 export default function CaregiverDashboard() {
   const [user, setUser] = useState(null);
   const [selectedPatient, setSelectedPatient] = useState(null);
+  const [isDemo, setIsDemo] = useState(false);
+  const [demoData, setDemoData] = useState(null);
 
   useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => {});
+    const urlParams = new URLSearchParams(window.location.search);
+    const demoMode = urlParams.get('demo') === 'true';
+    
+    if (demoMode) {
+      setIsDemo(true);
+      const data = generateDemoData();
+      setDemoData(data);
+      setUser({ email: "family@example.com", full_name: "Mrs. Gluco" });
+      // Auto-select the demo patient
+      if (data.caregiverAccess?.length > 0) {
+        setSelectedPatient(data.caregiverAccess[0]);
+      }
+    } else {
+      base44.auth.me().then(setUser).catch(() => {});
+    }
   }, []);
 
   // Get all patients this user is caregiver for
