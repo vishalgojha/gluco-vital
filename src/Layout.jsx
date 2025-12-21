@@ -42,9 +42,10 @@ export default function Layout({ children, currentPageName }) {
         { name: "Caregiver View", icon: Users, page: "CaregiverDashboard" },
         { name: "Profile", icon: User, page: "Profile" },
     ...(isAdmin ? [
-      { name: "Admin", icon: Shield, page: "AdminDashboard" },
-      { name: "Marketing", icon: Megaphone, page: "MarketingContent" }
-    ] : [])
+                { name: "Admin", icon: Shield, page: "AdminDashboard" },
+                { name: "Marketing", icon: Megaphone, page: "MarketingContent" },
+                { name: "Docs", icon: FileText, page: "Documentation" }
+              ] : [])
   ];
 
   // Show these pages without the full layout (accessible without auth)
