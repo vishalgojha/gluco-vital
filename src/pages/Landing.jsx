@@ -139,21 +139,59 @@ export default function Landing() {
           </nav>
         </div>
 
-        <div className="max-w-6xl mx-auto px-4 py-16 md:py-24 text-center relative">
-          <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur px-4 py-2 rounded-full text-sm text-[#5b9a8b] font-medium mb-6 border border-[#5b9a8b]/20">
-            <Droplet className="w-4 h-4" aria-hidden="true" />
-            Diabetes & Health Management Made Simple
-          </div>
+        <div className="max-w-6xl mx-auto px-4 py-16 md:py-24 relative">
+                        <div className="grid md:grid-cols-2 gap-8 items-center">
+                          <div className="text-center md:text-left">
+                            <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur px-4 py-2 rounded-full text-sm text-[#5b9a8b] font-medium mb-6 border border-[#5b9a8b]/20">
+                              <Droplet className="w-4 h-4" aria-hidden="true" />
+                              Diabetes & Health Management Made Simple
+                            </div>
 
-          <h1 className="text-4xl md:text-6xl font-bold text-slate-800 mb-6 leading-tight">
-            Your Personal <span className="text-[#5b9a8b]">Health Companion</span><br />
-            on WhatsApp
-          </h1>
-          
-          <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto mb-8">
-            Log your sugar, BP, and meals via WhatsApp.<br />
-            Get gentle insights, reminders, and clear summaries — in your language.
-          </p>
+                            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-800 mb-6 leading-tight">
+                              Your Personal <span className="text-[#5b9a8b]">Health Companion</span><br />
+                              on WhatsApp
+                            </h1>
+
+                            <p className="text-lg md:text-xl text-slate-600 max-w-xl mb-8">
+                              Log your sugar, BP, and meals via WhatsApp.<br />
+                              Get gentle insights, reminders, and clear summaries — in your language.
+                            </p>
+                          </div>
+
+                          <div className="hidden md:block relative">
+                            <div className="relative w-full aspect-square max-w-md mx-auto">
+                              <img 
+                                src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=500&h=500&fit=crop&q=80" 
+                                alt="Healthcare technology concept"
+                                className="rounded-3xl shadow-2xl shadow-[#5b9a8b]/20 object-cover w-full h-full"
+                              />
+                              <div className="absolute -bottom-4 -left-4 bg-white rounded-2xl p-4 shadow-lg border border-slate-100">
+                                <div className="flex items-center gap-3">
+                                  <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                                    <Check className="w-5 h-5 text-green-600" />
+                                  </div>
+                                  <div>
+                                    <p className="text-sm font-medium text-slate-800">Sugar Logged</p>
+                                    <p className="text-xs text-slate-500">120 mg/dL • In Range</p>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="absolute -top-4 -right-4 bg-white rounded-2xl p-4 shadow-lg border border-slate-100">
+                                <div className="flex items-center gap-3">
+                                  <div className="w-10 h-10 bg-violet-100 rounded-full flex items-center justify-center">
+                                    <MessageCircle className="w-5 h-5 text-violet-600" />
+                                  </div>
+                                  <div>
+                                    <p className="text-sm font-medium text-slate-800">WhatsApp</p>
+                                    <p className="text-xs text-slate-500">Connected ✓</p>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="text-center mt-8">
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button 
@@ -266,11 +304,16 @@ export default function Landing() {
       </section>
 
       {/* Features */}
-      <section className="py-16">
-        <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center text-slate-800 mb-12">
-            Everything You Need
-          </h2>
+                  <section className="py-16">
+                    <div className="max-w-6xl mx-auto px-4">
+                      <div className="text-center mb-12">
+                        <h2 className="text-3xl font-bold text-slate-800 mb-4">
+                          Everything You Need
+                        </h2>
+                        <p className="text-slate-500 max-w-xl mx-auto">
+                          Comprehensive diabetes management tools designed for real life
+                        </p>
+                      </div>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             {features.map((feature, idx) => (
@@ -519,14 +562,21 @@ export default function Landing() {
       </section>
 
       {/* CTA */}
-      <section className="py-20">
-        <div className="max-w-2xl mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold text-slate-800 mb-4">
-            Start with One Simple Log
-          </h2>
-          <p className="text-slate-500 mb-8">
-            Free to use. No credit card. Takes less than 30 seconds to send your first message.
-          </p>
+                  <section className="py-20 relative overflow-hidden">
+                    <div className="absolute inset-0 opacity-10">
+                      <img 
+                        src="https://images.unsplash.com/photo-1505751172876-fa1923c5c528?w=1200&h=600&fit=crop&q=60"
+                        alt=""
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="max-w-2xl mx-auto px-4 text-center relative z-10">
+                      <h2 className="text-3xl font-bold text-slate-800 mb-4">
+                        Start with One Simple Log
+                      </h2>
+                      <p className="text-slate-500 mb-8">
+                        Free to use. No credit card. Takes less than 30 seconds to send your first message.
+                      </p>
           <Button 
             size="lg"
             onClick={async () => {
@@ -542,15 +592,16 @@ export default function Landing() {
             Get Started Free <ArrowRight className="w-5 h-5 ml-2" />
           </Button>
           <p className="text-sm text-slate-500 mt-4">
-            After signing up, connect WhatsApp to log your health data via messages
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6 mt-6 text-sm text-slate-500">
-            <span className="flex items-center gap-1"><Check className="w-4 h-4 text-green-500" /> Free to use</span>
-            <span className="flex items-center gap-1"><Check className="w-4 h-4 text-green-500" /> WhatsApp-based</span>
-            <span className="flex items-center gap-1"><Check className="w-4 h-4 text-green-500" /> AI-assisted (not medical advice)</span>
-          </div>
-        </div>
-      </section>
+                            After signing up, connect WhatsApp to log your health data via messages
+                          </p>
+                          <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6 mt-6 text-sm text-slate-500">
+                            <span className="flex items-center gap-1"><Check className="w-4 h-4 text-green-500" /> Free to use</span>
+                            <span className="flex items-center gap-1"><Check className="w-4 h-4 text-green-500" /> WhatsApp-based</span>
+                            <span className="flex items-center gap-1"><Check className="w-4 h-4 text-green-500" /> AI-assisted (not medical advice)</span>
+                          </div>
+                          </div>
+                        </div>
+                      </section>
 
       {/* Footer */}
       <footer className="py-8 border-t border-slate-200">
