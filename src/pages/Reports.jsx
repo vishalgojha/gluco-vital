@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import EnhancedReportGenerator from "@/components/reports/EnhancedReportGenerator";
 import ReportCard from "@/components/reports/ReportCard";
 import EnhancedReportViewer from "@/components/reports/EnhancedReportViewer";
+import DoctorClinicalReport from "@/components/reports/DoctorClinicalReport";
 import DoctorQuestionsList from "@/components/reports/DoctorQuestionsList";
 
 export default function Reports() {
@@ -55,10 +56,15 @@ export default function Reports() {
         </div>
 
         {showGenerator && (
-          <div className="mb-8">
+          <div className="mb-8 space-y-6">
             <EnhancedReportGenerator 
               userEmail={user?.email} 
               onReportGenerated={handleReportGenerated}
+            />
+            <DoctorClinicalReport 
+              userEmail={user?.email}
+              patientName={profile?.name || user?.full_name}
+              profile={profile}
             />
           </div>
         )}
