@@ -9,15 +9,29 @@ import ReportCard from "@/components/reports/ReportCard";
 import EnhancedReportViewer from "@/components/reports/EnhancedReportViewer";
 import DoctorClinicalReport from "@/components/reports/DoctorClinicalReport";
 import DoctorQuestionsList from "@/components/reports/DoctorQuestionsList";
+import { generateDemoData } from "@/components/demo/DemoDataGenerator";
+import DemoBanner from "@/components/demo/DemoBanner";
 
 export default function Reports() {
   const queryClient = useQueryClient();
   const [user, setUser] = useState(null);
   const [showGenerator, setShowGenerator] = useState(false);
   const [selectedReport, setSelectedReport] = useState(null);
+  const [isDemo, setIsDemo] = useState(false);
+  const [demoData, setDemoData] = useState(null);
 
   useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => {});
+    const urlParams = new URLSearchParams(window.location.search);
+    const demoMode = urlParams.get('demo') === 'true';
+    
+    if (demoMode) {
+      setIsDemo(true);
+      const data = generateDemoData();
+      setDemoData(data);
+      setUser(data.user);
+    } else {
+      base44.auth.me().then(setUser).catch(() => {});
+    }
   }, []);
 
   const { data: reports = [], isLoading } = useQuery({
