@@ -290,8 +290,115 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* FAQ */}
+      {/* Pricing */}
       <section className="py-16 bg-white/50">
+        <div className="max-w-5xl mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center text-slate-800 mb-4">
+            Simple, Transparent Pricing
+          </h2>
+          <p className="text-center text-slate-500 mb-12 max-w-xl mx-auto">
+            Start free forever. Upgrade when you need more.
+          </p>
+
+          <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+            {/* Free Tier */}
+            <div className="bg-white rounded-2xl p-6 border-2 border-slate-200 shadow-sm">
+              <div className="mb-4">
+                <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">Free Forever</span>
+              </div>
+              <h3 className="text-2xl font-bold text-slate-800 mb-2">Basic</h3>
+              <p className="text-slate-500 text-sm mb-4">Everything you need to start tracking</p>
+              <div className="mb-6">
+                <span className="text-4xl font-bold text-slate-800">₹0</span>
+                <span className="text-slate-500"> / forever</span>
+              </div>
+              <ul className="space-y-3 mb-6">
+                {[
+                  "Unlimited sugar & BP logging",
+                  "Meal & medication tracking",
+                  "WhatsApp integration",
+                  "7-day history view",
+                  "Basic trends & charts",
+                  "14 language support"
+                ].map((feature, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm text-slate-600">
+                    <Check className="w-4 h-4 text-green-500 shrink-0" />
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+              <Button 
+                variant="outline"
+                className="w-full h-12 rounded-xl border-2"
+                onClick={async () => {
+                  const isAuth = await base44.auth.isAuthenticated();
+                  if (isAuth) {
+                    window.location.href = createPageUrl("Home");
+                  } else {
+                    base44.auth.redirectToLogin(createPageUrl("Home"));
+                  }
+                }}
+              >
+                Get Started Free
+              </Button>
+            </div>
+
+            {/* Premium Tier */}
+            <div className="bg-gradient-to-br from-[#5b9a8b] to-[#4a8a7b] rounded-2xl p-6 border-2 border-[#5b9a8b] shadow-lg text-white relative">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                <span className="px-4 py-1 bg-amber-400 text-amber-900 rounded-full text-xs font-bold shadow-md">MOST POPULAR</span>
+              </div>
+              <div className="mb-4 mt-2">
+                <span className="px-3 py-1 bg-white/20 text-white rounded-full text-xs font-medium">Premium</span>
+              </div>
+              <h3 className="text-2xl font-bold mb-2">Premium</h3>
+              <p className="text-white/80 text-sm mb-4">Advanced insights & features</p>
+              <div className="mb-2">
+                <span className="text-4xl font-bold">₹199</span>
+                <span className="text-white/80"> / month</span>
+              </div>
+              <p className="text-white/60 text-xs mb-6">or $5/month for international users</p>
+              <ul className="space-y-3 mb-6">
+                {[
+                  "Everything in Basic",
+                  "Unlimited history & reports",
+                  "AI-powered insights",
+                  "Doctor sharing & clinical reports",
+                  "Caregiver access",
+                  "Medication reminders",
+                  "Weekly health summaries",
+                  "Priority support"
+                ].map((feature, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm text-white/90">
+                    <Check className="w-4 h-4 text-amber-300 shrink-0" />
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+              <Button 
+                className="w-full h-12 rounded-xl bg-white text-[#5b9a8b] hover:bg-white/90 font-semibold"
+                onClick={async () => {
+                  const isAuth = await base44.auth.isAuthenticated();
+                  if (isAuth) {
+                    window.location.href = createPageUrl("Home");
+                  } else {
+                    base44.auth.redirectToLogin(createPageUrl("Home"));
+                  }
+                }}
+              >
+                Start Free, Upgrade Later
+              </Button>
+            </div>
+          </div>
+
+          <p className="text-center text-sm text-slate-500 mt-8">
+            🎉 Currently all features are free during our early access period!
+          </p>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="py-16 bg-slate-50/50">
         <div className="max-w-3xl mx-auto px-4">
           <h2 className="text-3xl font-bold text-center text-slate-800 mb-4">
             Frequently Asked Questions
