@@ -19,6 +19,8 @@ import OnboardingFlow from "@/components/onboarding/OnboardingFlow";
 import QuickLogModal from "@/components/onboarding/QuickLogModal";
 import QuickMedicationModal from "@/components/onboarding/QuickMedicationModal";
 import { generateDemoData, DEMO_USER_EMAIL } from "@/components/demo/DemoDataGenerator";
+import DemoBanner from "@/components/demo/DemoBanner";
+import DemoAIChat from "@/components/demo/DemoAIChat";
 
 export default function Home() {
   const [user, setUser] = useState(null);
