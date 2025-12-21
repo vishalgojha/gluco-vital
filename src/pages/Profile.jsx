@@ -19,6 +19,7 @@ import LabReportUpload from "@/components/labs/LabReportUpload";
 import HbA1cTrendChart from "@/components/labs/HbA1cTrendChart";
 import CaregiverManager from "@/components/caregiver/CaregiverManager";
 import { NotificationSettings } from "@/components/notifications/NotificationManager";
+import CalendarExport from "@/components/medications/CalendarExport";
 
 export default function Profile() {
   const queryClient = useQueryClient();
@@ -436,12 +437,17 @@ export default function Profile() {
                 Medication Reminders
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
               <MedicationRemindersList 
                 reminders={reminders} 
                 profile={{ ...profile, user_email: user?.email }} 
                 onUpdate={refetchReminders}
               />
+              
+              {/* Calendar Export */}
+              {reminders.length > 0 && (
+                <CalendarExport reminders={reminders} />
+              )}
             </CardContent>
           </Card>
 
