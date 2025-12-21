@@ -36,8 +36,11 @@ export default function Progress() {
   }, []);
 
   const { data: logs = [], isLoading } = useQuery({
-    queryKey: ['health-logs-progress', user?.email],
+    queryKey: ['health-logs-progress', user?.email, isDemo],
     queryFn: async () => {
+      if (isDemo && demoData) {
+        return demoData.logs.filter(log => log.status !== 'corrected' && log.status !== 'deleted');
+      }
       // Fetch logs and filter for this user (by user_email or created_by), exclude corrected/deleted
       const results = await base44.entities.HealthLog.list('-created_date', 500);
       return results.filter(log => 
@@ -45,25 +48,31 @@ export default function Progress() {
         log.status !== 'corrected' && log.status !== 'deleted'
       );
     },
-    enabled: !!user?.email
+    enabled: !!user?.email || isDemo
   });
 
   const { data: profile } = useQuery({
-    queryKey: ['patient-profile', user?.email],
+    queryKey: ['patient-profile', user?.email, isDemo],
     queryFn: async () => {
+      if (isDemo && demoData) {
+        return demoData.profile;
+      }
       const results = await base44.entities.PatientProfile.filter({ user_email: user?.email });
       return results?.[0];
     },
-    enabled: !!user?.email
+    enabled: !!user?.email || isDemo
   });
 
   const { data: achievements } = useQuery({
-    queryKey: ['user-achievements', user?.email],
+    queryKey: ['user-achievements', user?.email, isDemo],
     queryFn: async () => {
+      if (isDemo && demoData) {
+        return demoData.achievements;
+      }
       const results = await base44.entities.UserAchievements.filter({ user_email: user?.email });
       return results?.[0];
     },
-    enabled: !!user?.email
+    enabled: !!user?.email || isDemo
   });
 
   // Filter logs by time range
