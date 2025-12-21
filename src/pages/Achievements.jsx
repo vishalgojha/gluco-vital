@@ -53,8 +53,11 @@ export default function Achievements() {
   };
 
   const { data: achievements, isLoading } = useQuery({
-    queryKey: ['user-achievements', user?.email],
+    queryKey: ['user-achievements', user?.email, isDemo],
     queryFn: async () => {
+      if (isDemo && demoData) {
+        return demoData.achievements;
+      }
       // Try to find existing achievements (check both user_email and created_by)
       const allAchievements = await base44.entities.UserAchievements.list('-created_date', 100);
       let results = allAchievements.filter(a => 
@@ -79,12 +82,16 @@ export default function Achievements() {
       }
       return results[0];
     },
-    enabled: !!user?.email
+    enabled: !!user?.email || isDemo
   });
 
   const { data: leaderboard = [] } = useQuery({
-    queryKey: ['leaderboard'],
+    queryKey: ['leaderboard', isDemo],
     queryFn: async () => {
+      if (isDemo && demoData) {
+        // Return demo user as sole leaderboard entry for demo
+        return [demoData.achievements];
+      }
       const all = await base44.entities.UserAchievements.filter(
         { show_on_leaderboard: true },
         '-total_points',
