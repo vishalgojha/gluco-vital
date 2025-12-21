@@ -250,6 +250,18 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* CGM Positioning Section */}
+      <section className="py-12 bg-white/50">
+        <div className="max-w-3xl mx-auto px-4 text-center">
+          <h2 className="text-2xl font-bold text-slate-800 mb-4">
+            Not sure if you need a CGM yet?
+          </h2>
+          <p className="text-slate-600 leading-relaxed">
+            Many people start with finger-stick testing and logging. Glucovital helps you understand patterns, habits, and context first — so you can decide if and when advanced monitoring like a CGM makes sense. Some users later add a CGM. Some never need one. Glucovital works in both cases.
+          </p>
+        </div>
+      </section>
+
       {/* Features */}
       <section className="py-16">
         <div className="max-w-6xl mx-auto px-4">
@@ -366,7 +378,8 @@ export default function Landing() {
                   "Doctor sharing & reports",
                   "Medication reminders",
                   "Weekly health summaries",
-                  "Priority support"
+                  "Priority support",
+                  "Works with finger-stick testing"
                 ].map((feature, idx) => (
                   <li key={idx} className="flex items-center gap-2 text-sm text-white/90">
                     <Check className="w-4 h-4 text-amber-300 shrink-0" />
@@ -455,10 +468,14 @@ export default function Landing() {
           
           <div className="space-y-4">
             {[
-              {
-                q: "Is Gluco Vital a replacement for my doctor?",
-                a: "No. Gluco Vital helps you log and track your health data, but it does not diagnose, treat, or replace medical care. Always consult your doctor for medical decisions."
-              },
+                {
+                  q: "Do I need a CGM to use Gluco Vital?",
+                  a: "No. Gluco Vital works with finger-stick readings and manual logs. Many people use Gluco Vital before considering a CGM to build consistency, understand patterns, and share clearer data with their doctor. Some later add a CGM. Some never need one. Gluco Vital works in both cases."
+                },
+                {
+                  q: "Is Gluco Vital a replacement for my doctor?",
+                  a: "No. Gluco Vital helps you log and track your health data, but it does not diagnose, treat, or replace medical care. Always consult your doctor for medical decisions."
+                },
               {
                 q: "How do I log my readings?",
                 a: "Simply send a WhatsApp message like 'Sugar 120' or 'BP 130/80'. You can also log meals, medications, and symptoms using natural language."
