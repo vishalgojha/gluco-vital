@@ -35,18 +35,26 @@ export default function Reports() {
   }, []);
 
   const { data: reports = [], isLoading } = useQuery({
-    queryKey: ['health-reports', user?.email],
-    queryFn: () => base44.entities.HealthReport.filter({ user_email: user?.email }, '-created_date'),
-    enabled: !!user?.email
+    queryKey: ['health-reports', user?.email, isDemo],
+    queryFn: async () => {
+      if (isDemo && demoData) {
+        return demoData.reports;
+      }
+      return base44.entities.HealthReport.filter({ user_email: user?.email }, '-created_date');
+    },
+    enabled: !!user?.email || isDemo
   });
 
   const { data: profile } = useQuery({
-    queryKey: ['patient-profile', user?.email],
+    queryKey: ['patient-profile', user?.email, isDemo],
     queryFn: async () => {
+      if (isDemo && demoData) {
+        return demoData.profile;
+      }
       const results = await base44.entities.PatientProfile.filter({ user_email: user?.email });
       return results?.[0];
     },
-    enabled: !!user?.email
+    enabled: !!user?.email || isDemo
   });
 
   const handleReportGenerated = (report) => {
