@@ -9,7 +9,6 @@ const generateICSContent = (reminder, daysAhead = 30) => {
   const events = [];
   const now = new Date();
   
-  // Get all scheduled times
   const times = reminder.specific_times || ["08:00"];
   
   for (let day = 0; day < daysAhead; day++) {
@@ -123,7 +122,7 @@ const downloadICS = (content, filename) => {
   URL.revokeObjectURL(url);
 };
 
-function CalendarExportButton({ reminder }) {
+export function CalendarExportButton({ reminder }) {
   const handleExport = () => {
     const icsContent = generateICSContent(reminder);
     const filename = `${reminder.medication_name.replace(/\s+/g, "_")}_reminders.ics`;
@@ -146,7 +145,7 @@ function CalendarExportButton({ reminder }) {
   );
 }
 
-function ExportAllRemindersButton({ reminders }) {
+export function ExportAllRemindersButton({ reminders }) {
   const activeReminders = reminders.filter(r => r.is_active);
   
   const handleExport = () => {
@@ -176,4 +175,3 @@ function ExportAllRemindersButton({ reminders }) {
 }
 
 export default CalendarExportButton;
-export { ExportAllRemindersButton };
