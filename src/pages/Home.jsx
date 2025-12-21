@@ -33,16 +33,18 @@ export default function Home() {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    // Check for demo mode
+    // Check for demo mode - MUST check URL param first
     const urlParams = new URLSearchParams(window.location.search);
     const demoMode = urlParams.get('demo') === 'true';
     
     if (demoMode) {
+      // Demo mode takes priority over real auth
       setIsDemo(true);
       const data = generateDemoData();
       setDemoData(data);
       setUser(data.user);
     } else {
+      setIsDemo(false);
       base44.auth.me().then((userData) => {
         setUser(userData);
         // Show onboarding for new users who haven't completed it
@@ -51,7 +53,7 @@ export default function Home() {
         }
       }).catch(() => {});
     }
-  }, []);
+  }, [window.location.search]);
 
   const { data: logs = [], isLoading: logsLoading } = useQuery({
     queryKey: ['health-logs', user?.email, isDemo],
