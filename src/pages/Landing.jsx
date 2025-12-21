@@ -300,19 +300,19 @@ export default function Landing() {
             Start free forever. Upgrade when you need more.
           </p>
 
-          <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {/* Free Tier */}
             <div className="bg-white rounded-2xl p-6 border-2 border-slate-200 shadow-sm">
               <div className="mb-4">
                 <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">Free Forever</span>
               </div>
               <h3 className="text-2xl font-bold text-slate-800 mb-2">Basic</h3>
-              <p className="text-slate-500 text-sm mb-4">Everything you need to start tracking</p>
+              <p className="text-slate-500 text-sm mb-4">Start tracking your health</p>
               <div className="mb-6">
                 <span className="text-4xl font-bold text-slate-800">₹0</span>
                 <span className="text-slate-500"> / forever</span>
               </div>
-              <ul className="space-y-3 mb-6">
+              <ul className="space-y-2.5 mb-6">
                 {[
                   "Unlimited sugar & BP logging",
                   "Meal & medication tracking",
@@ -329,7 +329,7 @@ export default function Landing() {
               </ul>
               <Button 
                 variant="outline"
-                className="w-full h-12 rounded-xl border-2"
+                className="w-full h-11 rounded-xl border-2"
                 onClick={async () => {
                   const isAuth = await base44.auth.isAuthenticated();
                   if (isAuth) {
@@ -352,19 +352,18 @@ export default function Landing() {
                 <span className="px-3 py-1 bg-white/20 text-white rounded-full text-xs font-medium">Premium</span>
               </div>
               <h3 className="text-2xl font-bold mb-2">Premium</h3>
-              <p className="text-white/80 text-sm mb-4">Advanced insights & features</p>
+              <p className="text-white/80 text-sm mb-4">Advanced insights & AI</p>
               <div className="mb-2">
                 <span className="text-4xl font-bold">₹199</span>
                 <span className="text-white/80"> / month</span>
               </div>
-              <p className="text-white/60 text-xs mb-6">or $5/month for international users</p>
-              <ul className="space-y-3 mb-6">
+              <p className="text-white/60 text-xs mb-6">or $5/month international</p>
+              <ul className="space-y-2.5 mb-6">
                 {[
                   "Everything in Basic",
                   "Unlimited history & reports",
                   "AI-powered insights",
-                  "Doctor sharing & clinical reports",
-                  "Caregiver access",
+                  "Doctor sharing & reports",
                   "Medication reminders",
                   "Weekly health summaries",
                   "Priority support"
@@ -376,7 +375,54 @@ export default function Landing() {
                 ))}
               </ul>
               <Button 
-                className="w-full h-12 rounded-xl bg-white text-[#5b9a8b] hover:bg-white/90 font-semibold"
+                className="w-full h-11 rounded-xl bg-white text-[#5b9a8b] hover:bg-white/90 font-semibold"
+                onClick={async () => {
+                  const isAuth = await base44.auth.isAuthenticated();
+                  if (isAuth) {
+                    window.location.href = createPageUrl("Home");
+                  } else {
+                    base44.auth.redirectToLogin(createPageUrl("Home"));
+                  }
+                }}
+              >
+                Start Free, Upgrade Later
+              </Button>
+            </div>
+
+            {/* Family Tier */}
+            <div className="bg-white rounded-2xl p-6 border-2 border-violet-200 shadow-sm relative">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                <span className="px-4 py-1 bg-violet-100 text-violet-700 rounded-full text-xs font-bold">FOR FAMILIES</span>
+              </div>
+              <div className="mb-4 mt-2">
+                <span className="px-3 py-1 bg-violet-100 text-violet-700 rounded-full text-xs font-medium">Family</span>
+              </div>
+              <h3 className="text-2xl font-bold text-slate-800 mb-2">Family Care</h3>
+              <p className="text-slate-500 text-sm mb-4">Care for your loved ones</p>
+              <div className="mb-2">
+                <span className="text-4xl font-bold text-slate-800">₹349</span>
+                <span className="text-slate-500"> / month</span>
+              </div>
+              <p className="text-slate-400 text-xs mb-6">or $9/month international</p>
+              <ul className="space-y-2.5 mb-6">
+                {[
+                  "Everything in Premium",
+                  "Up to 3 family members",
+                  "Caregiver dashboard",
+                  "Real-time alerts for family",
+                  "Shared health reports",
+                  "Emergency notifications",
+                  "Family health insights",
+                  "Dedicated family support"
+                ].map((feature, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm text-slate-600">
+                    <Check className="w-4 h-4 text-violet-500 shrink-0" />
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+              <Button 
+                className="w-full h-11 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-semibold"
                 onClick={async () => {
                   const isAuth = await base44.auth.isAuthenticated();
                   if (isAuth) {
