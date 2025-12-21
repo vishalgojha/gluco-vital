@@ -259,6 +259,9 @@ export default function Landing() {
           <p className="text-slate-600 leading-relaxed">
             Many people start with finger-stick testing and logging. Glucovital helps you understand patterns, habits, and context first — so you can decide if and when advanced monitoring like a CGM makes sense. Some users later add a CGM. Some never need one. Glucovital works in both cases.
           </p>
+          <p className="text-slate-500 text-sm mt-3">
+            Used by people managing diabetes at different stages.
+          </p>
         </div>
       </section>
 
@@ -469,9 +472,9 @@ export default function Landing() {
           <div className="space-y-4">
             {[
                 {
-                  q: "Do I need a CGM to use Gluco Vital?",
-                  a: "No. Gluco Vital works with finger-stick readings and manual logs. Many people use Gluco Vital before considering a CGM to build consistency, understand patterns, and share clearer data with their doctor. Some later add a CGM. Some never need one. Gluco Vital works in both cases."
-                },
+                                      q: "Do I need a CGM to use Gluco Vital?",
+                                      a: "No. Gluco Vital works with finger-stick readings and manual logs. Many people use Gluco Vital before considering a CGM to build consistency, understand patterns, and share clearer data with their doctor. Some later add a CGM. Some never need one. Gluco Vital works in both cases. Your doctor can help you decide when—or if—a CGM makes sense."
+                                    },
                 {
                   q: "Is Gluco Vital a replacement for my doctor?",
                   a: "No. Gluco Vital helps you log and track your health data, but it does not diagnose, treat, or replace medical care. Always consult your doctor for medical decisions."

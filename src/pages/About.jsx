@@ -79,7 +79,7 @@ export default function About() {
               <h2 className="text-xl font-semibold text-slate-800">Before Advanced Monitoring</h2>
             </div>
             <p className="text-slate-600 leading-relaxed">
-              GlucoVital helps you build consistent logs, capture context, and generate longitudinal summaries — often before considering advanced glucose monitoring like CGMs. 
+              GlucoVital helps you build consistent logs, capture context, and generate longitudinal summaries — often before considering advanced monitoring like a CGM. 
               Many users find this leads to more informed monitoring decisions and better readiness for conversations with their healthcare provider.
             </p>
           </div>
