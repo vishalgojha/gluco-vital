@@ -7,7 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { Loader2, Check, Crown, Users, Zap, Star, CreditCard, Calendar, AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Loader2, Check, Crown, Users, Zap, Star, CreditCard, Calendar, AlertCircle, Key, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 
@@ -60,11 +61,12 @@ const PLANS = {
   }
 };
 
-export default function SubscriptionManager({ user }) {
+export default function SubscriptionManager({ user, isAdmin = false }) {
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState("premium");
   const [billingCycle, setBillingCycle] = useState("monthly");
   const [processing, setProcessing] = useState(false);
+  const [showSecretsInfo, setShowSecretsInfo] = useState(false);
   const queryClient = useQueryClient();
 
   const { data: subscription, isLoading } = useQuery({
@@ -308,6 +310,67 @@ export default function SubscriptionManager({ user }) {
           </p>
         </DialogContent>
       </Dialog>
+
+      {/* Admin: Secrets Configuration Info */}
+      {isAdmin && (
+        <Card className="border-2 border-amber-200 bg-amber-50">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg flex items-center gap-2 text-amber-800">
+              <Key className="w-5 h-5" />
+              Razorpay Configuration (Admin Only)
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-amber-700">
+              The following secrets need to be configured in the Base44 dashboard for payments to work:
+            </p>
+            
+            <div className="space-y-2">
+              <SecretItem name="RAZORPAY_KEY_ID" description="Your Razorpay API Key ID" />
+              <SecretItem name="RAZORPAY_KEY_SECRET" description="Your Razorpay API Key Secret" />
+              <SecretItem name="RAZORPAY_WEBHOOK_SECRET" description="Webhook secret for verifying payment events" />
+              <SecretItem name="RAZORPAY_PLAN_PREMIUM_MONTHLY" description="Plan ID for Premium Monthly (optional)" />
+              <SecretItem name="RAZORPAY_PLAN_PREMIUM_YEARLY" description="Plan ID for Premium Yearly (optional)" />
+              <SecretItem name="RAZORPAY_PLAN_FAMILY_MONTHLY" description="Plan ID for Family Monthly (optional)" />
+              <SecretItem name="RAZORPAY_PLAN_FAMILY_YEARLY" description="Plan ID for Family Yearly (optional)" />
+            </div>
+
+            <Alert className="bg-white border-amber-300">
+              <AlertCircle className="h-4 w-4 text-amber-600" />
+              <AlertDescription className="text-amber-700">
+                <strong>Setup Steps:</strong>
+                <ol className="list-decimal ml-4 mt-2 space-y-1 text-sm">
+                  <li>Create a Razorpay account at <a href="https://razorpay.com" target="_blank" rel="noopener" className="underline">razorpay.com</a></li>
+                  <li>Go to Settings → API Keys to get your Key ID and Secret</li>
+                  <li>Create subscription plans in Razorpay Dashboard → Products → Subscriptions</li>
+                  <li>Set up webhook at Settings → Webhooks with your function URL</li>
+                  <li>Add all secrets in Base44 Dashboard → Settings → Environment Variables</li>
+                </ol>
+              </AlertDescription>
+            </Alert>
+
+            <Button 
+              variant="outline" 
+              className="w-full border-amber-300 text-amber-700 hover:bg-amber-100"
+              onClick={() => window.open('https://dashboard.razorpay.com', '_blank')}
+            >
+              <ExternalLink className="w-4 h-4 mr-2" />
+              Open Razorpay Dashboard
+            </Button>
+          </CardContent>
+        </Card>
+      )}
     </>
+  );
+}
+
+function SecretItem({ name, description }) {
+  return (
+    <div className="flex items-start gap-3 p-2 bg-white rounded-lg border border-amber-200">
+      <code className="text-xs bg-amber-100 px-2 py-1 rounded font-mono text-amber-800 whitespace-nowrap">
+        {name}
+      </code>
+      <span className="text-xs text-amber-600">{description}</span>
+    </div>
   );
 }
