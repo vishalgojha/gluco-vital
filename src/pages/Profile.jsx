@@ -20,6 +20,7 @@ import HbA1cTrendChart from "@/components/labs/HbA1cTrendChart";
 import CaregiverManager from "@/components/caregiver/CaregiverManager";
 import { NotificationSettings } from "@/components/notifications/NotificationManager";
 import CalendarExport from "@/components/medications/CalendarExport";
+import SubscriptionManager from "@/components/subscription/SubscriptionManager";
 
 export default function Profile() {
   const queryClient = useQueryClient();
@@ -586,6 +587,9 @@ export default function Profile() {
             userEmail={user?.email} 
             userName={formData.name || user?.full_name} 
           />
+
+          {/* Subscription Management */}
+          <SubscriptionManager user={user} />
 
           {/* Doctor */}
           <Card className="border-slate-100 shadow-sm">
