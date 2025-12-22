@@ -589,7 +589,7 @@ export default function Profile() {
           />
 
           {/* Subscription Management */}
-          <SubscriptionManager user={user} />
+          <SubscriptionManager user={user} isAdmin={user?.role === 'admin'} />
 
           {/* Doctor */}
           <Card className="border-slate-100 shadow-sm">
