@@ -21,6 +21,7 @@ import Profile from './pages/Profile';
 import Progress from './pages/Progress';
 import Reports from './pages/Reports';
 import Terms from './pages/Terms';
+import DoctorSummary from './pages/DoctorSummary';
 import __Layout from './Layout.jsx';
 
 
@@ -48,6 +49,7 @@ export const PAGES = {
     "Progress": Progress,
     "Reports": Reports,
     "Terms": Terms,
+    "DoctorSummary": DoctorSummary,
 }
 
 export const pagesConfig = {
