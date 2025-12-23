@@ -195,11 +195,21 @@ function SystemOverview() {
           
           <h4 className="text-slate-800 font-semibold mb-2">Architecture Principles</h4>
           <ul className="text-slate-600 space-y-1 mb-4">
-            <li>• <strong>WhatsApp-First:</strong> Primary data entry via conversational AI agent (Priya)</li>
+            <li>• <strong>Doctor-First:</strong> Everything builds toward doctor-consumable summaries</li>
+            <li>• <strong>Logging Is The Product:</strong> Patients generate signal, not manage diabetes</li>
+            <li>• <strong>Decision Scaffolding:</strong> OBSERVE / STABILIZE / ESCALATE states, not advice</li>
+            <li>• <strong>WhatsApp-First:</strong> Primary data entry via conversational AI agent</li>
             <li>• <strong>Draft-Sync Model:</strong> Health logs start as drafts, confirmed before becoming official records</li>
             <li>• <strong>User-Centric Security:</strong> Row-level security ensures users only access their own data</li>
-            <li>• <strong>Offline-Capable:</strong> PWA support for mobile installation</li>
             <li>• <strong>Multilingual:</strong> 14 language support with cultural context awareness</li>
+          </ul>
+
+          <h4 className="text-slate-800 font-semibold mb-2">Patient → Doctor Flow (The Spine)</h4>
+          <ul className="text-slate-600 space-y-1 mb-4">
+            <li>• <strong>Phase 1 - Patient (Continuous):</strong> Conversational logging, zero advice, fatigue detection</li>
+            <li>• <strong>Phase 2 - Compression (Automatic):</strong> DoctorSummary generation, no prose</li>
+            <li>• <strong>Phase 3 - Doctor (Episodic):</strong> Pattern view, risk flags, 30-second glance</li>
+            <li>• <strong>Phase 4 - Feedback Loop (Optional):</strong> Doctor actions as events, not instructions</li>
           </ul>
         </div>
       </SectionCard>
@@ -235,7 +245,7 @@ function SystemOverview() {
 │                                                                 │
 │  Functions: syncAchievements, razorpayWebhook, sendNotificationEmail │
 │                                                                 │
-│  Agents: health_buddy (Priya) - WhatsApp conversational agent   │
+│  Agents: health_buddy - Clinical decision scaffolding agent     │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
           `}</pre>
@@ -246,7 +256,8 @@ function SystemOverview() {
         <div className="grid md:grid-cols-2 gap-4">
           {[
             { name: "Health Logging", icon: Heart, desc: "Sugar, BP, meals, symptoms, medications" },
-            { name: "AI Agent (Priya)", icon: MessageCircle, desc: "WhatsApp-based health companion" },
+            { name: "AI Agent", icon: MessageCircle, desc: "Clinical-grade decision scaffolding, not advice" },
+            { name: "Doctor Summaries", icon: Stethoscope, desc: "Signal-based clinical views, 30-sec glance" },
             { name: "Medication Management", icon: Pill, desc: "Reminders, adherence tracking, refills" },
             { name: "Reports & Analytics", icon: FileText, desc: "Weekly reports, doctor summaries" },
             { name: "Gamification", icon: Trophy, desc: "Points, streaks, badges, leaderboard" },
@@ -304,29 +315,46 @@ function FeaturesWorkflows() {
           </div>
         </CollapsibleSection>
 
-        <CollapsibleSection title="🤖 AI Agent (Priya)">
+        <CollapsibleSection title="🤖 AI Agent (Health Buddy)">
           <div className="space-y-3 text-sm">
             <p className="text-slate-600">
-              Priya is the WhatsApp-based AI health companion that handles natural language health logging.
+              Clinical-grade diabetes support companion for decision scaffolding, logging, and doctor-aligned signal generation. 
+              <strong> Not a coach or advisor.</strong>
             </p>
+            <div className="bg-blue-50 p-3 rounded border border-blue-200">
+              <p className="font-medium text-blue-800 mb-2">Core Principles (Non-Negotiable):</p>
+              <ul className="text-blue-700 space-y-1 text-xs">
+                <li>• <strong>No Medical Advice:</strong> Never prescribe, diagnose, or optimize behavior</li>
+                <li>• <strong>Decision States:</strong> Route all situations to OBSERVE / STABILIZE / ESCALATE</li>
+                <li>• <strong>Logging Is The Product:</strong> Every response ends with a logging prompt</li>
+                <li>• <strong>Fatigue Detection:</strong> Track diabetes fatigue as clinical signal, not failure</li>
+                <li>• <strong>Doctor-Aligned:</strong> Write as if output will be read by clinician</li>
+              </ul>
+            </div>
             <div className="bg-slate-50 p-3 rounded">
-              <p className="font-medium text-slate-700 mb-2">Capabilities:</p>
+              <p className="font-medium text-slate-700 mb-2">Decision States:</p>
               <ul className="text-slate-600 space-y-1">
-                <li>• Parse natural language: "Sugar 156 after breakfast"</li>
-                <li>• Time inference from message timestamp</li>
-                <li>• Context capture (meals, missed meds, symptoms)</li>
-                <li>• Emergency alerts for critical readings</li>
-                <li>• Medication reminders and tracking</li>
-                <li>• Corrections and edit flow</li>
-                <li>• Sync/confirmation workflow</li>
+                <li>• <strong>OBSERVE:</strong> Gather data, monitor patterns</li>
+                <li>• <strong>STABILIZE:</strong> Reduce uncertainty, lower cognitive load (fatigue detected)</li>
+                <li>• <strong>ESCALATE:</strong> Recommend contacting healthcare professional</li>
+              </ul>
+            </div>
+            <div className="bg-violet-50 p-3 rounded border border-violet-200">
+              <p className="font-medium text-violet-800 mb-2">Fatigue Detection Triggers:</p>
+              <ul className="text-violet-700 text-xs space-y-1">
+                <li>• Language markers: "I don't care", "tired of this", "what's the point"</li>
+                <li>• Missed logs / logging gaps</li>
+                <li>• High readings without context</li>
+                <li>• Medication non-adherence patterns</li>
               </ul>
             </div>
             <div className="bg-amber-50 p-3 rounded border border-amber-200">
-              <p className="font-medium text-amber-800">Safety Thresholds:</p>
+              <p className="font-medium text-amber-800">Safety Escalation:</p>
               <ul className="text-amber-700 text-xs mt-1">
-                <li>• Sugar ≥ 350 mg/dL → Urgent warning</li>
-                <li>• Sugar &lt; 70 mg/dL → Hypoglycemia alert</li>
-                <li>• BP &gt; 180/120 → Hypertensive crisis warning</li>
+                <li>• Sugar &lt; 70 mg/dL → Immediate hypo alert, ESCALATE state</li>
+                <li>• Sugar &gt; 350 mg/dL → Urgent warning, ESCALATE state</li>
+                <li>• BP &gt; 180/120 → Hypertensive crisis, ESCALATE state</li>
+                <li>• Never delay escalation with logging loops</li>
               </ul>
             </div>
           </div>
@@ -366,6 +394,33 @@ function FeaturesWorkflows() {
                 <li>• Medication adherence reports</li>
                 <li>• AI-generated insights</li>
               </ul>
+            </div>
+          </div>
+        </CollapsibleSection>
+
+        <CollapsibleSection title="🩺 Doctor Clinical Summaries">
+          <div className="space-y-3 text-sm">
+            <p className="text-slate-600">
+              Signal-based summaries designed for 30-second doctor review. No prose, no recommendations — just actionable signals.
+            </p>
+            <div className="bg-emerald-50 p-3 rounded border border-emerald-200">
+              <p className="font-medium text-emerald-800 mb-2">Summary Components:</p>
+              <ul className="text-emerald-700 space-y-1 text-xs">
+                <li>• <strong>Decision State Distribution:</strong> % of interactions in OBSERVE / STABILIZE / ESCALATE</li>
+                <li>• <strong>Fatigue Signal:</strong> none / mild / detected / severe + trend</li>
+                <li>• <strong>Logging Consistency:</strong> strong / moderate / declining / poor</li>
+                <li>• <strong>Glucose Volatility:</strong> low / moderate / high / critical</li>
+                <li>• <strong>Risk Flags:</strong> adherence_risk, burnout_risk, hypo_risk, hyper_risk</li>
+                <li>• <strong>Patient Voice:</strong> Single verbatim quote for context</li>
+                <li>• <strong>System Recommendation:</strong> ignore / monitor / review / contact</li>
+              </ul>
+            </div>
+            <div className="bg-slate-50 p-3 rounded">
+              <p className="font-medium text-slate-700 mb-2">Validation Test:</p>
+              <p className="text-slate-600 text-xs">
+                "Could a doctor glance at this for 30 seconds and know what to do next?"<br />
+                If yes → valid. If no → iterate on compression, not conversation.
+              </p>
             </div>
           </div>
         </CollapsibleSection>
@@ -453,15 +508,24 @@ function FeatureStatus() {
     { category: "Health Logging", feature: "Weight logging", status: "implemented" },
     { category: "Health Logging", feature: "Draft-Sync model", status: "implemented" },
     
-    // WhatsApp Agent
-    { category: "AI Agent (Priya)", feature: "WhatsApp integration", status: "implemented" },
-    { category: "AI Agent (Priya)", feature: "Natural language parsing", status: "implemented" },
-    { category: "AI Agent (Priya)", feature: "Time inference", status: "implemented" },
-    { category: "AI Agent (Priya)", feature: "Context logging", status: "implemented" },
-    { category: "AI Agent (Priya)", feature: "Emergency alerts", status: "implemented" },
-    { category: "AI Agent (Priya)", feature: "Correction flow", status: "implemented" },
-    { category: "AI Agent (Priya)", feature: "Sync confirmation", status: "implemented" },
-    { category: "AI Agent (Priya)", feature: "Proactive medication reminders via WhatsApp", status: "not_implemented", note: "WhatsApp is for queries only, not scheduled pushes" },
+    // AI Agent
+    { category: "AI Agent", feature: "WhatsApp integration", status: "implemented" },
+    { category: "AI Agent", feature: "Natural language parsing", status: "implemented" },
+    { category: "AI Agent", feature: "Decision state routing (OBSERVE/STABILIZE/ESCALATE)", status: "implemented" },
+    { category: "AI Agent", feature: "Fatigue detection", status: "implemented" },
+    { category: "AI Agent", feature: "Context logging", status: "implemented" },
+    { category: "AI Agent", feature: "Safety escalation alerts", status: "implemented" },
+    { category: "AI Agent", feature: "Doctor-aligned language", status: "implemented" },
+    { category: "AI Agent", feature: "No medical advice policy", status: "implemented" },
+    { category: "AI Agent", feature: "Proactive medication reminders via WhatsApp", status: "not_implemented", note: "WhatsApp is for queries only, not scheduled pushes" },
+    
+    // Doctor Summaries
+    { category: "Doctor Summaries", feature: "Clinical summary generation", status: "implemented" },
+    { category: "Doctor Summaries", feature: "Decision state distribution", status: "implemented" },
+    { category: "Doctor Summaries", feature: "Fatigue signal tracking", status: "implemented" },
+    { category: "Doctor Summaries", feature: "Risk flag detection", status: "implemented" },
+    { category: "Doctor Summaries", feature: "Patient voice (verbatim)", status: "implemented" },
+    { category: "Doctor Summaries", feature: "System recommendation routing", status: "implemented" },
     
     // Medications
     { category: "Medication Management", feature: "Medication reminders", status: "implemented" },
@@ -698,6 +762,8 @@ function TechnicalImplementation() {
                 { name: "HealthReport", purpose: "Generated reports", fields: "report_type, summary, sugar_stats, bp_stats" },
                 { name: "LabResult", purpose: "Lab test results", fields: "test_type, value, reference_range, status" },
                 { name: "LabReport", purpose: "Uploaded lab documents", fields: "document_url, extraction_status" },
+                { name: "DoctorSummary", purpose: "Clinical summaries for doctors", fields: "decision_state_distribution, diabetes_fatigue, risk_flags, patient_voice" },
+                { name: "ConversationMemory", purpose: "Agent context memory", fields: "memory_type, key, value, confidence" },
                 { name: "DoctorConnection", purpose: "Patient-doctor links", fields: "status, permissions, access_type" },
                 { name: "DoctorFeedback", purpose: "Doctor recommendations", fields: "feedback_type, content, priority" },
                 { name: "CaregiverAccess", purpose: "Family access control", fields: "relation, permissions, status" },
@@ -843,7 +909,11 @@ function OperationsMaintenance() {
 │   ├── razorpayWebhook.js
 │   └── ...
 ├── agents/                   # AI agent configurations
-│   └── health_buddy.json     # Priya agent
+│   └── health_buddy.json     # Clinical decision scaffolding agent
+├── components/fatigue/       # Fatigue detection system
+│   └── FatigueDetector.jsx   # Derived fatigue scoring
+├── components/flow/          # Patient-Doctor flow
+│   └── PatientDoctorFlow.jsx # Compression & lifecycle
 └── Layout.jsx                # App shell/navigation`}</pre>
         </div>
       </SectionCard>
@@ -856,6 +926,23 @@ function OperationsMaintenance() {
               1. Update HealthLog.json entity schema enum<br />
               2. Add icon/color mapping in LogCard.jsx<br />
               3. Update agent instructions in health_buddy.json
+            </p>
+          </div>
+          <div className="p-3 bg-slate-50 rounded">
+            <p className="font-medium text-slate-700">Modifying Fatigue Detection</p>
+            <p className="text-slate-500 text-xs mt-1">
+              1. Update FATIGUE_MARKERS in FatigueDetector.jsx<br />
+              2. Adjust scoring weights in calculateFatigue()<br />
+              3. Document what CANNOT influence fatigue (important)
+            </p>
+          </div>
+          <div className="p-3 bg-slate-50 rounded">
+            <p className="font-medium text-slate-700">Adding Doctor Summary Fields</p>
+            <p className="text-slate-500 text-xs mt-1">
+              1. Update DoctorSummary.json entity schema<br />
+              2. Modify compressForDoctor() in PatientDoctorFlow.jsx<br />
+              3. Update DoctorSummaryCard.jsx display<br />
+              4. Validate: "Can doctor glance in 30 seconds?"
             </p>
           </div>
           <div className="p-3 bg-slate-50 rounded">
