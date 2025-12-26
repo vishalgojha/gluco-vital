@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { format, subDays, subMonths, startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfQuarter, endOfQuarter, differenceInDays } from "date-fns";
+
+const IST_TIMEZONE = "Asia/Kolkata";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
