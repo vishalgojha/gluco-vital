@@ -105,7 +105,7 @@ export default function About() {
             </div>
             <p className="text-slate-600 leading-relaxed">
               With over 537 million people living with diabetes worldwide, we're committed to making GlucoVital accessible 
-              to everyone. We support <strong>14 languages</strong> including Hindi, Chinese, Spanish, Arabic, and more.
+              to everyone. We support <strong>21 languages</strong> including Hindi, Tamil, Telugu, Marathi, Gujarati, Kannada, Malayalam, Punjabi, Bengali, Chinese, Spanish, Arabic, and more.
             </p>
           </div>
 

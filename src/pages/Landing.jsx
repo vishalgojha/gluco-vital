@@ -119,7 +119,7 @@ export default function Landing() {
 
   const stats = [
     { value: "537M", label: "People with diabetes globally" },
-    { value: "14", label: "Languages supported" },
+    { value: "21", label: "Languages supported" },
     { value: "24/7", label: "Health companion" },
   ];
 
@@ -389,7 +389,7 @@ export default function Landing() {
             Designed for people managing health in everyday life — across languages and cultures.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
-            {["🇮🇳 Hindi", "🇨🇳 中文", "🇺🇸 English", "🇵🇰 اردو", "🇧🇷 Português", "🇸🇦 العربية", "🇮🇩 Bahasa", "🇯🇵 日本語", "🇷🇺 Русский", "🇹🇷 Türkçe", "🇧🇩 বাংলা", "🇩🇪 Deutsch", "🇪🇸 Español", "🇲🇽 Hinglish"].map((lang, idx) => (
+            {["🇮🇳 Hindi", "🇮🇳 Tamil", "🇮🇳 Telugu", "🇮🇳 Marathi", "🇮🇳 Gujarati", "🇮🇳 Kannada", "🇮🇳 Malayalam", "🇮🇳 Punjabi", "🇮🇳 Bengali", "🇨🇳 中文", "🇺🇸 English", "🇵🇰 اردو", "🇧🇷 Português", "🇸🇦 العربية", "🇮🇩 Bahasa", "🇯🇵 日本語", "🇷🇺 Русский", "🇹🇷 Türkçe", "🇩🇪 Deutsch", "🇪🇸 Español", "🇲🇽 Hinglish"].map((lang, idx) => (
               <span key={idx} className="px-4 py-2 bg-white/10 rounded-full text-sm backdrop-blur">
                 {lang}
               </span>
