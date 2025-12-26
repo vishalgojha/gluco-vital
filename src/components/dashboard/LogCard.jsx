@@ -30,7 +30,9 @@ const logColors = {
   sleep: "bg-indigo-50 text-indigo-600 border-indigo-100"
 };
 
-export default function LogCard({ log, timezone = "Asia/Kolkata" }) {
+const IST_TIMEZONE = "Asia/Kolkata";
+
+export default function LogCard({ log, timezone = IST_TIMEZONE }) {
   const Icon = logIcons[log.log_type] || Activity;
   const colorClass = logColors[log.log_type] || "bg-slate-50 text-slate-600 border-slate-100";
 
