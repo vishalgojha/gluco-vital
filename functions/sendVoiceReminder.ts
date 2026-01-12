@@ -3,14 +3,27 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 const ELEVENLABS_API_KEY = Deno.env.get("ELEVENLABS_API_KEY");
 
 Deno.serve(async (req) => {
+  console.log('sendVoiceReminder function called');
+  
   try {
     const base44 = createClientFromRequest(req);
     const user = await base44.auth.me();
 
     if (!user) {
+      console.log('User not authenticated');
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
+    
+    console.log('User authenticated:', user.email);
 
+    if (!ELEVENLABS_API_KEY) {
+      console.error('ELEVENLABS_API_KEY is not set');
+      return Response.json({ error: 'ElevenLabs API key not configured' }, { status: 500 });
+    }
+
+    const body = await req.json();
+    console.log('Request body:', JSON.stringify(body));
+    
     const { 
       user_email,
       reminder_type, // 'medication', 'glucose', 'appointment', 'custom'
@@ -18,7 +31,7 @@ Deno.serve(async (req) => {
       appointment_details,
       custom_message,
       language = 'english'
-    } = await req.json();
+    } = body;
 
     const targetEmail = user_email || user.email;
 
