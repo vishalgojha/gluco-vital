@@ -21,8 +21,8 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import Profile from './pages/Profile';
 import Progress from './pages/Progress';
 import Reports from './pages/Reports';
-import Terms from './pages/Terms';
 import Subscription from './pages/Subscription';
+import Terms from './pages/Terms';
 import __Layout from './Layout.jsx';
 
 
@@ -50,8 +50,8 @@ export const PAGES = {
     "Profile": Profile,
     "Progress": Progress,
     "Reports": Reports,
-    "Terms": Terms,
     "Subscription": Subscription,
+    "Terms": Terms,
 }
 
 export const pagesConfig = {
