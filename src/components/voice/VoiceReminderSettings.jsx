@@ -40,21 +40,43 @@ export default function VoiceReminderSettings({ user, profile, onUpdate }) {
   const testVoiceReminder = async (type) => {
     setTesting(type);
     try {
+      console.log('Testing voice reminder:', type, settings.preferred_voice_language);
+      
       const response = await base44.functions.invoke('sendVoiceReminder', {
         reminder_type: type,
         medication_name: type === 'medication' ? 'Metformin' : undefined,
         language: settings.preferred_voice_language
       });
 
+      console.log('Voice reminder response:', response);
+
+      if (response.data?.error) {
+        toast.error(`Error: ${response.data.error}`);
+        console.error('Voice reminder error:', response.data);
+        return;
+      }
+
       if (response.data?.audio_url) {
         // Play the audio
         const audio = new Audio(response.data.audio_url);
-        audio.play();
+        audio.oncanplaythrough = () => {
+          audio.play().catch(e => {
+            console.error('Audio play failed:', e);
+            toast.error("Couldn't play audio. Check browser permissions.");
+          });
+        };
+        audio.onerror = (e) => {
+          console.error('Audio load error:', e);
+          toast.error("Audio file couldn't be loaded");
+        };
         toast.success("Playing voice reminder!");
+      } else {
+        toast.error("No audio URL returned");
+        console.error('No audio_url in response:', response.data);
       }
     } catch (error) {
-      toast.error("Failed to generate voice reminder");
-      console.error(error);
+      console.error('Voice reminder error:', error);
+      toast.error(`Failed: ${error.message || 'Unknown error'}`);
     } finally {
       setTesting(null);
     }
