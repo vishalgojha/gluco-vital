@@ -116,42 +116,44 @@ export default function PatientDetail() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
-      <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="max-w-6xl mx-auto px-3 sm:px-4 py-4 md:py-8">
         {/* Header */}
-        <div className="flex items-center gap-4 mb-8">
-          <Link to={createPageUrl("DoctorDashboard")}>
-            <Button variant="ghost" size="icon">
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-          </Link>
-          <div className="flex-1">
-            <h1 className="text-2xl font-bold text-slate-800">{connection?.patient_name || "Patient"}</h1>
-            <p className="text-slate-500">{patientEmail}</p>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 mb-6 md:mb-8">
+          <div className="flex items-center gap-3 flex-1">
+            <Link to={createPageUrl("DoctorDashboard")}>
+              <Button variant="ghost" size="icon" className="flex-shrink-0">
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
+            </Link>
+            <div className="min-w-0">
+              <h1 className="text-xl sm:text-2xl font-bold text-slate-800 truncate">{connection?.patient_name || "Patient"}</h1>
+              <p className="text-slate-500 text-sm truncate">{patientEmail}</p>
+            </div>
           </div>
-          <Link to={createPageUrl(`DoctorFeedback?connection=${connectionId}`)}>
-            <Button className="bg-[#5b9a8b] hover:bg-[#4a8a7b]">
+          <Link to={createPageUrl(`DoctorFeedback?connection=${connectionId}`)} className="w-full sm:w-auto">
+            <Button className="bg-[#5b9a8b] hover:bg-[#4a8a7b] w-full sm:w-auto">
               Add Feedback
             </Button>
           </Link>
         </div>
 
         {/* Patient Info */}
-        <Card className="mb-6">
-          <CardContent className="p-5">
-            <div className="flex items-start gap-4">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#5b9a8b]/20 to-[#7eb8a8]/20 flex items-center justify-center">
-                <User className="w-8 h-8 text-[#5b9a8b]" />
+        <Card className="mb-4 md:mb-6">
+          <CardContent className="p-3 sm:p-5">
+            <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-[#5b9a8b]/20 to-[#7eb8a8]/20 flex items-center justify-center flex-shrink-0">
+                <User className="w-6 h-6 sm:w-8 sm:h-8 text-[#5b9a8b]" />
               </div>
-              <div className="flex-1 grid md:grid-cols-4 gap-4">
+              <div className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 w-full">
                 <div>
                   <p className="text-xs text-slate-500">Age</p>
-                  <p className="font-medium">{profile?.age || "--"} years</p>
+                  <p className="font-medium text-sm sm:text-base">{profile?.age || "--"} years</p>
                 </div>
                 <div>
                   <p className="text-xs text-slate-500">Gender</p>
-                  <p className="font-medium capitalize">{profile?.gender || "--"}</p>
+                  <p className="font-medium text-sm sm:text-base capitalize">{profile?.gender || "--"}</p>
                 </div>
-                <div>
+                <div className="col-span-2 sm:col-span-1">
                   <p className="text-xs text-slate-500">Conditions</p>
                   <div className="flex flex-wrap gap-1 mt-1">
                     {(profile?.conditions || []).map(c => (
@@ -161,29 +163,29 @@ export default function PatientDetail() {
                 </div>
                 <div>
                   <p className="text-xs text-slate-500">On Insulin</p>
-                  <p className="font-medium">{profile?.is_on_insulin ? "Yes" : "No"}</p>
+                  <p className="font-medium text-sm sm:text-base">{profile?.is_on_insulin ? "Yes" : "No"}</p>
                 </div>
               </div>
             </div>
 
             {/* Targets */}
             {profile && (
-              <div className="mt-4 pt-4 border-t border-slate-100 grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="p-3 bg-blue-50 rounded-lg">
-                  <p className="text-xs text-blue-600">Target Fasting Sugar</p>
-                  <p className="font-bold text-blue-800">{profile.target_sugar_fasting || 100} mg/dL</p>
+              <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-slate-100 grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4">
+                <div className="p-2 sm:p-3 bg-blue-50 rounded-lg">
+                  <p className="text-[10px] sm:text-xs text-blue-600">Target Fasting</p>
+                  <p className="font-bold text-sm sm:text-base text-blue-800">{profile.target_sugar_fasting || 100} <span className="text-xs font-normal">mg/dL</span></p>
                 </div>
-                <div className="p-3 bg-violet-50 rounded-lg">
-                  <p className="text-xs text-violet-600">Target Post-Meal Sugar</p>
-                  <p className="font-bold text-violet-800">{profile.target_sugar_post_meal || 140} mg/dL</p>
+                <div className="p-2 sm:p-3 bg-violet-50 rounded-lg">
+                  <p className="text-[10px] sm:text-xs text-violet-600">Target Post-Meal</p>
+                  <p className="font-bold text-sm sm:text-base text-violet-800">{profile.target_sugar_post_meal || 140} <span className="text-xs font-normal">mg/dL</span></p>
                 </div>
-                <div className="p-3 bg-red-50 rounded-lg">
-                  <p className="text-xs text-red-600">Target BP (Systolic)</p>
-                  <p className="font-bold text-red-800">{profile.target_bp_systolic || 120} mmHg</p>
+                <div className="p-2 sm:p-3 bg-red-50 rounded-lg">
+                  <p className="text-[10px] sm:text-xs text-red-600">BP Systolic</p>
+                  <p className="font-bold text-sm sm:text-base text-red-800">{profile.target_bp_systolic || 120} <span className="text-xs font-normal">mmHg</span></p>
                 </div>
-                <div className="p-3 bg-orange-50 rounded-lg">
-                  <p className="text-xs text-orange-600">Target BP (Diastolic)</p>
-                  <p className="font-bold text-orange-800">{profile.target_bp_diastolic || 80} mmHg</p>
+                <div className="p-2 sm:p-3 bg-orange-50 rounded-lg">
+                  <p className="text-[10px] sm:text-xs text-orange-600">BP Diastolic</p>
+                  <p className="font-bold text-sm sm:text-base text-orange-800">{profile.target_bp_diastolic || 80} <span className="text-xs font-normal">mmHg</span></p>
                 </div>
               </div>
             )}
@@ -191,45 +193,45 @@ export default function PatientDetail() {
         </Card>
 
         {/* Stats Overview */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+        <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-4 mb-4 md:mb-6">
           <Card>
-            <CardContent className="p-4 text-center">
-              <p className="text-3xl font-bold text-blue-600">{avgSugar || "--"}</p>
-              <p className="text-xs text-slate-500">Avg Sugar (mg/dL)</p>
+            <CardContent className="p-2 sm:p-4 text-center">
+              <p className="text-xl sm:text-3xl font-bold text-blue-600">{avgSugar || "--"}</p>
+              <p className="text-[10px] sm:text-xs text-slate-500">Avg Sugar</p>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-4 text-center">
-              <p className="text-3xl font-bold text-red-600">{maxSugar || "--"}</p>
-              <p className="text-xs text-slate-500">Highest</p>
+            <CardContent className="p-2 sm:p-4 text-center">
+              <p className="text-xl sm:text-3xl font-bold text-red-600">{maxSugar || "--"}</p>
+              <p className="text-[10px] sm:text-xs text-slate-500">Highest</p>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-4 text-center">
-              <p className="text-3xl font-bold text-green-600">{minSugar || "--"}</p>
-              <p className="text-xs text-slate-500">Lowest</p>
+            <CardContent className="p-2 sm:p-4 text-center">
+              <p className="text-xl sm:text-3xl font-bold text-green-600">{minSugar || "--"}</p>
+              <p className="text-[10px] sm:text-xs text-slate-500">Lowest</p>
             </CardContent>
           </Card>
-          <Card>
-            <CardContent className="p-4 text-center">
-              <p className="text-3xl font-bold text-slate-800">{sugarLogs.length}</p>
-              <p className="text-xs text-slate-500">Total Readings</p>
+          <Card className="hidden sm:block">
+            <CardContent className="p-2 sm:p-4 text-center">
+              <p className="text-xl sm:text-3xl font-bold text-slate-800">{sugarLogs.length}</p>
+              <p className="text-[10px] sm:text-xs text-slate-500">Readings</p>
             </CardContent>
           </Card>
-          <Card>
-            <CardContent className="p-4 text-center">
-              <p className="text-3xl font-bold text-violet-600">{medicationLogs.length}</p>
-              <p className="text-xs text-slate-500">Medication Logs</p>
+          <Card className="hidden sm:block">
+            <CardContent className="p-2 sm:p-4 text-center">
+              <p className="text-xl sm:text-3xl font-bold text-violet-600">{medicationLogs.length}</p>
+              <p className="text-[10px] sm:text-xs text-slate-500">Med Logs</p>
             </CardContent>
           </Card>
         </div>
 
-        <Tabs defaultValue="trends" className="space-y-6">
-          <TabsList>
-            <TabsTrigger value="trends">Sugar Trends</TabsTrigger>
-            <TabsTrigger value="patterns">Patterns</TabsTrigger>
-            <TabsTrigger value="logs">All Logs</TabsTrigger>
-            <TabsTrigger value="feedback">Your Feedback</TabsTrigger>
+        <Tabs defaultValue="trends" className="space-y-4 md:space-y-6">
+          <TabsList className="w-full flex overflow-x-auto no-scrollbar">
+            <TabsTrigger value="trends" className="flex-1 text-xs sm:text-sm">Trends</TabsTrigger>
+            <TabsTrigger value="patterns" className="flex-1 text-xs sm:text-sm">Patterns</TabsTrigger>
+            <TabsTrigger value="logs" className="flex-1 text-xs sm:text-sm">Logs</TabsTrigger>
+            <TabsTrigger value="feedback" className="flex-1 text-xs sm:text-sm">Feedback</TabsTrigger>
           </TabsList>
 
           <TabsContent value="trends">
@@ -282,7 +284,7 @@ export default function PatientDetail() {
           </TabsContent>
 
           <TabsContent value="patterns">
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid gap-4 md:grid-cols-2 md:gap-6">
               {/* Time of Day Analysis */}
               <Card>
                 <CardHeader>
