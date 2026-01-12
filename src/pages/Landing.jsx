@@ -297,16 +297,18 @@ export default function Landing() {
       </section>
 
       {/* Final CTA */}
-      <section className="py-10 md:py-14 px-4 bg-[#f0f7f4]">
-        <div className="max-w-md mx-auto text-center">
-          <h2 className="text-xl md:text-2xl font-bold text-slate-800 mb-2">Ready to start?</h2>
-          <p className="text-sm text-slate-600 mb-5">Free. No credit card. 30 seconds.</p>
+      <section className="py-16 md:py-24 px-4 bg-gradient-to-br from-[#e8f5f1] via-[#f0f9f6] to-[#faf8f5] relative overflow-hidden">
+        <div className="absolute top-0 left-1/4 w-64 h-64 bg-[#5b9a8b]/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-48 h-48 bg-[#7eb8a8]/10 rounded-full blur-3xl" />
+        <div className="max-w-lg mx-auto text-center relative">
+          <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-3">Ready to take control?</h2>
+          <p className="text-lg text-slate-600 mb-8">Free. No credit card. Setup in 30 seconds.</p>
           <Button 
             size="lg"
             onClick={handleGetStarted}
-            className="bg-[#5b9a8b] hover:bg-[#4a8a7b] h-12 px-8 text-base rounded-xl shadow-md"
+            className="bg-gradient-to-r from-[#5b9a8b] to-[#4a8a7b] hover:from-[#4a8a7b] hover:to-[#3d7a6b] h-14 px-10 text-lg rounded-2xl shadow-xl shadow-[#5b9a8b]/25"
           >
-            Get Started Free <ArrowRight className="w-4 h-4 ml-2" />
+            Get Started Free <ArrowRight className="w-5 h-5 ml-2" />
           </Button>
         </div>
       </section>
