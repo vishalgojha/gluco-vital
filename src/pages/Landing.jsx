@@ -139,95 +139,85 @@ export default function Landing() {
           </nav>
         </div>
 
-        <div className="max-w-6xl mx-auto px-4 py-16 md:py-24 relative">
-                        <div className="grid md:grid-cols-2 gap-8 items-center">
-                          <div className="text-center md:text-left">
-                            <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur px-4 py-2 rounded-full text-sm text-[#5b9a8b] font-medium mb-6 border border-[#5b9a8b]/20">
-                              <Droplet className="w-4 h-4" aria-hidden="true" />
-                              Diabetes & Health Management Made Simple
-                            </div>
-
-                            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-800 mb-6 leading-tight">
-                              Your Personal <span className="text-[#5b9a8b]">Health Companion</span><br />
-                              on WhatsApp
-                            </h1>
-
-                            <p className="text-lg md:text-xl text-slate-600 max-w-xl mb-8">
-                              Log your sugar, BP, and meals via WhatsApp.<br />
-                              Get gentle insights, reminders, and clear summaries — in your language.
-                            </p>
-                          </div>
-
-                          <div className="hidden md:block relative">
-                            <div className="relative w-full aspect-square max-w-md mx-auto">
-                              <img 
-                                src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=500&h=500&fit=crop&q=80" 
-                                alt="Healthcare technology concept"
-                                className="rounded-3xl shadow-2xl shadow-[#5b9a8b]/20 object-cover w-full h-full"
-                              />
-                              <div className="absolute -bottom-4 -left-4 bg-white rounded-2xl p-4 shadow-lg border border-slate-100">
-                                <div className="flex items-center gap-3">
-                                  <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                                    <Check className="w-5 h-5 text-green-600" />
-                                  </div>
-                                  <div>
-                                    <p className="text-sm font-medium text-slate-800">Sugar Logged</p>
-                                    <p className="text-xs text-slate-500">120 mg/dL • In Range</p>
-                                  </div>
-                                </div>
-                              </div>
-                              <div className="absolute -top-4 -right-4 bg-white rounded-2xl p-4 shadow-lg border border-slate-100">
-                                <div className="flex items-center gap-3">
-                                  <div className="w-10 h-10 bg-violet-100 rounded-full flex items-center justify-center">
-                                    <MessageCircle className="w-5 h-5 text-violet-600" />
-                                  </div>
-                                  <div>
-                                    <p className="text-sm font-medium text-slate-800">WhatsApp</p>
-                                    <p className="text-xs text-slate-500">Connected ✓</p>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="text-center mt-8">
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button 
-              size="lg"
-              onClick={async () => {
-                const isAuth = await base44.auth.isAuthenticated();
-                if (isAuth) {
-                  window.location.href = createPageUrl("Home");
-                } else {
-                  base44.auth.redirectToLogin(createPageUrl("Home"));
-                }
-              }}
-              className="bg-[#5b9a8b] hover:bg-[#4a8a7b] h-14 px-10 text-lg rounded-xl shadow-lg"
-            >
-              Get Started Free <ArrowRight className="w-5 h-5 ml-2" />
-            </Button>
-            <Button 
-              size="lg"
-              variant="outline"
-              onClick={() => {
-                window.location.href = createPageUrl("Home") + "?demo=true";
-              }}
-              className="h-14 px-10 text-lg rounded-xl border-2 border-[#5b9a8b] text-[#5b9a8b] hover:bg-[#5b9a8b]/10"
-            >
-              Try Demo 👀
-            </Button>
-          </div>
-
-          {/* Stats */}
-          <div className="grid grid-cols-3 gap-4 max-w-lg mx-auto mt-12">
-            {stats.map((stat, idx) => (
-              <div key={idx} className="text-center">
-                <p className="text-2xl md:text-3xl font-bold text-[#5b9a8b]">{stat.value}</p>
-                <p className="text-xs md:text-sm text-slate-500">{stat.label}</p>
+        <div className="max-w-6xl mx-auto px-4 pt-4 pb-6 relative">
+          <div className="grid md:grid-cols-2 gap-4 items-center">
+            <div className="text-center md:text-left">
+              <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur px-3 py-1.5 rounded-full text-xs text-[#5b9a8b] font-medium mb-3 border border-[#5b9a8b]/20">
+                <Droplet className="w-3 h-3" aria-hidden="true" />
+                Diabetes & Health Management Made Simple
               </div>
-            ))}
-          </div>
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-800 mb-3 leading-tight">
+                Your Personal <span className="text-[#5b9a8b]">Health Companion</span><br />on WhatsApp
+              </h1>
+              <p className="text-base md:text-lg text-slate-600 max-w-xl mb-4">
+                Log your sugar, BP, and meals via WhatsApp. Get gentle insights, reminders, and clear summaries — in your language.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
+                <Button 
+                  size="lg"
+                  onClick={async () => {
+                    const isAuth = await base44.auth.isAuthenticated();
+                    if (isAuth) {
+                      window.location.href = createPageUrl("Home");
+                    } else {
+                      base44.auth.redirectToLogin(createPageUrl("Home"));
+                    }
+                  }}
+                  className="bg-[#5b9a8b] hover:bg-[#4a8a7b] h-11 px-6 text-base rounded-xl shadow-lg"
+                >
+                  Get Started Free <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+                <Button 
+                  size="lg"
+                  variant="outline"
+                  onClick={() => {
+                    window.location.href = createPageUrl("Home") + "?demo=true";
+                  }}
+                  className="h-11 px-6 text-base rounded-xl border-2 border-[#5b9a8b] text-[#5b9a8b] hover:bg-[#5b9a8b]/10"
+                >
+                  Try Demo 👀
+                </Button>
+              </div>
+              <div className="grid grid-cols-3 gap-3 max-w-sm mt-4 mx-auto md:mx-0">
+                {stats.map((stat, idx) => (
+                  <div key={idx} className="text-center md:text-left">
+                    <p className="text-xl md:text-2xl font-bold text-[#5b9a8b]">{stat.value}</p>
+                    <p className="text-[10px] md:text-xs text-slate-500">{stat.label}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="hidden md:block relative">
+              <div className="relative w-full max-w-xs mx-auto">
+                <img 
+                  src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=400&h=400&fit=crop&q=80" 
+                  alt="Healthcare technology concept"
+                  className="rounded-2xl shadow-xl shadow-[#5b9a8b]/20 object-cover w-full aspect-square"
+                />
+                <div className="absolute -bottom-2 -left-2 bg-white rounded-xl p-2.5 shadow-lg border border-slate-100">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                      <Check className="w-4 h-4 text-green-600" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-slate-800">Sugar Logged</p>
+                      <p className="text-[10px] text-slate-500">120 mg/dL • In Range</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="absolute -top-2 -right-2 bg-white rounded-xl p-2.5 shadow-lg border border-slate-100">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-violet-100 rounded-full flex items-center justify-center">
+                      <MessageCircle className="w-4 h-4 text-violet-600" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-slate-800">WhatsApp</p>
+                      <p className="text-[10px] text-slate-500">Connected ✓</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </header>
