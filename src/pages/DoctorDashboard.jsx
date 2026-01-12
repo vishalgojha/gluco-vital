@@ -85,20 +85,20 @@ export default function DoctorDashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-8">
+      <div className="max-w-6xl mx-auto px-3 sm:px-4 py-4 md:py-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 md:mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-slate-800">Doctor Dashboard</h1>
-            <p className="text-slate-500 mt-1">View and manage your patients' health data</p>
+            <h1 className="text-2xl md:text-3xl font-bold text-slate-800">Doctor Dashboard</h1>
+            <p className="text-slate-500 text-sm mt-1">View and manage your patients' health data</p>
           </div>
-          <Button onClick={() => setShowInviteDialog(true)} className="bg-[#5b9a8b] hover:bg-[#4a8a7b]">
+          <Button onClick={() => setShowInviteDialog(true)} className="bg-[#5b9a8b] hover:bg-[#4a8a7b] w-full sm:w-auto">
             <UserPlus className="w-4 h-4 mr-2" />
             Invite Patient
           </Button>
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-6 md:mb-8">
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
@@ -137,28 +137,28 @@ export default function DoctorDashboard() {
             <div className="space-y-3">
               {pendingConnections.map(conn => (
                 <Card key={conn.id} className="border-amber-200 bg-amber-50/50">
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
+                  <CardContent className="p-3 sm:p-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:justify-between">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
+                        <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
                           <span className="font-semibold text-amber-700">
                             {conn.patient_name?.[0]?.toUpperCase() || "P"}
                           </span>
                         </div>
-                        <div>
-                          <p className="font-medium text-slate-800">{conn.patient_name}</p>
-                          <p className="text-sm text-slate-500">{conn.patient_email}</p>
+                        <div className="min-w-0">
+                          <p className="font-medium text-slate-800 truncate">{conn.patient_name}</p>
+                          <p className="text-sm text-slate-500 truncate">{conn.patient_email}</p>
                         </div>
                       </div>
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 ml-auto sm:ml-0">
                         <Button
                           size="sm"
                           onClick={() => acceptMutation.mutate(conn.id)}
                           disabled={acceptMutation.isPending}
                           className="bg-green-600 hover:bg-green-700"
                         >
-                          <CheckCircle className="w-4 h-4 mr-1" />
-                          Accept
+                          <CheckCircle className="w-4 h-4 sm:mr-1" />
+                          <span className="hidden sm:inline">Accept</span>
                         </Button>
                         <Button
                           size="sm"
@@ -166,7 +166,8 @@ export default function DoctorDashboard() {
                           onClick={() => declineMutation.mutate(conn.id)}
                           className="text-red-600 border-red-200"
                         >
-                          Decline
+                          <span className="sm:hidden">✕</span>
+                          <span className="hidden sm:inline">Decline</span>
                         </Button>
                       </div>
                     </div>
@@ -309,7 +310,7 @@ function PatientCard({ connection }) {
 
   return (
     <Card className={`hover:shadow-md transition-shadow ${hasHighSugar || hasLowSugar ? 'border-red-200' : ''}`}>
-      <CardContent className="p-5">
+      <CardContent className="p-3 sm:p-5">
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#5b9a8b]/20 to-[#7eb8a8]/20 flex items-center justify-center">
@@ -334,37 +335,37 @@ function PatientCard({ connection }) {
         </div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-3 gap-3 mb-4">
-          <div className="p-3 bg-blue-50 rounded-lg text-center">
-            <Droplet className="w-4 h-4 text-blue-500 mx-auto mb-1" />
-            <p className={`text-lg font-bold ${hasHighSugar ? 'text-red-600' : hasLowSugar ? 'text-amber-600' : 'text-slate-800'}`}>
+        <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-4">
+          <div className="p-2 sm:p-3 bg-blue-50 rounded-lg text-center">
+            <Droplet className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500 mx-auto mb-1" />
+            <p className={`text-base sm:text-lg font-bold ${hasHighSugar ? 'text-red-600' : hasLowSugar ? 'text-amber-600' : 'text-slate-800'}`}>
               {lastSugar || "--"}
             </p>
-            <p className="text-xs text-slate-500">Last Sugar</p>
+            <p className="text-[10px] sm:text-xs text-slate-500">Last Sugar</p>
           </div>
-          <div className="p-3 bg-red-50 rounded-lg text-center">
-            <Heart className="w-4 h-4 text-red-500 mx-auto mb-1" />
-            <p className="text-lg font-bold text-slate-800">{lastBP || "--"}</p>
-            <p className="text-xs text-slate-500">Last BP</p>
+          <div className="p-2 sm:p-3 bg-red-50 rounded-lg text-center">
+            <Heart className="w-3 h-3 sm:w-4 sm:h-4 text-red-500 mx-auto mb-1" />
+            <p className="text-base sm:text-lg font-bold text-slate-800">{lastBP || "--"}</p>
+            <p className="text-[10px] sm:text-xs text-slate-500">Last BP</p>
           </div>
-          <div className="p-3 bg-green-50 rounded-lg text-center">
-            <TrendingUp className="w-4 h-4 text-green-500 mx-auto mb-1" />
-            <p className="text-lg font-bold text-slate-800">{avgSugar || "--"}</p>
-            <p className="text-xs text-slate-500">7-Day Avg</p>
+          <div className="p-2 sm:p-3 bg-green-50 rounded-lg text-center">
+            <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-green-500 mx-auto mb-1" />
+            <p className="text-base sm:text-lg font-bold text-slate-800">{avgSugar || "--"}</p>
+            <p className="text-[10px] sm:text-xs text-slate-500">7-Day Avg</p>
           </div>
         </div>
 
-        <div className="flex items-center justify-between text-sm text-slate-500 mb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between text-xs sm:text-sm text-slate-500 mb-4 gap-1">
           <span>{todayLogs.length} logs today</span>
-          <span>Last active: {logs[0] ? format(new Date(logs[0].created_date), "MMM d, h:mm a") : "Never"}</span>
+          <span className="truncate">Last: {logs[0] ? format(new Date(logs[0].created_date), "MMM d, h:mm a") : "Never"}</span>
         </div>
 
         {/* Actions */}
-        <div className="flex gap-2">
-          <Link to={createPageUrl(`PatientDetail?email=${connection.patient_email}&connection=${connection.id}`)} className="flex-1">
+        <div className="flex flex-wrap gap-2">
+          <Link to={createPageUrl(`PatientDetail?email=${connection.patient_email}&connection=${connection.id}`)} className="flex-1 min-w-[120px]">
             <Button variant="outline" className="w-full" size="sm">
               <Activity className="w-4 h-4 mr-1" />
-              View Details
+              <span className="hidden xs:inline">View</span> Details
             </Button>
           </Link>
           <Link to={createPageUrl(`DoctorMessages?connection=${connection.id}`)}>
@@ -374,8 +375,8 @@ function PatientCard({ connection }) {
           </Link>
           <Link to={createPageUrl(`DoctorFeedback?connection=${connection.id}`)}>
             <Button size="sm" className="bg-[#5b9a8b] hover:bg-[#4a8a7b]">
-              <FileText className="w-4 h-4 mr-1" />
-              Feedback
+              <FileText className="w-4 h-4 sm:mr-1" />
+              <span className="hidden sm:inline">Feedback</span>
             </Button>
           </Link>
         </div>
