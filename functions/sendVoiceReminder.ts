@@ -113,11 +113,15 @@ Deno.serve(async (req) => {
     }
 
     const audioBuffer = await ttsResponse.arrayBuffer();
+    console.log('Audio buffer size:', audioBuffer.byteLength);
+    
     const audioBlob = new Blob([audioBuffer], { type: 'audio/mpeg' });
     const fileName = `voice_reminder_${reminder_type}_${Date.now()}.mp3`;
     const file = new File([audioBlob], fileName, { type: 'audio/mpeg' });
     
+    console.log('Uploading audio file...');
     const uploadResult = await base44.integrations.Core.UploadFile({ file });
+    console.log('Upload result:', JSON.stringify(uploadResult));
 
     // Log the voice reminder sent
     console.log(`Voice reminder sent to ${targetEmail}: ${reminder_type}`);
