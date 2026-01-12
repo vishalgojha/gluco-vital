@@ -236,15 +236,15 @@ export default function PatientDetail() {
 
           <TabsContent value="trends">
             <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Activity className="w-5 h-5 text-blue-500" />
-                  Blood Sugar Trend (Last 30 readings)
+              <CardHeader className="p-3 sm:p-6">
+                <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                  <Activity className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500" />
+                  Sugar Trend
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-2 sm:p-6">
                 {chartData.length > 0 ? (
-                  <ResponsiveContainer width="100%" height={300}>
+                  <ResponsiveContainer width="100%" height={250}>
                     <AreaChart data={chartData}>
                       <defs>
                         <linearGradient id="sugarGradient" x1="0" y1="0" x2="0" y2="1">
@@ -347,29 +347,29 @@ export default function PatientDetail() {
           <TabsContent value="logs">
             <Card>
               <CardContent className="p-0">
-                <div className="divide-y divide-slate-100 max-h-[600px] overflow-y-auto">
+                <div className="divide-y divide-slate-100 max-h-[400px] sm:max-h-[600px] overflow-y-auto">
                   {logs.slice(0, 50).map(log => (
-                    <div key={log.id} className="p-4 flex items-center gap-4">
-                      <div className={`p-2 rounded-lg ${
+                    <div key={log.id} className="p-3 sm:p-4 flex items-center gap-2 sm:gap-4">
+                      <div className={`p-1.5 sm:p-2 rounded-lg flex-shrink-0 ${
                         log.log_type === 'sugar' ? 'bg-blue-100' :
                         log.log_type === 'blood_pressure' ? 'bg-red-100' :
                         log.log_type === 'medication' ? 'bg-violet-100' :
                         log.log_type === 'meal' ? 'bg-green-100' : 'bg-slate-100'
                       }`}>
-                        {log.log_type === 'sugar' && <Droplet className="w-4 h-4 text-blue-600" />}
-                        {log.log_type === 'blood_pressure' && <Heart className="w-4 h-4 text-red-600" />}
-                        {log.log_type === 'medication' && <Pill className="w-4 h-4 text-violet-600" />}
-                        {log.log_type === 'meal' && <Utensils className="w-4 h-4 text-green-600" />}
+                        {log.log_type === 'sugar' && <Droplet className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />}
+                        {log.log_type === 'blood_pressure' && <Heart className="w-3 h-3 sm:w-4 sm:h-4 text-red-600" />}
+                        {log.log_type === 'medication' && <Pill className="w-3 h-3 sm:w-4 sm:h-4 text-violet-600" />}
+                        {log.log_type === 'meal' && <Utensils className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />}
                       </div>
-                      <div className="flex-1">
-                        <p className="font-medium">{log.value}</p>
-                        <p className="text-xs text-slate-500 capitalize">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-sm sm:text-base truncate">{log.value}</p>
+                        <p className="text-[10px] sm:text-xs text-slate-500 capitalize truncate">
                           {log.time_of_day?.replace(/_/g, ' ')} • {log.log_type.replace(/_/g, ' ')}
                         </p>
                       </div>
-                      <div className="text-right">
-                        <p className="text-sm text-slate-600">{format(new Date(log.created_date), "MMM d")}</p>
-                        <p className="text-xs text-slate-400">{format(new Date(log.created_date), "h:mm a")}</p>
+                      <div className="text-right flex-shrink-0">
+                        <p className="text-xs sm:text-sm text-slate-600">{format(new Date(log.created_date), "MMM d")}</p>
+                        <p className="text-[10px] sm:text-xs text-slate-400">{format(new Date(log.created_date), "h:mm a")}</p>
                       </div>
                     </div>
                   ))}
@@ -380,10 +380,10 @@ export default function PatientDetail() {
 
           <TabsContent value="feedback">
             <Card>
-              <CardContent className="p-6">
+              <CardContent className="p-3 sm:p-6">
                 {feedback.length === 0 ? (
-                  <div className="text-center py-12">
-                    <p className="text-slate-500">No feedback given yet</p>
+                  <div className="text-center py-8 sm:py-12">
+                    <p className="text-slate-500 text-sm sm:text-base">No feedback given yet</p>
                     <Link to={createPageUrl(`DoctorFeedback?connection=${connectionId}`)}>
                       <Button className="mt-4 bg-[#5b9a8b] hover:bg-[#4a8a7b]">
                         Add First Feedback
