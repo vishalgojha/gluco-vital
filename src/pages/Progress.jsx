@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { format, subDays, startOfDay, differenceInDays } from "date-fns";
-import { TrendingUp, TrendingDown, Activity, Calendar, Download, Target, Pill } from "lucide-react";
+import { TrendingUp, TrendingDown, Activity, Calendar, Download, Target, Pill, BarChart2, GitCompare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -14,6 +14,7 @@ import ComparisonCards from "@/components/progress/ComparisonCards";
 import WearableDashboard from "@/components/wearables/WearableDashboard";
 import { generateDemoData } from "@/components/demo/DemoDataGenerator";
 import DemoBanner from "@/components/demo/DemoBanner";
+import MultiMetricDashboard from "@/components/analytics/MultiMetricDashboard";
 
 export default function Progress() {
   const [user, setUser] = useState(null);
@@ -75,6 +76,16 @@ export default function Progress() {
       return results?.[0];
     },
     enabled: !!user?.email || isDemo
+  });
+
+  const { data: adherenceData = [] } = useQuery({
+    queryKey: ['medication-adherence', user?.email, isDemo],
+    queryFn: async () => {
+      if (isDemo) return [];
+      const results = await base44.entities.MedicationAdherence.filter({ user_email: user?.email });
+      return results || [];
+    },
+    enabled: !!user?.email && !isDemo
   });
 
   // Filter logs by time range
@@ -155,14 +166,25 @@ export default function Progress() {
         />
 
         {/* Charts Section */}
-        <Tabs defaultValue="sugar" className="mt-8">
+        <Tabs defaultValue="analytics" className="mt-8">
           <TabsList className="flex flex-wrap h-auto gap-1 p-1 mb-6">
+            <TabsTrigger value="analytics" className="flex-1 min-w-[80px] text-xs sm:text-sm flex items-center gap-1">
+              <BarChart2 className="w-3 h-3" />Analytics
+            </TabsTrigger>
             <TabsTrigger value="sugar" className="flex-1 min-w-[80px] text-xs sm:text-sm">Sugar</TabsTrigger>
             <TabsTrigger value="bp" className="flex-1 min-w-[80px] text-xs sm:text-sm">BP</TabsTrigger>
             <TabsTrigger value="medication" className="flex-1 min-w-[80px] text-xs sm:text-sm">Meds</TabsTrigger>
             <TabsTrigger value="wearables" className="flex-1 min-w-[80px] text-xs sm:text-sm">Wearables</TabsTrigger>
             <TabsTrigger value="activity" className="flex-1 min-w-[80px] text-xs sm:text-sm">Activity</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="analytics" className="space-y-6">
+            <MultiMetricDashboard 
+              logs={filteredLogs}
+              adherenceData={adherenceData}
+              profile={profile}
+            />
+          </TabsContent>
 
           <TabsContent value="sugar" className="space-y-6">
             <SugarTrendChart 
