@@ -61,7 +61,8 @@ const PLANS = {
   }
 };
 
-export default function SubscriptionManager({ user, isAdmin = false }) {
+export default function SubscriptionManager({ user }) {
+  const isAdmin = user?.role === 'admin';
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState("premium");
   const [billingCycle, setBillingCycle] = useState("monthly");
