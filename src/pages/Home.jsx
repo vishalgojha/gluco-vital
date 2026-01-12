@@ -441,9 +441,22 @@ export default function Home() {
               </div>
             </div>
 
+            {/* Supported By */}
+            <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm text-center">
+              <p className="text-xs text-slate-500 mb-3">Supported by</p>
+              <a href="https://elevenlabs.io/startup-grants" target="_blank" rel="noopener noreferrer">
+                <img 
+                  src="https://eleven-public-cdn.elevenlabs.io/payloadcms/pwsc4vchsqt-ElevenLabsGrants.webp" 
+                  alt="ElevenLabs Grants" 
+                  className="mx-auto"
+                  style={{ width: '180px' }}
+                />
+              </a>
+            </div>
+
             {/* Global Reach */}
             <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
-              <h3 className="font-semibold text-slate-800 mb-3">🌍 Supports 14 Languages</h3>
+              <h3 className="font-semibold text-slate-800 mb-3">🌍 Supports 21 Languages</h3>
               <p className="text-xs text-slate-500 mb-3">Countries with highest diabetics:</p>
               <div className="space-y-2 text-xs">
                 <div className="flex justify-between items-center p-2 bg-red-50 rounded-lg">
