@@ -223,105 +223,89 @@ export default function Landing() {
       </header>
 
       {/* How it Works */}
-      <section className="py-8 bg-white/50">
-                    <div className="max-w-6xl mx-auto px-4">
-          <div className="flex flex-col md:flex-row items-center gap-6 mb-8">
-                        <div className="md:w-1/3">
-                          {/* WhatsApp Chat Mockup */}
-                          <div className="bg-[#e5ddd5] rounded-2xl shadow-lg w-full max-w-xs mx-auto overflow-hidden">
-                            {/* WhatsApp Header */}
-                            <div className="bg-[#075e54] text-white px-4 py-3 flex items-center gap-3">
-                              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#5b9a8b] to-[#7eb8a8] flex items-center justify-center">
-                                <Heart className="w-5 h-5 text-white" />
-                              </div>
-                              <div>
-                                <p className="font-semibold text-sm">Gluco Vital</p>
-                                <p className="text-xs text-green-200">online</p>
-                              </div>
-                            </div>
-                            {/* Chat Messages */}
-                            <div className="p-3 space-y-2">
-                              {/* User message */}
-                              <div className="flex justify-end">
-                                <div className="bg-[#dcf8c6] rounded-lg px-3 py-2 max-w-[80%] shadow-sm">
-                                  <p className="text-sm text-slate-800">Fasting sugar 118</p>
-                                  <p className="text-[10px] text-slate-500 text-right mt-1">9:15 AM ✓✓</p>
-                                </div>
-                              </div>
-                              {/* Bot response */}
-                              <div className="flex justify-start">
-                                <div className="bg-white rounded-lg px-3 py-2 max-w-[85%] shadow-sm">
-                                  <p className="text-sm text-slate-800">✅ Logged! Fasting sugar 118 mg/dL — within your target range. Great start to the day! 🌅</p>
-                                  <p className="text-[10px] text-slate-500 text-right mt-1">9:15 AM</p>
-                                </div>
-                              </div>
-                              {/* User message */}
-                              <div className="flex justify-end">
-                                <div className="bg-[#dcf8c6] rounded-lg px-3 py-2 max-w-[80%] shadow-sm">
-                                  <p className="text-sm text-slate-800">Took metformin</p>
-                                  <p className="text-[10px] text-slate-500 text-right mt-1">9:16 AM ✓✓</p>
-                                </div>
-                              </div>
-                              {/* Bot response */}
-                              <div className="flex justify-start">
-                                <div className="bg-white rounded-lg px-3 py-2 max-w-[85%] shadow-sm">
-                                  <p className="text-sm text-slate-800">💊 Medication logged! Keep up the consistency.</p>
-                                  <p className="text-[10px] text-slate-500 text-right mt-1">9:16 AM</p>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="md:w-2/3 text-center md:text-left">
-                          <h2 className="text-3xl font-bold text-slate-800 mb-4">
-                            Simple as Sending a Message
-                          </h2>
-                          <p className="text-slate-500 max-w-xl">
-                            No complex apps to learn. Just text your health data on WhatsApp. Our AI understands natural language in 14 languages.
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="grid md:grid-cols-3 gap-6">
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 text-center">
-              <div className="w-14 h-14 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <MessageCircle className="w-7 h-7 text-green-600" />
+      <section className="py-6 lg:py-10 bg-white/50">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="flex flex-col md:flex-row items-center gap-4 lg:gap-6 mb-6 lg:mb-8">
+            <div className="md:w-1/3">
+              <div className="bg-[#e5ddd5] rounded-xl shadow-lg w-full max-w-[240px] mx-auto overflow-hidden">
+                <div className="bg-[#075e54] text-white px-3 py-2 flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#5b9a8b] to-[#7eb8a8] flex items-center justify-center">
+                    <Heart className="w-4 h-4 text-white" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-xs">Gluco Vital</p>
+                    <p className="text-[10px] text-green-200">online</p>
+                  </div>
+                </div>
+                <div className="p-2 space-y-1.5">
+                  <div className="flex justify-end">
+                    <div className="bg-[#dcf8c6] rounded-lg px-2 py-1.5 max-w-[80%] shadow-sm">
+                      <p className="text-xs text-slate-800">Fasting sugar 118</p>
+                      <p className="text-[8px] text-slate-500 text-right">9:15 AM ✓✓</p>
+                    </div>
+                  </div>
+                  <div className="flex justify-start">
+                    <div className="bg-white rounded-lg px-2 py-1.5 max-w-[85%] shadow-sm">
+                      <p className="text-xs text-slate-800">✅ Logged! 118 mg/dL — in range. Great start! 🌅</p>
+                      <p className="text-[8px] text-slate-500 text-right">9:15 AM</p>
+                    </div>
+                  </div>
+                  <div className="flex justify-end">
+                    <div className="bg-[#dcf8c6] rounded-lg px-2 py-1.5 max-w-[80%] shadow-sm">
+                      <p className="text-xs text-slate-800">Took metformin</p>
+                      <p className="text-[8px] text-slate-500 text-right">9:16 AM ✓✓</p>
+                    </div>
+                  </div>
+                  <div className="flex justify-start">
+                    <div className="bg-white rounded-lg px-2 py-1.5 max-w-[85%] shadow-sm">
+                      <p className="text-xs text-slate-800">💊 Medication logged!</p>
+                      <p className="text-[8px] text-slate-500 text-right">9:16 AM</p>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <h3 className="font-semibold text-lg text-slate-800 mb-2">1. Send a Message</h3>
-              <p className="text-slate-500 text-sm">
-                Text "Sugar 120" or "BP 130/80" on WhatsApp. That's it!
+            </div>
+            <div className="md:w-2/3 text-center md:text-left">
+              <h2 className="text-xl lg:text-2xl font-bold text-slate-800 mb-2">Simple as Sending a Message</h2>
+              <p className="text-slate-500 text-sm lg:text-base max-w-xl">
+                No complex apps to learn. Just text your health data on WhatsApp. Our AI understands natural language in 21 languages.
               </p>
-              <div className="mt-4 p-3 bg-slate-50 rounded-lg text-left text-sm">
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-3 lg:gap-4">
+            <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100 text-center">
+              <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-2">
+                <MessageCircle className="w-5 h-5 text-green-600" />
+              </div>
+              <h3 className="font-semibold text-sm text-slate-800 mb-1">1. Send a Message</h3>
+              <p className="text-slate-500 text-xs">Text "Sugar 120" or "BP 130/80" on WhatsApp.</p>
+              <div className="mt-2 p-2 bg-slate-50 rounded-lg text-left text-[10px]">
                 <p className="text-green-600 font-mono">"Fasting sugar 110"</p>
-                <p className="text-green-600 font-mono">"Ate roti dal sabzi"</p>
-                <p className="text-green-600 font-mono">"Took medicine"</p>
+                <p className="text-green-600 font-mono">"Ate roti dal"</p>
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 text-center">
-              <div className="w-14 h-14 bg-violet-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <TrendingUp className="w-7 h-7 text-violet-600" />
+            <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100 text-center">
+              <div className="w-10 h-10 bg-violet-100 rounded-xl flex items-center justify-center mx-auto mb-2">
+                <TrendingUp className="w-5 h-5 text-violet-600" />
               </div>
-              <h3 className="font-semibold text-lg text-slate-800 mb-2">2. Get Pattern Insights</h3>
-              <p className="text-slate-500 text-sm">
-                Gluco Vital analyzes your logs and highlights useful patterns.
-              </p>
-              <div className="mt-4 p-3 bg-violet-50 rounded-lg text-left text-sm text-violet-700">
-                "Your post-dinner readings have been higher than usual. You could try a lighter dinner and see how it goes."
+              <h3 className="font-semibold text-sm text-slate-800 mb-1">2. Get Pattern Insights</h3>
+              <p className="text-slate-500 text-xs">AI analyzes logs and highlights patterns.</p>
+              <div className="mt-2 p-2 bg-violet-50 rounded-lg text-left text-[10px] text-violet-700">
+                "Post-dinner readings higher than usual."
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 text-center">
-              <div className="w-14 h-14 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <Smartphone className="w-7 h-7 text-blue-600" />
+            <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100 text-center">
+              <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-2">
+                <Smartphone className="w-5 h-5 text-blue-600" />
               </div>
-              <h3 className="font-semibold text-lg text-slate-800 mb-2">3. Track Progress</h3>
-              <p className="text-slate-500 text-sm">
-                Clear summaries that help you notice progress over time.
-              </p>
-              <div className="mt-4 flex justify-center gap-2">
-                <div className="px-3 py-1.5 bg-amber-100 text-amber-700 rounded-full text-xs font-medium">🏆 7 days logged</div>
-                <div className="px-3 py-1.5 bg-green-100 text-green-700 rounded-full text-xs font-medium">✓ Within range</div>
+              <h3 className="font-semibold text-sm text-slate-800 mb-1">3. Track Progress</h3>
+              <p className="text-slate-500 text-xs">Clear summaries to notice progress.</p>
+              <div className="mt-2 flex justify-center gap-1.5">
+                <div className="px-2 py-1 bg-amber-100 text-amber-700 rounded-full text-[10px] font-medium">🏆 7 days</div>
+                <div className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-[10px] font-medium">✓ In range</div>
               </div>
             </div>
           </div>
