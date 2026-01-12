@@ -11,7 +11,7 @@ import { SugarTrendChart, SugarDistributionChart, TimeOfDayChart, BPTrendChart }
 import MedicationAdherenceChart from "@/components/progress/MedicationAdherenceChart";
 import ProgressStats from "@/components/progress/ProgressStats";
 import ComparisonCards from "@/components/progress/ComparisonCards";
-import WearableDashboard from "@/components/wearables/WearableDashboard";
+
 import { generateDemoData } from "@/components/demo/DemoDataGenerator";
 import DemoBanner from "@/components/demo/DemoBanner";
 import MultiMetricDashboard from "@/components/analytics/MultiMetricDashboard";
@@ -174,7 +174,6 @@ export default function Progress() {
             <TabsTrigger value="sugar" className="flex-1 min-w-[80px] text-xs sm:text-sm">Sugar</TabsTrigger>
             <TabsTrigger value="bp" className="flex-1 min-w-[80px] text-xs sm:text-sm">BP</TabsTrigger>
             <TabsTrigger value="medication" className="flex-1 min-w-[80px] text-xs sm:text-sm">Meds</TabsTrigger>
-            <TabsTrigger value="wearables" className="flex-1 min-w-[80px] text-xs sm:text-sm">Wearables</TabsTrigger>
             <TabsTrigger value="activity" className="flex-1 min-w-[80px] text-xs sm:text-sm">Activity</TabsTrigger>
           </TabsList>
 
@@ -213,13 +212,6 @@ export default function Progress() {
             <MedicationAdherenceChart 
               logs={filteredLogs}
               profile={profile}
-              timeRange={parseInt(timeRange)}
-            />
-          </TabsContent>
-
-          <TabsContent value="wearables" className="space-y-6">
-            <WearableDashboard 
-              userEmail={user?.email}
               timeRange={parseInt(timeRange)}
             />
           </TabsContent>
