@@ -311,8 +311,8 @@ export default function SubscriptionManager({ user, isAdmin = false }) {
         </DialogContent>
       </Dialog>
 
-      {/* Admin: Secrets Configuration Info */}
-      {isAdmin && (
+      {/* Admin: Secrets Configuration Info - Only show to actual admins */}
+      {isAdmin === true && user?.role === 'admin' && (
         <Card className="border-2 border-amber-200 bg-amber-50">
           <CardHeader className="pb-3">
             <CardTitle className="text-lg flex items-center gap-2 text-amber-800">
