@@ -7,12 +7,12 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { User, Heart, Target, Globe, Plus, X, Save, Loader2, Pill, Watch, FileImage, FlaskConical } from "lucide-react";
+import { User, Heart, Target, Globe, Plus, X, Save, Loader2, Pill, FileImage, FlaskConical } from "lucide-react";
 import { toast } from "sonner";
 import MedicationRemindersList from "@/components/medications/MedicationRemindersList";
 import AdherenceTracker from "@/components/medications/AdherenceTracker";
 import MedicationCalendar from "@/components/medications/MedicationCalendar";
-import WearableImport from "@/components/import/WearableImport";
+
 import PrescriptionUpload from "@/components/profile/PrescriptionUpload";
 import LabResultsList from "@/components/labs/LabResultsList";
 import LabReportUpload from "@/components/labs/LabReportUpload";
@@ -583,12 +583,6 @@ export default function Profile() {
 
           {/* Notification Settings */}
           <NotificationSettings user={user} />
-
-          {/* Wearable Import */}
-          <WearableImport 
-            userEmail={user?.email} 
-            onImportComplete={() => queryClient.invalidateQueries({ queryKey: ['health-logs'] })}
-          />
 
           {/* Family & Caregivers */}
           <CaregiverManager 
