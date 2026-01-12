@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
+import { encode as base64Encode } from "https://deno.land/std@0.208.0/encoding/base64.ts";
 
 Deno.serve(async (req) => {
   console.log('sendVoiceReminder function called');
@@ -15,66 +16,43 @@ Deno.serve(async (req) => {
     console.log('User authenticated:', user.email);
 
     const ELEVENLABS_API_KEY = Deno.env.get("ELEVENLABS_API_KEY");
+    console.log('API Key exists:', !!ELEVENLABS_API_KEY);
+    console.log('API Key length:', ELEVENLABS_API_KEY?.length || 0);
+    
     if (!ELEVENLABS_API_KEY) {
-      console.error('ELEVENLABS_API_KEY is not set');
-      return Response.json({ error: 'ElevenLabs API key not configured. Please add it in Dashboard > Settings > Environment Variables.' }, { status: 500 });
+      return Response.json({ error: 'ElevenLabs API key not configured' }, { status: 500 });
     }
 
-    let body;
+    let body = {};
     try {
       body = await req.json();
-    } catch (parseError) {
-      console.error('JSON parse error:', parseError);
-      return Response.json({ error: 'Invalid request body' }, { status: 400 });
+    } catch (e) {
+      console.log('No body or invalid JSON, using defaults');
     }
-    
-    console.log('Request body:', JSON.stringify(body));
     
     const { 
       reminder_type = 'general',
-      medication_name,
-      appointment_details,
-      custom_message,
-      language = 'english'
+      medication_name = 'medication'
     } = body;
 
-    // Get user name for personalization
-    const patientName = user.full_name?.split(' ')[0] || 'there';
+    const patientName = user.full_name?.split(' ')[0] || 'friend';
+    const hour = new Date().getHours();
+    const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
 
-    // Generate contextual reminder messages
-    let reminderMessage = '';
-    const currentHour = new Date().getHours();
-    const timeGreeting = currentHour < 12 ? 'Good morning' : currentHour < 17 ? 'Good afternoon' : 'Good evening';
-
-    switch (reminder_type) {
-      case 'medication':
-        reminderMessage = `${timeGreeting}! This is a gentle reminder to take your ${medication_name || 'medication'}. Staying consistent helps keep your sugar levels stable.`;
-        break;
-      
-      case 'glucose':
-        const readingType = currentHour < 10 ? 'fasting' : currentHour < 14 ? 'post-lunch' : 'evening';
-        reminderMessage = `${timeGreeting}! It's time for your ${readingType} glucose reading. A quick check helps you stay on track.`;
-        break;
-      
-      case 'appointment':
-        reminderMessage = `${timeGreeting}! A friendly reminder about your upcoming doctor's appointment${appointment_details ? ': ' + appointment_details : ''}. Bring your recent glucose readings!`;
-        break;
-      
-      case 'custom':
-        reminderMessage = custom_message || 'This is your health reminder from Gluco Vital.';
-        break;
-      
-      default:
-        reminderMessage = `${timeGreeting}! This is your health reminder from Gluco Vital.`;
+    let message = `${greeting} ${patientName}! `;
+    if (reminder_type === 'medication') {
+      message += `Time to take your ${medication_name}.`;
+    } else if (reminder_type === 'glucose') {
+      message += `Time for your glucose check.`;
+    } else if (reminder_type === 'appointment') {
+      message += `Don't forget your doctor appointment.`;
+    } else {
+      message += `This is your health reminder.`;
     }
 
-    const voiceId = '21m00Tcm4TlvDq8ikWAM'; // Rachel voice
-    const fullMessage = `Hello ${patientName}. ${reminderMessage}`;
-
-    console.log('Calling ElevenLabs API...');
-    console.log('Message length:', fullMessage.length);
+    console.log('Message:', message);
     
-    const ttsResponse = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
+    const ttsResponse = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/21m00Tcm4TlvDq8ikWAM`, {
       method: 'POST',
       headers: {
         'Accept': 'audio/mpeg',
@@ -82,55 +60,37 @@ Deno.serve(async (req) => {
         'xi-api-key': ELEVENLABS_API_KEY
       },
       body: JSON.stringify({
-        text: fullMessage,
-        model_id: 'eleven_multilingual_v2',
+        text: message,
+        model_id: 'eleven_monolingual_v1',
         voice_settings: {
           stability: 0.5,
-          similarity_boost: 0.75
+          similarity_boost: 0.5
         }
       })
     });
 
-    console.log('ElevenLabs response status:', ttsResponse.status);
+    console.log('ElevenLabs status:', ttsResponse.status);
 
     if (!ttsResponse.ok) {
-      const errorText = await ttsResponse.text();
-      console.error('ElevenLabs API error:', errorText);
-      return Response.json({ 
-        error: 'Failed to generate voice', 
-        details: errorText,
-        status: ttsResponse.status 
-      }, { status: 500 });
+      const errText = await ttsResponse.text();
+      console.error('ElevenLabs error:', errText);
+      return Response.json({ error: 'ElevenLabs failed', details: errText }, { status: 500 });
     }
 
     const audioBuffer = await ttsResponse.arrayBuffer();
-    console.log('Audio buffer size:', audioBuffer.byteLength);
+    console.log('Audio size:', audioBuffer.byteLength);
     
-    if (audioBuffer.byteLength === 0) {
-      return Response.json({ error: 'Empty audio returned from ElevenLabs' }, { status: 500 });
-    }
-    
-    // Convert to base64
-    const uint8Array = new Uint8Array(audioBuffer);
-    const chunkSize = 8192;
-    let binaryString = '';
-    for (let i = 0; i < uint8Array.length; i += chunkSize) {
-      const chunk = uint8Array.subarray(i, i + chunkSize);
-      binaryString += String.fromCharCode.apply(null, chunk);
-    }
-    const base64Audio = btoa(binaryString);
-
-    console.log('Voice reminder generated successfully');
+    const base64Audio = base64Encode(new Uint8Array(audioBuffer));
+    console.log('Base64 length:', base64Audio.length);
 
     return Response.json({
       success: true,
       audio_base64: base64Audio,
-      message: fullMessage,
-      reminder_type
+      message: message
     });
 
   } catch (error) {
-    console.error('Send voice reminder error:', error.message, error.stack);
-    return Response.json({ error: error.message || 'Unknown error' }, { status: 500 });
+    console.error('Error:', error.message, error.stack);
+    return Response.json({ error: error.message }, { status: 500 });
   }
 });
