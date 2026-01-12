@@ -3,14 +3,14 @@ import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Pill, Clock, Bell, BellRing, BellOff, Plus, Pencil, Trash2, Check, X, Shield, ClipboardList } from "lucide-react";
+import { Pill, Clock, Bell, BellRing, BellOff, Plus, Pencil, Trash2, Check, X, Shield, AlertTriangle } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import MedicationReminderForm from "./MedicationReminderForm";
 import CalendarExportButton, { ExportAllRemindersButton } from "./CalendarExport";
+import RefillReminder, { RefillSummaryCard, needsRefill } from "./RefillReminder";
 import DrugInteractionChecker from "./DrugInteractionChecker";
-import RefillAlerts from "./RefillAlerts";
-import MedicationIntakeLogger from "./MedicationIntakeLogger";
+import { QuickMedicationLog } from "./MedicationIntakeLog";
 
 const TIMING_LABELS = {
   specific_time: "At set times",
@@ -32,8 +32,6 @@ export default function MedicationRemindersList({ reminders = [], profile, onUpd
   const [showForm, setShowForm] = useState(false);
   const [editingReminder, setEditingReminder] = useState(null);
   const [showInteractionChecker, setShowInteractionChecker] = useState(false);
-  const [showIntakeLogger, setShowIntakeLogger] = useState(false);
-  const [selectedReminder, setSelectedReminder] = useState(null);
 
   const handleSave = async (formData) => {
     if (!formData.medication_name || formData.medication_name === "__custom__") {
@@ -84,37 +82,17 @@ export default function MedicationRemindersList({ reminders = [], profile, onUpd
     }
   };
 
-  const markTaken = async (reminder) => {
-    // Open the intake logger for detailed logging
-    setSelectedReminder(reminder);
-    setShowIntakeLogger(true);
-  };
-
-  const handleUpdateReminder = async (reminderId, updates) => {
+  const handleRefill = async (reminder) => {
     try {
-      await base44.entities.MedicationReminder.update(reminderId, updates);
-      toast.success("Medication updated!");
-      onUpdate?.();
-    } catch (error) {
-      toast.error("Failed to update");
-    }
-  };
-
-  const markSkipped = async (reminder, reason = "") => {
-    try {
-      await base44.entities.MedicationAdherence.create({
-        user_email: profile?.user_email,
-        reminder_id: reminder.id,
-        medication_name: reminder.medication_name,
-        scheduled_time: new Date().toISOString(),
-        status: "skipped",
-        confirmed_via: "app",
-        skip_reason: reason
+      const newPillCount = reminder.pills_per_strip || 30;
+      await base44.entities.MedicationReminder.update(reminder.id, {
+        pills_remaining: (reminder.pills_remaining || 0) + newPillCount,
+        last_refill_date: format(new Date(), "yyyy-MM-dd")
       });
-      toast.info(`${reminder.medication_name} marked as skipped`);
+      toast.success(`${reminder.medication_name} refilled!`);
       onUpdate?.();
     } catch (error) {
-      toast.error("Failed to update");
+      toast.error("Failed to update refill");
     }
   };
 
@@ -139,7 +117,13 @@ export default function MedicationRemindersList({ reminders = [], profile, onUpd
   return (
     <div className="space-y-4">
       {/* Refill Alerts */}
-      <RefillAlerts reminders={reminders} onUpdateReminder={handleUpdateReminder} />
+      {reminders.some(needsRefill) && (
+        <RefillReminder 
+          reminders={reminders} 
+          onRefill={handleRefill}
+          onDismiss={() => {}}
+        />
+      )}
 
       <div className="flex items-center justify-between flex-wrap gap-2">
         <h3 className="font-semibold text-slate-800 flex items-center gap-2">
@@ -152,7 +136,7 @@ export default function MedicationRemindersList({ reminders = [], profile, onUpd
               size="sm" 
               variant="outline"
               onClick={() => setShowInteractionChecker(true)}
-              className="text-amber-600 border-amber-200 hover:bg-amber-50"
+              className="text-violet-600"
             >
               <Shield className="w-4 h-4 mr-1" /> Check Interactions
             </Button>
@@ -211,6 +195,12 @@ export default function MedicationRemindersList({ reminders = [], profile, onUpd
                         ✓ Last taken: {format(new Date(reminder.last_taken), "MMM d, h:mm a")}
                       </p>
                     )}
+                    {reminder.pills_remaining > 0 && (
+                      <p className={`text-xs mt-1 ${needsRefill(reminder) ? "text-amber-600" : "text-slate-400"}`}>
+                        {needsRefill(reminder) && <AlertTriangle className="w-3 h-3 inline mr-1" />}
+                        {reminder.pills_remaining} {reminder.dosage_unit || "pills"} remaining
+                      </p>
+                    )}
                   </div>
                   <Switch
                     checked={reminder.is_active}
@@ -218,22 +208,13 @@ export default function MedicationRemindersList({ reminders = [], profile, onUpd
                   />
                 </div>
                 <div className="flex items-center gap-2 mt-3 pt-3 border-t border-slate-100 flex-wrap">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => markTaken(reminder)}
-                    className="flex-1 text-green-600 border-green-200 hover:bg-green-50"
-                  >
-                    <ClipboardList className="w-4 h-4 mr-1" /> Log Intake
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => markSkipped(reminder)}
-                    className="text-slate-500 border-slate-200 hover:bg-slate-50"
-                  >
-                    <X className="w-4 h-4 mr-1" /> Skip
-                  </Button>
+                  <div className="flex-1">
+                    <QuickMedicationLog 
+                      reminder={reminder} 
+                      profile={profile} 
+                      onComplete={onUpdate} 
+                    />
+                  </div>
                   <CalendarExportButton reminder={reminder} />
                   <Button
                     size="icon"
@@ -266,31 +247,22 @@ export default function MedicationRemindersList({ reminders = [], profile, onUpd
           <MedicationReminderForm
             reminder={editingReminder}
             existingMedications={profile?.medications || []}
+            allReminders={reminders}
             onSave={handleSave}
             onCancel={() => { setShowForm(false); setEditingReminder(null); }}
           />
         </DialogContent>
       </Dialog>
 
-      {/* Drug Interaction Checker */}
-      <DrugInteractionChecker
-        medications={reminders}
-        open={showInteractionChecker}
-        onOpenChange={setShowInteractionChecker}
-      />
-
-      {/* Medication Intake Logger */}
-      <MedicationIntakeLogger
-        reminder={selectedReminder}
-        profile={profile}
-        open={showIntakeLogger}
-        onOpenChange={setShowIntakeLogger}
-        onLogged={() => {
-          setShowIntakeLogger(false);
-          setSelectedReminder(null);
-          onUpdate?.();
-        }}
-      />
+      {/* Drug Interaction Checker Dialog */}
+      <Dialog open={showInteractionChecker} onOpenChange={setShowInteractionChecker}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Drug Interaction Check</DialogTitle>
+          </DialogHeader>
+          <DrugInteractionChecker medications={reminders} />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
