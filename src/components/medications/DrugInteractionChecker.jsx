@@ -1,229 +1,258 @@
 import React, { useState, useEffect } from "react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { AlertTriangle, Shield, CheckCircle, Loader2, Info, RefreshCw } from "lucide-react";
+import { AlertTriangle, Shield, Info, Loader2, CheckCircle, XCircle } from "lucide-react";
 import { base44 } from "@/api/base44Client";
-import { toast } from "sonner";
 
-export default function DrugInteractionChecker({ medications = [], open, onOpenChange }) {
-  const [checking, setChecking] = useState(false);
-  const [interactions, setInteractions] = useState(null);
+// Known common drug interactions for quick checks (expanded for diabetes meds)
+const KNOWN_INTERACTIONS = {
+  "metformin": {
+    "alcohol": { severity: "moderate", description: "Alcohol can increase the risk of lactic acidosis with metformin" },
+    "contrast dye": { severity: "severe", description: "Stop metformin before and after procedures with iodinated contrast" },
+    "topiramate": { severity: "moderate", description: "May increase risk of lactic acidosis" }
+  },
+  "glimepiride": {
+    "fluconazole": { severity: "moderate", description: "May increase blood sugar lowering effect, risk of hypoglycemia" },
+    "alcohol": { severity: "moderate", description: "May cause unpredictable blood sugar changes" },
+    "beta-blockers": { severity: "moderate", description: "May mask symptoms of low blood sugar" }
+  },
+  "insulin": {
+    "alcohol": { severity: "moderate", description: "Can cause unpredictable blood sugar changes" },
+    "beta-blockers": { severity: "moderate", description: "May mask symptoms of hypoglycemia" },
+    "pioglitazone": { severity: "moderate", description: "Increased risk of fluid retention and heart failure" }
+  },
+  "sitagliptin": {
+    "digoxin": { severity: "mild", description: "May slightly increase digoxin levels" }
+  },
+  "empagliflozin": {
+    "diuretics": { severity: "moderate", description: "May increase risk of dehydration and low blood pressure" },
+    "insulin": { severity: "mild", description: "May need to reduce insulin dose to prevent hypoglycemia" }
+  },
+  "lisinopril": {
+    "potassium supplements": { severity: "moderate", description: "Risk of high potassium levels" },
+    "nsaids": { severity: "moderate", description: "May reduce blood pressure lowering effect" },
+    "spironolactone": { severity: "severe", description: "High risk of dangerous potassium levels" }
+  },
+  "atorvastatin": {
+    "grapefruit": { severity: "moderate", description: "Grapefruit can increase statin levels and side effects" },
+    "erythromycin": { severity: "severe", description: "Significantly increases statin levels, muscle damage risk" },
+    "gemfibrozil": { severity: "severe", description: "Increased risk of muscle damage (rhabdomyolysis)" }
+  },
+  "aspirin": {
+    "ibuprofen": { severity: "moderate", description: "May reduce aspirin's heart-protective effects" },
+    "warfarin": { severity: "severe", description: "Increased risk of bleeding" },
+    "methotrexate": { severity: "severe", description: "Aspirin can increase methotrexate toxicity" }
+  },
+  "amlodipine": {
+    "simvastatin": { severity: "moderate", description: "May increase statin levels, limit simvastatin dose" },
+    "grapefruit": { severity: "mild", description: "May slightly increase amlodipine levels" }
+  }
+};
 
-  const checkInteractions = async () => {
-    if (medications.length < 2) {
-      toast.info("Need at least 2 medications to check interactions");
-      return;
-    }
-
-    setChecking(true);
-    setInteractions(null);
-
-    try {
-      const medList = medications.map(m => m.medication_name || m.name).join(", ");
-      
-      const result = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are a pharmacist assistant. Check for drug interactions between these medications: ${medList}
-
-For each potential interaction found:
-1. List the two drugs involved
-2. Severity (major, moderate, minor)
-3. Description of the interaction
-4. Clinical recommendation
-
-Also provide:
-- General safety notes for this combination
-- Any food/lifestyle interactions to be aware of
-
-Be thorough but only report clinically significant interactions.`,
-        add_context_from_internet: true,
-        response_json_schema: {
-          type: "object",
-          properties: {
-            interactions: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  drug1: { type: "string" },
-                  drug2: { type: "string" },
-                  severity: { type: "string", enum: ["major", "moderate", "minor"] },
-                  description: { type: "string" },
-                  recommendation: { type: "string" }
-                }
-              }
-            },
-            food_interactions: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  drug: { type: "string" },
-                  food_item: { type: "string" },
-                  effect: { type: "string" }
-                }
-              }
-            },
-            general_notes: { type: "string" },
-            overall_safety: { type: "string", enum: ["safe", "caution", "consult_doctor"] }
+export function checkLocalInteractions(medications) {
+  const interactions = [];
+  const medNames = medications.map(m => m.medication_name?.toLowerCase() || m.toLowerCase());
+  
+  for (let i = 0; i < medNames.length; i++) {
+    const med1 = medNames[i];
+    const med1Key = Object.keys(KNOWN_INTERACTIONS).find(k => med1.includes(k));
+    
+    if (med1Key && KNOWN_INTERACTIONS[med1Key]) {
+      for (let j = 0; j < medNames.length; j++) {
+        if (i === j) continue;
+        const med2 = medNames[j];
+        
+        for (const [interactingDrug, info] of Object.entries(KNOWN_INTERACTIONS[med1Key])) {
+          if (med2.includes(interactingDrug)) {
+            interactions.push({
+              drug1: medications[i].medication_name || medications[i],
+              drug2: medications[j].medication_name || medications[j],
+              severity: info.severity,
+              description: info.description
+            });
           }
         }
-      });
+      }
+    }
+  }
+  
+  return interactions;
+}
 
-      setInteractions(result);
-    } catch (error) {
-      console.error("Interaction check error:", error);
-      toast.error("Failed to check interactions");
-    } finally {
-      setChecking(false);
+export default function DrugInteractionChecker({ medications = [], newMedication, onClose }) {
+  const [checking, setChecking] = useState(false);
+  const [interactions, setInteractions] = useState([]);
+  const [aiChecked, setAiChecked] = useState(false);
+
+  useEffect(() => {
+    if (medications.length > 0 || newMedication) {
+      checkInteractions();
+    }
+  }, [medications, newMedication]);
+
+  const checkInteractions = async () => {
+    // First do local check
+    const allMeds = newMedication 
+      ? [...medications, newMedication]
+      : medications;
+    
+    const localInteractions = checkLocalInteractions(allMeds);
+    setInteractions(localInteractions);
+
+    // Then do AI check for comprehensive analysis
+    if (allMeds.length >= 2) {
+      setChecking(true);
+      try {
+        const medList = allMeds.map(m => m.medication_name || m).join(", ");
+        
+        const result = await base44.integrations.Core.InvokeLLM({
+          prompt: `Check for drug interactions between these medications: ${medList}
+
+For each potential interaction found, provide:
+1. The two drugs involved
+2. Severity (mild, moderate, severe)
+3. Brief description of the interaction and what to watch for
+
+Only report clinically significant interactions. Be accurate and conservative.`,
+          add_context_from_internet: true,
+          response_json_schema: {
+            type: "object",
+            properties: {
+              interactions: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    drug1: { type: "string" },
+                    drug2: { type: "string" },
+                    severity: { type: "string", enum: ["mild", "moderate", "severe"] },
+                    description: { type: "string" }
+                  }
+                }
+              },
+              general_advice: { type: "string" }
+            }
+          }
+        });
+
+        if (result.interactions?.length > 0) {
+          // Merge with local interactions, avoiding duplicates
+          const newInteractions = result.interactions.filter(ai => 
+            !localInteractions.some(local => 
+              local.drug1.toLowerCase().includes(ai.drug1.toLowerCase()) &&
+              local.drug2.toLowerCase().includes(ai.drug2.toLowerCase())
+            )
+          );
+          setInteractions([...localInteractions, ...newInteractions]);
+        }
+        setAiChecked(true);
+      } catch (error) {
+        console.error("AI interaction check failed:", error);
+      } finally {
+        setChecking(false);
+      }
     }
   };
 
-  useEffect(() => {
-    if (open && medications.length >= 2 && !interactions) {
-      checkInteractions();
-    }
-  }, [open]);
-
   const getSeverityColor = (severity) => {
     switch (severity) {
-      case "major": return "bg-red-100 text-red-700 border-red-200";
-      case "moderate": return "bg-amber-100 text-amber-700 border-amber-200";
-      case "minor": return "bg-blue-100 text-blue-700 border-blue-200";
-      default: return "bg-slate-100 text-slate-700 border-slate-200";
+      case "severe": return "bg-red-50 border-red-200 text-red-800";
+      case "moderate": return "bg-amber-50 border-amber-200 text-amber-800";
+      case "mild": return "bg-blue-50 border-blue-200 text-blue-800";
+      default: return "bg-slate-50 border-slate-200 text-slate-800";
     }
   };
 
   const getSeverityIcon = (severity) => {
     switch (severity) {
-      case "major": return <AlertTriangle className="w-4 h-4" />;
-      case "moderate": return <Info className="w-4 h-4" />;
-      default: return <CheckCircle className="w-4 h-4" />;
-    }
-  };
-
-  const getOverallIcon = (safety) => {
-    switch (safety) {
-      case "safe": return <CheckCircle className="w-6 h-6 text-green-500" />;
-      case "caution": return <AlertTriangle className="w-6 h-6 text-amber-500" />;
-      case "consult_doctor": return <AlertTriangle className="w-6 h-6 text-red-500" />;
-      default: return <Shield className="w-6 h-6 text-slate-400" />;
+      case "severe": return <XCircle className="w-5 h-5 text-red-500" />;
+      case "moderate": return <AlertTriangle className="w-5 h-5 text-amber-500" />;
+      case "mild": return <Info className="w-5 h-5 text-blue-500" />;
+      default: return <Info className="w-5 h-5 text-slate-500" />;
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Shield className="w-5 h-5 text-violet-500" />
-            Drug Interaction Check
-          </DialogTitle>
-        </DialogHeader>
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h4 className="font-medium text-slate-800 flex items-center gap-2">
+          <Shield className="w-5 h-5 text-violet-500" />
+          Drug Interaction Check
+        </h4>
+        {checking && <Loader2 className="w-4 h-4 animate-spin text-violet-500" />}
+      </div>
 
-        <div className="space-y-4">
-          {/* Medications Being Checked */}
-          <div className="p-3 bg-slate-50 rounded-lg">
-            <p className="text-xs text-slate-500 mb-2">Checking interactions for:</p>
-            <div className="flex flex-wrap gap-2">
-              {medications.map((med, idx) => (
-                <span key={idx} className="px-2 py-1 bg-white rounded-full text-xs border border-slate-200">
-                  {med.medication_name || med.name}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          {/* Loading State */}
-          {checking && (
-            <div className="flex flex-col items-center py-8">
-              <Loader2 className="w-8 h-8 animate-spin text-violet-500 mb-2" />
-              <p className="text-sm text-slate-500">Checking interactions...</p>
-            </div>
-          )}
-
-          {/* Results */}
-          {interactions && !checking && (
-            <div className="space-y-4">
-              {/* Overall Safety */}
-              <div className={`p-4 rounded-xl border flex items-start gap-3 ${
-                interactions.overall_safety === "safe" ? "bg-green-50 border-green-200" :
-                interactions.overall_safety === "caution" ? "bg-amber-50 border-amber-200" :
-                "bg-red-50 border-red-200"
-              }`}>
-                {getOverallIcon(interactions.overall_safety)}
-                <div>
-                  <p className="font-medium">
-                    {interactions.overall_safety === "safe" ? "No Major Concerns" :
-                     interactions.overall_safety === "caution" ? "Use With Caution" :
-                     "Consult Your Doctor"}
-                  </p>
-                  <p className="text-sm mt-1">{interactions.general_notes}</p>
-                </div>
-              </div>
-
-              {/* Drug-Drug Interactions */}
-              {interactions.interactions?.length > 0 && (
-                <div className="space-y-2">
-                  <h4 className="font-medium text-slate-700">Drug Interactions</h4>
-                  {interactions.interactions.map((int, idx) => (
-                    <div key={idx} className={`p-3 rounded-lg border ${getSeverityColor(int.severity)}`}>
-                      <div className="flex items-center gap-2 mb-1">
-                        {getSeverityIcon(int.severity)}
-                        <span className="font-medium text-sm">
-                          {int.drug1} + {int.drug2}
-                        </span>
-                        <span className="ml-auto text-xs uppercase font-medium px-2 py-0.5 rounded-full bg-white/50">
-                          {int.severity}
-                        </span>
-                      </div>
-                      <p className="text-sm mt-1">{int.description}</p>
-                      <p className="text-xs mt-2 opacity-75">
-                        <strong>Recommendation:</strong> {int.recommendation}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {interactions.interactions?.length === 0 && (
-                <div className="p-4 bg-green-50 rounded-lg border border-green-200 text-center">
-                  <CheckCircle className="w-8 h-8 text-green-500 mx-auto mb-2" />
-                  <p className="text-green-700 font-medium">No Drug Interactions Found</p>
-                  <p className="text-sm text-green-600 mt-1">These medications appear safe to take together</p>
-                </div>
-              )}
-
-              {/* Food Interactions */}
-              {interactions.food_interactions?.length > 0 && (
-                <div className="space-y-2">
-                  <h4 className="font-medium text-slate-700">Food & Lifestyle Notes</h4>
-                  {interactions.food_interactions.map((int, idx) => (
-                    <div key={idx} className="p-3 bg-amber-50 rounded-lg border border-amber-200">
-                      <p className="text-sm">
-                        <strong>{int.drug}</strong> + <strong>{int.food_item}</strong>
-                      </p>
-                      <p className="text-xs mt-1 text-amber-700">{int.effect}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Refresh Button */}
-              <Button variant="outline" onClick={checkInteractions} className="w-full">
-                <RefreshCw className="w-4 h-4 mr-2" /> Re-check Interactions
-              </Button>
-            </div>
-          )}
-
-          {/* Disclaimer */}
-          <div className="p-3 bg-slate-100 rounded-lg">
-            <p className="text-xs text-slate-500">
-              <strong>⚠️ Disclaimer:</strong> This tool provides general information only and is not a substitute 
-              for professional medical advice. Always consult your doctor or pharmacist about potential drug interactions.
-            </p>
-          </div>
+      {interactions.length === 0 && !checking ? (
+        <Alert className="bg-green-50 border-green-200">
+          <CheckCircle className="w-4 h-4 text-green-600" />
+          <AlertTitle className="text-green-800">No interactions detected</AlertTitle>
+          <AlertDescription className="text-green-700 text-sm">
+            No known drug interactions found between your medications.
+            {!aiChecked && " Full AI check in progress..."}
+          </AlertDescription>
+        </Alert>
+      ) : (
+        <div className="space-y-3">
+          {interactions.map((interaction, idx) => (
+            <Alert key={idx} className={getSeverityColor(interaction.severity)}>
+              {getSeverityIcon(interaction.severity)}
+              <AlertTitle className="flex items-center gap-2">
+                <span className="capitalize">{interaction.severity}</span> Interaction
+              </AlertTitle>
+              <AlertDescription>
+                <p className="font-medium mb-1">
+                  {interaction.drug1} + {interaction.drug2}
+                </p>
+                <p className="text-sm">{interaction.description}</p>
+              </AlertDescription>
+            </Alert>
+          ))}
         </div>
-      </DialogContent>
-    </Dialog>
+      )}
+
+      <p className="text-xs text-slate-500 bg-slate-50 p-2 rounded">
+        ⚠️ This is for informational purposes only. Always consult your doctor or pharmacist about drug interactions.
+      </p>
+    </div>
+  );
+}
+
+// Inline warning component for forms
+export function InteractionWarningBadge({ medications, newMedicationName }) {
+  const [warning, setWarning] = useState(null);
+
+  useEffect(() => {
+    if (newMedicationName && medications.length > 0) {
+      const allMeds = [...medications, { medication_name: newMedicationName }];
+      const interactions = checkLocalInteractions(allMeds);
+      
+      const severe = interactions.find(i => i.severity === "severe");
+      const moderate = interactions.find(i => i.severity === "moderate");
+      
+      if (severe) {
+        setWarning({ type: "severe", interaction: severe });
+      } else if (moderate) {
+        setWarning({ type: "moderate", interaction: moderate });
+      } else {
+        setWarning(null);
+      }
+    } else {
+      setWarning(null);
+    }
+  }, [medications, newMedicationName]);
+
+  if (!warning) return null;
+
+  return (
+    <div className={`p-2 rounded-lg text-xs flex items-start gap-2 ${
+      warning.type === "severe" ? "bg-red-50 text-red-700" : "bg-amber-50 text-amber-700"
+    }`}>
+      <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+      <div>
+        <span className="font-medium">Potential interaction with {warning.interaction.drug2}:</span>{" "}
+        {warning.interaction.description}
+      </div>
+    </div>
   );
 }

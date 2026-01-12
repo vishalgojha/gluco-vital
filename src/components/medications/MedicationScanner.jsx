@@ -3,39 +3,36 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Camera, Barcode, Loader2, X, CheckCircle, AlertCircle } from "lucide-react";
+import { Camera, QrCode, Loader2, X, Search, Pill } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
 
-export default function MedicationScanner({ onMedicationFound, open, onOpenChange }) {
+export default function MedicationScanner({ onScanComplete, open, onOpenChange }) {
   const [scanning, setScanning] = useState(false);
+  const [processing, setProcessing] = useState(false);
   const [manualCode, setManualCode] = useState("");
-  const [lookupResult, setLookupResult] = useState(null);
   const fileInputRef = useRef(null);
 
   const handleImageCapture = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setScanning(true);
-    setLookupResult(null);
-
+    setProcessing(true);
     try {
-      // Upload image first
+      // Upload the image
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
 
-      // Use AI to extract medication info from packaging
+      // Use AI to extract medication info from the image
       const result = await base44.integrations.Core.InvokeLLM({
-        prompt: `Analyze this medication packaging image and extract the following information:
-1. Medication/Drug name (generic and brand name if visible)
-2. Dosage/Strength (e.g., 500mg, 100 units/ml)
-3. Form (tablet, capsule, injection, syrup, etc.)
-4. Manufacturer name
-5. Any visible barcode/NDC number
-6. Quantity per pack
-7. Key warnings or instructions visible
+        prompt: `Analyze this medication packaging/label image and extract the following information:
+- Medication name (generic and brand name if visible)
+- Dosage/Strength (e.g., 500mg, 10mg)
+- Form (tablet, capsule, injection, etc.)
+- Manufacturer
+- Any barcode/NDC number visible
+- Instructions or warnings visible
 
-Be accurate and only extract what you can clearly see. If something is not visible, say "not visible".`,
+Be precise and only extract what's clearly visible. If something isn't visible, leave it blank.`,
         file_urls: [file_url],
         response_json_schema: {
           type: "object",
@@ -47,101 +44,89 @@ Be accurate and only extract what you can clearly see. If something is not visib
             strength: { type: "string" },
             form: { type: "string" },
             manufacturer: { type: "string" },
-            barcode_ndc: { type: "string" },
-            quantity_per_pack: { type: "number" },
-            warnings: { type: "string" },
-            instructions: { type: "string" }
+            barcode: { type: "string" },
+            instructions: { type: "string" },
+            warnings: { type: "string" }
           }
         }
       });
 
-      setLookupResult({
-        success: true,
-        data: result,
-        source: "image"
-      });
+      if (result.medication_name || result.brand_name || result.generic_name) {
+        toast.success("Medication details extracted!");
+        onScanComplete({
+          medication_name: result.medication_name || result.brand_name || result.generic_name,
+          dosage: result.dosage || result.strength || "",
+          strength: result.strength || "",
+          notes: [result.instructions, result.warnings].filter(Boolean).join(". "),
+          manufacturer: result.manufacturer,
+          barcode: result.barcode
+        });
+        onOpenChange(false);
+      } else {
+        toast.error("Couldn't extract medication details. Try a clearer image.");
+      }
     } catch (error) {
       console.error("Scan error:", error);
-      setLookupResult({
-        success: false,
-        error: "Could not extract medication details. Try a clearer image."
-      });
+      toast.error("Failed to process image");
     } finally {
-      setScanning(false);
+      setProcessing(false);
     }
   };
 
   const handleManualLookup = async () => {
-    if (!manualCode.trim()) return;
+    if (!manualCode.trim()) {
+      toast.error("Please enter a barcode or medication name");
+      return;
+    }
 
-    setScanning(true);
-    setLookupResult(null);
-
+    setProcessing(true);
     try {
-      // Use AI with internet to look up medication by barcode/NDC
+      // Use AI to look up medication info
       const result = await base44.integrations.Core.InvokeLLM({
-        prompt: `Look up medication information for barcode/NDC: ${manualCode}
+        prompt: `Look up medication information for: "${manualCode}"
         
-Return detailed medication information including:
-- Generic and brand names
-- Common dosages
-- Drug class
-- Common uses
-- Important warnings
-- Typical directions`,
+This could be a barcode/NDC number, or a medication name. Provide accurate information about:
+- Full medication name
+- Common dosages available
+- Form (tablet, capsule, etc.)
+- Common usage/purpose
+- Important warnings or interactions
+
+Only provide information you're confident about.`,
         add_context_from_internet: true,
         response_json_schema: {
           type: "object",
           properties: {
             medication_name: { type: "string" },
-            brand_name: { type: "string" },
             generic_name: { type: "string" },
-            drug_class: { type: "string" },
             common_dosages: { type: "array", items: { type: "string" } },
-            uses: { type: "string" },
+            form: { type: "string" },
+            purpose: { type: "string" },
             warnings: { type: "string" },
-            directions: { type: "string" },
-            found: { type: "boolean" }
+            common_interactions: { type: "array", items: { type: "string" } }
           }
         }
       });
 
-      if (result.found === false || !result.medication_name) {
-        setLookupResult({
-          success: false,
-          error: "Could not find medication with this code. Try scanning the packaging instead."
+      if (result.medication_name) {
+        toast.success("Medication found!");
+        onScanComplete({
+          medication_name: result.medication_name,
+          generic_name: result.generic_name,
+          dosage: result.common_dosages?.[0] || "",
+          notes: result.warnings || "",
+          purpose: result.purpose,
+          known_interactions: result.common_interactions || []
         });
+        onOpenChange(false);
       } else {
-        setLookupResult({
-          success: true,
-          data: result,
-          source: "barcode"
-        });
+        toast.error("Medication not found. Please enter details manually.");
       }
     } catch (error) {
       console.error("Lookup error:", error);
-      setLookupResult({
-        success: false,
-        error: "Lookup failed. Please try again."
-      });
+      toast.error("Failed to lookup medication");
     } finally {
-      setScanning(false);
-    }
-  };
-
-  const handleUseMedication = () => {
-    if (lookupResult?.success && lookupResult.data) {
-      onMedicationFound({
-        medication_name: lookupResult.data.medication_name || lookupResult.data.brand_name,
-        generic_name: lookupResult.data.generic_name,
-        dosage: lookupResult.data.dosage || lookupResult.data.common_dosages?.[0] || "",
-        strength: lookupResult.data.strength || "",
-        notes: lookupResult.data.warnings || lookupResult.data.instructions || "",
-        pills_per_strip: lookupResult.data.quantity_per_pack || 10
-      });
-      onOpenChange(false);
-      setLookupResult(null);
-      setManualCode("");
+      setProcessing(false);
     }
   };
 
@@ -150,15 +135,15 @@ Return detailed medication information including:
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Barcode className="w-5 h-5 text-violet-500" />
+            <QrCode className="w-5 h-5 text-violet-500" />
             Scan Medication
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
-          {/* Camera Capture */}
+          {/* Camera/Image Capture */}
           <div className="space-y-2">
-            <Label>Take photo of medication packaging</Label>
+            <Label>Take a photo of the medication packaging</Label>
             <input
               ref={fileInputRef}
               type="file"
@@ -168,98 +153,74 @@ Return detailed medication information including:
               className="hidden"
             />
             <Button
-              variant="outline"
               onClick={() => fileInputRef.current?.click()}
-              disabled={scanning}
-              className="w-full h-24 border-dashed flex flex-col gap-2"
+              disabled={processing}
+              className="w-full h-32 bg-gradient-to-br from-violet-50 to-violet-100 border-2 border-dashed border-violet-300 hover:border-violet-400 text-violet-700"
+              variant="outline"
             >
-              {scanning ? (
-                <>
-                  <Loader2 className="w-6 h-6 animate-spin text-violet-500" />
-                  <span className="text-sm">Analyzing image...</span>
-                </>
+              {processing ? (
+                <div className="flex flex-col items-center gap-2">
+                  <Loader2 className="w-8 h-8 animate-spin" />
+                  <span className="text-sm">Processing...</span>
+                </div>
               ) : (
-                <>
-                  <Camera className="w-6 h-6 text-slate-400" />
-                  <span className="text-sm text-slate-500">Tap to capture or upload</span>
-                </>
+                <div className="flex flex-col items-center gap-2">
+                  <Camera className="w-8 h-8" />
+                  <span className="text-sm">Tap to capture or upload image</span>
+                </div>
               )}
             </Button>
+            <p className="text-xs text-slate-500 text-center">
+              Take a clear photo of the medication label, barcode, or packaging
+            </p>
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="flex-1 h-px bg-slate-200" />
-            <span className="text-xs text-slate-400">OR</span>
-            <div className="flex-1 h-px bg-slate-200" />
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-white px-2 text-slate-500">Or enter manually</span>
+            </div>
           </div>
 
-          {/* Manual Barcode Entry */}
+          {/* Manual Entry */}
           <div className="space-y-2">
-            <Label>Enter barcode/NDC number manually</Label>
+            <Label>Enter barcode number or medication name</Label>
             <div className="flex gap-2">
               <Input
                 value={manualCode}
                 onChange={(e) => setManualCode(e.target.value)}
-                placeholder="e.g., 0069-3150-66"
+                placeholder="e.g., Metformin or NDC 12345-678-90"
+                onKeyDown={(e) => e.key === "Enter" && handleManualLookup()}
               />
-              <Button
-                onClick={handleManualLookup}
-                disabled={scanning || !manualCode.trim()}
-              >
-                {scanning ? <Loader2 className="w-4 h-4 animate-spin" /> : "Lookup"}
+              <Button onClick={handleManualLookup} disabled={processing}>
+                {processing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
               </Button>
             </div>
           </div>
 
-          {/* Results */}
-          {lookupResult && (
-            <div className={`p-4 rounded-xl border ${
-              lookupResult.success 
-                ? "bg-green-50 border-green-200" 
-                : "bg-red-50 border-red-200"
-            }`}>
-              {lookupResult.success ? (
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-green-700">
-                    <CheckCircle className="w-5 h-5" />
-                    <span className="font-medium">Medication Found</span>
-                  </div>
-                  <div className="space-y-1 text-sm">
-                    <p><strong>Name:</strong> {lookupResult.data.medication_name || lookupResult.data.brand_name}</p>
-                    {lookupResult.data.generic_name && (
-                      <p><strong>Generic:</strong> {lookupResult.data.generic_name}</p>
-                    )}
-                    {lookupResult.data.dosage && (
-                      <p><strong>Dosage:</strong> {lookupResult.data.dosage}</p>
-                    )}
-                    {lookupResult.data.drug_class && (
-                      <p><strong>Class:</strong> {lookupResult.data.drug_class}</p>
-                    )}
-                    {lookupResult.data.warnings && (
-                      <p className="text-amber-700"><strong>⚠️ Note:</strong> {lookupResult.data.warnings}</p>
-                    )}
-                  </div>
-                  <Button onClick={handleUseMedication} className="w-full bg-green-600 hover:bg-green-700">
-                    Use This Medication
-                  </Button>
-                </div>
-              ) : (
-                <div className="flex items-center gap-2 text-red-700">
-                  <AlertCircle className="w-5 h-5" />
-                  <span>{lookupResult.error}</span>
-                </div>
-              )}
+          {/* Common Diabetes Meds Quick Select */}
+          <div className="space-y-2">
+            <Label className="text-xs text-slate-500">Quick select common medications</Label>
+            <div className="flex flex-wrap gap-2">
+              {["Metformin", "Glimepiride", "Insulin", "Sitagliptin", "Empagliflozin"].map((med) => (
+                <Button
+                  key={med}
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setManualCode(med);
+                    handleManualLookup();
+                  }}
+                  disabled={processing}
+                  className="text-xs"
+                >
+                  <Pill className="w-3 h-3 mr-1" />
+                  {med}
+                </Button>
+              ))}
             </div>
-          )}
-
-          {/* Tips */}
-          <div className="p-3 bg-slate-50 rounded-lg text-xs text-slate-500 space-y-1">
-            <p><strong>Tips for best results:</strong></p>
-            <ul className="list-disc list-inside space-y-0.5">
-              <li>Ensure good lighting</li>
-              <li>Include the drug name and dosage in the photo</li>
-              <li>Hold camera steady and close to the packaging</li>
-            </ul>
           </div>
         </div>
       </DialogContent>
