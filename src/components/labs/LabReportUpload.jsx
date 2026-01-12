@@ -347,25 +347,31 @@ export default function LabReportUpload({ userEmail, onReportUploaded, onResults
         <div className="space-y-4">
           <div className="bg-white rounded-xl p-4 border border-purple-100">
             <div className="flex items-center gap-3">
-              <CheckCircle className="w-8 h-8 text-green-500" />
+              {extracting ? (
+                <Loader2 className="w-8 h-8 text-purple-500 animate-spin" />
+              ) : (
+                <CheckCircle className="w-8 h-8 text-green-500" />
+              )}
               <div>
-                <p className="font-medium text-slate-800">Report Uploaded!</p>
-                <p className="text-sm text-slate-500">{uploadedReport.report_name}</p>
+                <p className="font-medium text-slate-800">
+                  {extracting ? "Extracting Results..." : "Report Uploaded!"}
+                </p>
+                <p className="text-sm text-slate-500">
+                  {extracting ? "AI is reading your report" : uploadedReport.report_name}
+                </p>
               </div>
             </div>
           </div>
 
-          <Button 
-            onClick={handleExtract} 
-            disabled={extracting}
-            className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
-          >
-            {extracting ? (
-              <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Extracting with AI...</>
-            ) : (
-              <><Sparkles className="w-4 h-4 mr-2" /> Extract Results with AI</>
-            )}
-          </Button>
+          {!extracting && (
+            <Button 
+              onClick={() => autoExtract(uploadedReport, uploadedReport.document_url)} 
+              disabled={extracting}
+              className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+            >
+              <Sparkles className="w-4 h-4 mr-2" /> Retry Extraction
+            </Button>
+          )}
         </div>
       ) : (
         <div className="space-y-4">
