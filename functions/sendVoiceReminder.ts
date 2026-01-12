@@ -146,8 +146,8 @@ Deno.serve(async (req) => {
     // Log the voice reminder sent
     console.log(`Voice reminder sent to ${targetEmail}: ${reminder_type}`);
 
-    // Optionally send email notification with audio link
-    if (profile?.user_email) {
+    // Optionally send email notification with audio link (only if upload succeeded)
+    if (profile?.user_email && uploadResult?.file_url) {
       try {
         await base44.integrations.Core.SendEmail({
           to: profile.user_email,
