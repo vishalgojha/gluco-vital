@@ -225,7 +225,7 @@ export default function Landing() {
       {/* How it Works */}
       <section className="py-8 bg-white/50">
                     <div className="max-w-6xl mx-auto px-4">
-                      <div className="flex flex-col md:flex-row items-center gap-8 mb-12">
+          <div className="flex flex-col md:flex-row items-center gap-6 mb-8">
                         <div className="md:w-1/3">
                           {/* WhatsApp Chat Mockup */}
                           <div className="bg-[#e5ddd5] rounded-2xl shadow-lg w-full max-w-xs mx-auto overflow-hidden">
