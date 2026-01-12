@@ -125,8 +125,23 @@ Deno.serve(async (req) => {
     const file = new File([audioBlob], fileName, { type: 'audio/mpeg' });
     
     console.log('Uploading audio file...');
-    const uploadResult = await base44.integrations.Core.UploadFile({ file });
-    console.log('Upload result:', JSON.stringify(uploadResult));
+    let uploadResult;
+    try {
+      uploadResult = await base44.integrations.Core.UploadFile({ file });
+      console.log('Upload result:', JSON.stringify(uploadResult));
+    } catch (uploadError) {
+      console.error('Upload error:', uploadError);
+      // Return audio as base64 if upload fails
+      const base64Audio = btoa(String.fromCharCode(...new Uint8Array(audioBuffer)));
+      return Response.json({
+        success: true,
+        audio_base64: base64Audio,
+        audio_type: 'audio/mpeg',
+        message: fullMessage,
+        reminder_type,
+        note: 'Upload failed, returning base64 audio'
+      });
+    }
 
     // Log the voice reminder sent
     console.log(`Voice reminder sent to ${targetEmail}: ${reminder_type}`);
