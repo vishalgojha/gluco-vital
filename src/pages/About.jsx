@@ -17,13 +17,13 @@ export default function About() {
           <ArrowLeft className="w-4 h-4" /> Back
         </Link>
 
-        <div className="text-center mb-6">
-          <div className="w-12 h-12 rounded-xl bg-[#5b9a8b] flex items-center justify-center mx-auto mb-3">
+        <Link to={createPageUrl("Landing")} className="flex flex-col items-center mb-6 hover:opacity-80 transition-opacity">
+          <div className="w-12 h-12 rounded-xl bg-[#5b9a8b] flex items-center justify-center mb-3">
             <MessageCircle className="w-6 h-6 text-white" />
           </div>
           <h1 className="text-2xl font-bold text-slate-800">About GlucoVital</h1>
           <p className="text-slate-500 text-sm mt-1">Your AI-powered diabetes companion</p>
-        </div>
+        </Link>
 
         <div className="space-y-4">
           {/* Mission */}
