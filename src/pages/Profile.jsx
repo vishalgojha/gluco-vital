@@ -21,6 +21,7 @@ import CaregiverManager from "@/components/caregiver/CaregiverManager";
 import { NotificationSettings } from "@/components/notifications/NotificationManager";
 import CalendarExport from "@/components/medications/CalendarExport";
 import SubscriptionManager from "@/components/subscription/SubscriptionManager";
+import VoiceReminderSettings from "@/components/voice/VoiceReminderSettings";
 
 export default function Profile() {
   const queryClient = useQueryClient();
@@ -571,6 +572,13 @@ export default function Profile() {
             onUpdate={async (data) => {
               await saveMutation.mutateAsync({ ...formData, ...data });
             }}
+          />
+
+          {/* Voice Reminders */}
+          <VoiceReminderSettings 
+            user={user} 
+            profile={profile}
+            onUpdate={() => queryClient.invalidateQueries({ queryKey: ['patient-profile'] })}
           />
 
           {/* Notification Settings */}
