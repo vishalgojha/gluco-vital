@@ -194,7 +194,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+    <div className="min-h-screen bg-[#f8faf9]">
       {/* Demo Mode Banner */}
       {isDemo && <DemoBanner />}
 
@@ -232,22 +232,22 @@ export default function Home() {
         user={user} 
       />
 
-      <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="max-w-6xl mx-auto px-4 py-4 md:py-6">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-800">
+        <div className="mb-4 md:mb-6">
+          <h1 className="text-xl md:text-2xl font-bold text-slate-800">
             {user ? `Hello, ${user.full_name?.split(' ')[0] || 'there'}` : 'Gluco Vital'} 👋
           </h1>
-          <p className="text-slate-500 mt-1">
-            {format(new Date(), "EEEE, MMMM d")} • Your health companion
+          <p className="text-slate-500 text-sm">
+            {format(new Date(), "EEEE, MMMM d")}
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-6">
+        <div className="grid lg:grid-cols-3 gap-4 md:gap-6">
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-4 md:space-y-6">
             {/* Stats Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
               <StatCard 
                 icon={Droplet}
                 label="Last Sugar"
@@ -277,15 +277,13 @@ export default function Home() {
             </div>
 
             {/* Sugar Chart */}
-            <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
-              <div className="flex items-center justify-between mb-4">
+            <div className="bg-white rounded-xl p-4 md:p-5 border border-slate-100">
+              <div className="flex items-center justify-between mb-3">
                 <div>
-                  <h2 className="text-lg font-semibold text-slate-800">Sugar Trend</h2>
-                  <p className="text-sm text-slate-500">Last 14 readings</p>
+                  <h2 className="font-semibold text-slate-800">Sugar Trend</h2>
+                  <p className="text-xs text-slate-500">Last 14 readings</p>
                 </div>
-                <div className="p-2 bg-blue-50 rounded-lg">
-                  <Activity className="w-5 h-5 text-blue-600" />
-                </div>
+                <Activity className="w-5 h-5 text-blue-500" />
               </div>
               <SugarChart 
                 logs={logs}
@@ -296,12 +294,12 @@ export default function Home() {
 
             {/* AI Insights */}
             {insights.length > 0 && (
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <div className="flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-violet-500" />
-                  <h2 className="text-lg font-semibold text-slate-800">AI Insights</h2>
+                  <Sparkles className="w-4 h-4 text-violet-500" />
+                  <h2 className="font-semibold text-slate-800">AI Insights</h2>
                 </div>
-                <div className="grid md:grid-cols-2 gap-4">
+                <div className="grid md:grid-cols-2 gap-3">
                   {insights.map((insight, idx) => (
                               <VoiceInsightCard key={idx} {...insight} />
                             ))}
@@ -314,31 +312,31 @@ export default function Home() {
 
             {/* Recent Logs */}
             <div>
-              <h2 className="text-lg font-semibold text-slate-800 mb-4">Recent Activity</h2>
+              <h2 className="font-semibold text-slate-800 mb-3">Recent Activity</h2>
               {logsLoading ? (
-                <div className="space-y-3">
+                <div className="space-y-2">
                   {[1, 2, 3].map(i => (
-                    <Skeleton key={i} className="h-20 w-full rounded-xl" />
+                    <Skeleton key={i} className="h-16 w-full rounded-xl" />
                   ))}
                 </div>
               ) : logs.length > 0 ? (
-                <div className="space-y-3">
-                  {logs.slice(0, 10).map(log => (
+                <div className="space-y-2">
+                  {logs.slice(0, 8).map(log => (
                                             <LogCard key={log.id} log={log} timezone={profile?.timezone || "Asia/Kolkata"} />
                                           ))}
                 </div>
               ) : (
-                <div className="text-center py-12 bg-white rounded-2xl border border-slate-100">
-                  <Utensils className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-                  <p className="text-slate-500">No health logs yet</p>
-                  <p className="text-sm text-slate-400 mt-1">Connect WhatsApp and start logging!</p>
+                <div className="text-center py-8 bg-white rounded-xl border border-slate-100">
+                  <Utensils className="w-10 h-10 text-slate-300 mx-auto mb-2" />
+                  <p className="text-sm text-slate-500">No logs yet</p>
+                  <p className="text-xs text-slate-400 mt-1">Connect WhatsApp to start!</p>
                 </div>
               )}
             </div>
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-6">
+          <div className="space-y-4">
             {/* Points & Streak Mini Display */}
             <PointsDisplay 
               points={achievements?.total_points || 0}
@@ -411,75 +409,35 @@ export default function Home() {
             )}
 
             {/* Quick Tips */}
-            <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
-              <h3 className="font-semibold text-slate-800 mb-4">Quick Tips 💡</h3>
-              <div className="space-y-3 text-sm">
-                <div className="p-3 bg-slate-50 rounded-lg">
+            <div className="bg-white rounded-xl p-4 border border-slate-100">
+              <h3 className="font-semibold text-slate-800 text-sm mb-3">Quick Tips 💡</h3>
+              <div className="space-y-2 text-xs">
+                <div className="p-2 bg-slate-50 rounded-lg">
                   <p className="font-medium text-slate-700">Log consistently</p>
-                  <p className="text-slate-500 text-xs mt-1">Same times daily = better patterns</p>
+                  <p className="text-slate-500">Same times daily = better patterns</p>
                 </div>
-                <div className="p-3 bg-slate-50 rounded-lg">
+                <div className="p-2 bg-slate-50 rounded-lg">
                   <p className="font-medium text-slate-700">Note what you eat</p>
-                  <p className="text-slate-500 text-xs mt-1">Helps identify food triggers</p>
-                </div>
-                <div className="p-3 bg-slate-50 rounded-lg">
-                  <p className="font-medium text-slate-700">Share with doctor</p>
-                  <p className="text-slate-500 text-xs mt-1">Show your trends at checkups</p>
+                  <p className="text-slate-500">Helps identify food triggers</p>
                 </div>
               </div>
             </div>
 
             {/* How to Log */}
-            <div className="bg-gradient-to-br from-violet-50 to-indigo-50 rounded-2xl p-5 border border-violet-100">
-              <h3 className="font-semibold text-slate-800 mb-3">How to Log via WhatsApp</h3>
-              <div className="space-y-2 text-sm text-slate-600">
-                <p>📍 <strong>"Sugar 120"</strong> - log sugar level</p>
-                <p>📍 <strong>"BP 130/80"</strong> - blood pressure</p>
-                <p>📍 <strong>"Ate rice dal"</strong> - meals</p>
-                <p>📍 <strong>"Took medicine"</strong> - medication</p>
-                <p>📍 <strong>"Feeling dizzy"</strong> - symptoms</p>
+            <div className="bg-violet-50 rounded-xl p-4 border border-violet-100">
+              <h3 className="font-semibold text-slate-800 text-sm mb-2">Log via WhatsApp</h3>
+              <div className="space-y-1 text-xs text-slate-600">
+                <p>"Sugar 120" • "BP 130/80"</p>
+                <p>"Ate rice dal" • "Took medicine"</p>
               </div>
             </div>
 
             {/* Supported By */}
-            <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm text-center">
-              <p className="text-xs text-slate-500 mb-3">Supported by</p>
+            <div className="text-center py-2">
+              <p className="text-[10px] text-slate-400 mb-2">Supported by</p>
               <a href="https://elevenlabs.io/startup-grants" target="_blank" rel="noopener noreferrer">
-                <img 
-                  src="https://eleven-public-cdn.elevenlabs.io/payloadcms/pwsc4vchsqt-ElevenLabsGrants.webp" 
-                  alt="ElevenLabs Grants" 
-                  className="mx-auto"
-                  style={{ width: '180px' }}
-                />
+                <img src="https://eleven-public-cdn.elevenlabs.io/payloadcms/pwsc4vchsqt-ElevenLabsGrants.webp" alt="ElevenLabs Grants" className="h-5 mx-auto opacity-60 hover:opacity-100 transition-opacity" />
               </a>
-            </div>
-
-            {/* Global Reach */}
-            <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
-              <h3 className="font-semibold text-slate-800 mb-3">🌍 Supports 21 Languages</h3>
-              <p className="text-xs text-slate-500 mb-3">Countries with highest diabetics:</p>
-              <div className="space-y-2 text-xs">
-                <div className="flex justify-between items-center p-2 bg-red-50 rounded-lg">
-                  <span>🇨🇳 China</span>
-                  <span className="font-bold text-red-700">141M</span>
-                </div>
-                <div className="flex justify-between items-center p-2 bg-orange-50 rounded-lg">
-                  <span>🇮🇳 India</span>
-                  <span className="font-bold text-orange-700">77M</span>
-                </div>
-                <div className="flex justify-between items-center p-2 bg-blue-50 rounded-lg">
-                  <span>🇺🇸 USA</span>
-                  <span className="font-bold text-blue-700">32M</span>
-                </div>
-                <div className="flex justify-between items-center p-2 bg-green-50 rounded-lg">
-                  <span>🇵🇰 Pakistan</span>
-                  <span className="font-bold text-green-700">33M</span>
-                </div>
-                <div className="flex justify-between items-center p-2 bg-purple-50 rounded-lg">
-                  <span>🇧🇷 Brazil</span>
-                  <span className="font-bold text-purple-700">17M</span>
-                </div>
-              </div>
             </div>
           </div>
         </div>
