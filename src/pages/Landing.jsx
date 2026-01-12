@@ -221,48 +221,55 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Pricing - Compact */}
-      <section className="py-10 md:py-14 px-4 bg-white">
-        <div className="max-w-3xl mx-auto">
-          <h2 className="text-xl md:text-2xl font-bold text-slate-800 text-center mb-2">Simple pricing</h2>
-          <p className="text-center text-sm text-slate-500 mb-6">Free during early access</p>
+      {/* Pricing */}
+      <section className="py-16 md:py-20 px-4 bg-white">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-3">Simple pricing</h2>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-50 rounded-full border border-green-200">
+              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+              <span className="text-sm font-medium text-green-700">All features free during early access!</span>
+            </div>
+          </div>
           
-          <div className="grid md:grid-cols-3 gap-3">
+          <div className="grid md:grid-cols-3 gap-5">
             {/* Free */}
-            <div className="border border-slate-200 rounded-xl p-4">
-              <p className="text-xs text-green-600 font-medium">FREE FOREVER</p>
-              <p className="text-2xl font-bold text-slate-800 mt-1">₹0</p>
-              <ul className="mt-3 space-y-1.5 text-xs text-slate-600">
+            <div className="border-2 border-slate-200 rounded-2xl p-6 bg-white hover:border-slate-300 transition-colors">
+              <p className="text-sm text-green-600 font-bold">FREE FOREVER</p>
+              <p className="text-4xl font-black text-slate-800 mt-2">₹0</p>
+              <p className="text-slate-500 text-sm mb-5">Forever free</p>
+              <ul className="space-y-3 text-sm text-slate-700">
                 {["Unlimited logging", "WhatsApp integration", "7-day history"].map((f,i) => (
-                  <li key={i} className="flex items-center gap-1.5"><Check className="w-3 h-3 text-green-500" />{f}</li>
+                  <li key={i} className="flex items-center gap-2"><Check className="w-5 h-5 text-green-500" />{f}</li>
                 ))}
               </ul>
             </div>
             
             {/* Premium */}
-            <div className="border-2 border-[#5b9a8b] rounded-xl p-4 bg-[#5b9a8b]/5 relative">
-              <span className="absolute -top-2.5 left-3 px-2 py-0.5 bg-[#5b9a8b] text-white text-[10px] font-medium rounded-full">POPULAR</span>
-              <p className="text-xs text-[#5b9a8b] font-medium">PREMIUM</p>
-              <p className="text-2xl font-bold text-slate-800 mt-1">₹299<span className="text-sm font-normal text-slate-500">/mo</span></p>
-              <ul className="mt-3 space-y-1.5 text-xs text-slate-600">
-                {["Unlimited history", "AI insights", "Doctor reports", "Reminders"].map((f,i) => (
-                  <li key={i} className="flex items-center gap-1.5"><Check className="w-3 h-3 text-[#5b9a8b]" />{f}</li>
+            <div className="border-2 border-[#5b9a8b] rounded-2xl p-6 bg-gradient-to-b from-[#5b9a8b]/5 to-white relative shadow-xl shadow-[#5b9a8b]/10 scale-105">
+              <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-gradient-to-r from-[#5b9a8b] to-[#4a8a7b] text-white text-xs font-bold rounded-full shadow-lg">MOST POPULAR</span>
+              <p className="text-sm text-[#5b9a8b] font-bold mt-2">PREMIUM</p>
+              <p className="text-4xl font-black text-slate-800 mt-2">₹299<span className="text-lg font-normal text-slate-500">/mo</span></p>
+              <p className="text-slate-500 text-sm mb-5">Best value</p>
+              <ul className="space-y-3 text-sm text-slate-700">
+                {["Unlimited history", "AI insights", "Doctor reports", "Smart reminders"].map((f,i) => (
+                  <li key={i} className="flex items-center gap-2"><Check className="w-5 h-5 text-[#5b9a8b]" />{f}</li>
                 ))}
               </ul>
             </div>
             
             {/* Family */}
-            <div className="border border-violet-200 rounded-xl p-4">
-              <p className="text-xs text-violet-600 font-medium">FAMILY</p>
-              <p className="text-2xl font-bold text-slate-800 mt-1">₹499<span className="text-sm font-normal text-slate-500">/mo</span></p>
-              <ul className="mt-3 space-y-1.5 text-xs text-slate-600">
+            <div className="border-2 border-violet-200 rounded-2xl p-6 bg-white hover:border-violet-300 transition-colors">
+              <p className="text-sm text-violet-600 font-bold">FAMILY</p>
+              <p className="text-4xl font-black text-slate-800 mt-2">₹499<span className="text-lg font-normal text-slate-500">/mo</span></p>
+              <p className="text-slate-500 text-sm mb-5">For caregivers</p>
+              <ul className="space-y-3 text-sm text-slate-700">
                 {["3 family members", "Caregiver dashboard", "Real-time alerts"].map((f,i) => (
-                  <li key={i} className="flex items-center gap-1.5"><Check className="w-3 h-3 text-violet-500" />{f}</li>
+                  <li key={i} className="flex items-center gap-2"><Check className="w-5 h-5 text-violet-500" />{f}</li>
                 ))}
               </ul>
             </div>
           </div>
-          <p className="text-center text-xs text-[#5b9a8b] mt-4">🎉 All features free during early access</p>
         </div>
       </section>
 
