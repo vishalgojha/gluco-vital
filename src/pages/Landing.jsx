@@ -55,56 +55,70 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen bg-[#f8faf9]">
-      {/* Hero - Compact, no wasted space */}
-      <section className="px-4 py-3">
-        {/* Nav */}
-        <nav className="flex items-center justify-between mb-6 md:mb-8">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-[#5b9a8b] flex items-center justify-center">
-              <Heart className="w-4 h-4 text-white" />
+      {/* Hero - Bold, impactful */}
+      <section className="relative overflow-hidden">
+        {/* Background gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#e8f5f1] via-[#f0f9f6] to-[#faf8f5]" />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-[#5b9a8b]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+        <div className="absolute bottom-0 left-0 w-72 h-72 bg-[#7eb8a8]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+        
+        <div className="relative px-4 py-4">
+          {/* Nav */}
+          <nav className="flex items-center justify-between mb-8 md:mb-12">
+            <div className="flex items-center gap-2.5">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#5b9a8b] to-[#4a8a7b] flex items-center justify-center shadow-lg shadow-[#5b9a8b]/25">
+                <Heart className="w-5 h-5 text-white" />
+              </div>
+              <span className="font-bold text-lg text-[#3d6b5f]">Gluco Vital</span>
             </div>
-            <span className="font-bold text-[#3d6b5f]">Gluco Vital</span>
-          </div>
-          <Button variant="ghost" size="sm" onClick={handleGetStarted} className="text-[#5b9a8b] text-sm">
-            Sign In
-          </Button>
-        </nav>
+            <Button onClick={handleGetStarted} className="bg-[#5b9a8b] hover:bg-[#4a8a7b] text-white rounded-xl px-5 h-10 text-sm shadow-md">
+              Sign In
+            </Button>
+          </nav>
 
-        {/* Hero Content */}
-        <div className="max-w-lg mx-auto text-center py-8 md:py-12">
-          <h1 className="text-3xl md:text-4xl font-bold text-slate-800 leading-tight mb-2">
-            Gluco Vital
-          </h1>
-          <p className="text-[#5b9a8b] text-xs font-medium mb-4 tracking-wide">DIABETES MANAGEMENT MADE SIMPLE</p>
-          <h2 className="text-xl md:text-2xl font-semibold text-slate-700 mb-3">
-            Log your health via <span className="text-[#5b9a8b]">WhatsApp</span>
-          </h2>
-          <p className="text-slate-600 text-sm mb-6 max-w-sm mx-auto">
-            Text your sugar, BP, or meals. Get insights, reminders, and doctor-ready reports — in 21 languages.
-          </p>
+          {/* Hero Content */}
+          <div className="max-w-2xl mx-auto text-center py-8 md:py-16">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur rounded-full border border-[#5b9a8b]/20 shadow-sm mb-6">
+              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+              <span className="text-sm font-medium text-[#5b9a8b]">AI-Powered Diabetes Management</span>
+            </div>
+            
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-slate-800 leading-[1.1] mb-4 tracking-tight">
+              Gluco<span className="text-[#5b9a8b]">Vital</span>
+            </h1>
+            
+            <h2 className="text-xl md:text-2xl font-semibold text-slate-700 mb-4">
+              Log your health via <span className="text-[#5b9a8b] underline decoration-[#5b9a8b]/30 decoration-4 underline-offset-4">WhatsApp</span>
+            </h2>
+            
+            <p className="text-slate-600 text-base md:text-lg mb-8 max-w-md mx-auto leading-relaxed">
+              Text your sugar, BP, or meals. Get insights, reminders, and doctor-ready reports — in <strong>21 languages</strong>.
+            </p>
 
-          {/* Primary CTA */}
-          <Button 
-            size="lg"
-            onClick={handleGetStarted}
-            className="bg-[#5b9a8b] hover:bg-[#4a8a7b] h-11 px-6 text-sm rounded-xl shadow-md"
-          >
-            Get Started Free <ArrowRight className="w-4 h-4 ml-2" />
-          </Button>
-          
-          {/* Secondary CTA */}
-          <button 
-            onClick={handleDemo}
-            className="ml-3 text-sm text-slate-500 hover:text-[#5b9a8b] transition-colors"
-          >
-            or try the demo →
-          </button>
+            {/* CTAs */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6">
+              <Button 
+                size="lg"
+                onClick={handleGetStarted}
+                className="bg-gradient-to-r from-[#5b9a8b] to-[#4a8a7b] hover:from-[#4a8a7b] hover:to-[#3d7a6b] h-14 px-8 text-base rounded-2xl shadow-xl shadow-[#5b9a8b]/25 w-full sm:w-auto"
+              >
+                Get Started Free <ArrowRight className="w-5 h-5 ml-2" />
+              </Button>
+              
+              <button 
+                onClick={handleDemo}
+                className="text-sm font-medium text-slate-600 hover:text-[#5b9a8b] transition-colors flex items-center gap-1"
+              >
+                Try the demo <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
 
-          {/* Trust signals */}
-          <div className="flex items-center justify-center gap-4 mt-5 text-xs text-slate-500">
-            <span>✓ Free forever</span>
-            <span>✓ No app needed</span>
-            <span>✓ 21 languages</span>
+            {/* Trust signals */}
+            <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-slate-600">
+              <span className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-500" /> Free forever</span>
+              <span className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-500" /> No app needed</span>
+              <span className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-500" /> 21 languages</span>
+            </div>
           </div>
         </div>
       </section>
