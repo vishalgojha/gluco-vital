@@ -108,21 +108,21 @@ export default function DoctorFeedback() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
-      <div className="max-w-3xl mx-auto px-4 py-8">
+      <div className="max-w-3xl mx-auto px-3 sm:px-4 py-4 md:py-8">
         {/* Header */}
-        <div className="flex items-center gap-4 mb-8">
+        <div className="flex items-center gap-3 sm:gap-4 mb-6 md:mb-8">
           <Link to={createPageUrl(`PatientDetail?email=${connection?.patient_email}&connection=${connectionId}`)}>
             <Button variant="ghost" size="icon">
               <ArrowLeft className="w-5 h-5" />
             </Button>
           </Link>
-          <div>
-            <h1 className="text-2xl font-bold text-slate-800">Send Feedback</h1>
-            <p className="text-slate-500">To: {connection?.patient_name}</p>
+          <div className="min-w-0">
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-800">Send Feedback</h1>
+            <p className="text-slate-500 text-sm truncate">To: {connection?.patient_name}</p>
           </div>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid gap-4 md:grid-cols-3 md:gap-6">
           {/* Feedback Form */}
           <div className="md:col-span-2">
             <Card>
@@ -173,7 +173,7 @@ export default function DoctorFeedback() {
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <Label>Priority</Label>
                       <Select
@@ -222,7 +222,7 @@ export default function DoctorFeedback() {
           </div>
 
           {/* Previous Feedback */}
-          <div>
+          <div className="md:col-span-1">
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg">Previous Feedback</CardTitle>

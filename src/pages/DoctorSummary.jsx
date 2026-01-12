@@ -60,22 +60,20 @@ export default function DoctorSummary() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
-      <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto px-3 sm:px-4 py-4 md:py-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
-              <Stethoscope className="w-6 h-6 text-slate-600" />
-              Clinical Summaries
-            </h1>
-            <p className="text-slate-500 text-sm mt-1">
-              Decision states • Fatigue signals • Risk flags
-            </p>
-          </div>
+        <div className="mb-6 md:mb-8">
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-800 flex items-center gap-2">
+            <Stethoscope className="w-5 h-5 sm:w-6 sm:h-6 text-slate-600" />
+            Clinical Summaries
+          </h1>
+          <p className="text-slate-500 text-xs sm:text-sm mt-1">
+            Decision states • Fatigue signals • Risk flags
+          </p>
         </div>
 
         {/* Filters */}
-        <div className="flex items-center gap-4 mb-6">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-4 mb-4 sm:mb-6">
           <Select value={selectedPatient} onValueChange={setSelectedPatient}>
             <SelectTrigger className="w-48">
               <Users className="w-4 h-4 mr-2 text-slate-400" />
@@ -102,31 +100,30 @@ export default function DoctorSummary() {
         </div>
 
         {/* Info Banner */}
-        <div className="bg-slate-100 border border-slate-200 rounded-lg p-4 mb-6">
-          <p className="text-sm text-slate-600">
+        <div className="bg-slate-100 border border-slate-200 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6">
+          <p className="text-xs sm:text-sm text-slate-600">
             <strong>Reading this view:</strong> Decision states show patient coping patterns. 
-            Fatigue signals indicate burnout risk. Patient voice provides context. 
-            Actions suggest workflow routing — not medical decisions.
+            Fatigue signals indicate burnout risk. Actions suggest workflow routing.
           </p>
         </div>
 
         {/* Summaries Grid */}
         {isLoading ? (
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid gap-3 sm:gap-4 md:grid-cols-2">
             {[1, 2, 3, 4].map(i => (
-              <Skeleton key={i} className="h-64 rounded-xl" />
+              <Skeleton key={i} className="h-48 sm:h-64 rounded-xl" />
             ))}
           </div>
         ) : displaySummaries.length === 0 ? (
-          <div className="text-center py-16 bg-white rounded-xl border border-slate-100">
-            <Clock className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-            <p className="text-slate-500">No summaries generated yet</p>
-            <p className="text-sm text-slate-400 mt-1">
+          <div className="text-center py-10 sm:py-16 bg-white rounded-xl border border-slate-100">
+            <Clock className="w-10 h-10 sm:w-12 sm:h-12 text-slate-300 mx-auto mb-3" />
+            <p className="text-slate-500 text-sm sm:text-base">No summaries generated yet</p>
+            <p className="text-xs sm:text-sm text-slate-400 mt-1">
               Summaries are generated from patient interactions
             </p>
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid gap-3 sm:gap-4 md:grid-cols-2">
             {displaySummaries.map(summary => (
               <DoctorSummaryCard key={summary.id} summary={summary} />
             ))}
