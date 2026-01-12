@@ -435,14 +435,9 @@ export default function Landing() {
       </section>
 
       {/* FAQ */}
-      <section className="py-16 bg-slate-50/50">
+      <section className="py-6 lg:py-10 bg-slate-50/50">
         <div className="max-w-3xl mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center text-slate-800 mb-4">
-            Frequently Asked Questions
-          </h2>
-          <p className="text-center text-slate-500 mb-10">
-            Everything you need to know about Gluco Vital
-          </p>
+          <h2 className="text-xl lg:text-2xl font-bold text-center text-slate-800 mb-4">FAQs</h2>
           
           <div className="space-y-4">
             {[
