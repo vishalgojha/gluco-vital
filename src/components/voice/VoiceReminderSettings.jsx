@@ -35,29 +35,32 @@ export default function VoiceReminderSettings({ user, profile, onUpdate }) {
       
       if (!user?.email) {
         toast.error("Please log in to save settings");
+        setSaving(false);
         return;
       }
 
-      // Use upsert via backend function for reliability
-      const response = await base44.functions.invoke('entityOperations', {
-        operation: 'upsert',
-        entity: 'PatientProfile',
-        data: {
-          user_email: user.email,
-          name: user.full_name || profile?.name || '',
-          ...updateData
+      // Direct entity update/create
+      if (profile?.id) {
+        await base44.entities.PatientProfile.update(profile.id, updateData);
+      } else {
+        // Check if profile exists
+        const existingProfiles = await base44.entities.PatientProfile.filter({ user_email: user.email });
+        if (existingProfiles && existingProfiles.length > 0) {
+          await base44.entities.PatientProfile.update(existingProfiles[0].id, updateData);
+        } else {
+          await base44.entities.PatientProfile.create({
+            user_email: user.email,
+            name: user.full_name || '',
+            ...updateData
+          });
         }
-      });
-
-      if (response.data?.error) {
-        throw new Error(response.data.error);
       }
 
       toast.success("Voice reminder settings saved!");
       onUpdate?.(settings);
     } catch (error) {
       console.error("Save error:", error);
-      toast.error("Failed to save settings: " + (error.message || "Unknown error"));
+      toast.error("Failed to save: " + (error.message || "Unknown error"));
     } finally {
       setSaving(false);
     }
@@ -82,32 +85,32 @@ export default function VoiceReminderSettings({ user, profile, onUpdate }) {
         return;
       }
 
-      if (response.data?.audio_url) {
-        // Play the audio from URL
-        const audio = new Audio(response.data.audio_url);
-        audio.oncanplaythrough = () => {
-          audio.play().catch(e => {
-            console.error('Audio play failed:', e);
-            toast.error("Couldn't play audio. Check browser permissions.");
-          });
-        };
-        audio.onerror = (e) => {
-          console.error('Audio load error:', e);
-          toast.error("Audio file couldn't be loaded");
-        };
-        toast.success("Playing voice reminder!");
-      } else if (response.data?.audio_base64) {
-        // Play from base64 if URL upload failed
-        const audio = new Audio(`data:audio/mpeg;base64,${response.data.audio_base64}`);
-        audio.play().catch(e => {
-          console.error('Audio play failed:', e);
-          toast.error("Couldn't play audio");
-        });
-        toast.success("Playing voice reminder!");
-      } else {
+      // Prefer base64 for reliable playback
+      const audioData = response.data?.audio_base64 || response.data?.audio_url;
+      if (!audioData) {
         toast.error("No audio returned");
         console.error('No audio in response:', response.data);
+        return;
       }
+
+      const audioSrc = response.data?.audio_base64 
+        ? `data:audio/mpeg;base64,${response.data.audio_base64}`
+        : response.data.audio_url;
+      
+      const audio = new Audio(audioSrc);
+      audio.oncanplaythrough = () => {
+        audio.play().then(() => {
+          toast.success("Playing voice reminder!");
+        }).catch(e => {
+          console.error('Audio play failed:', e);
+          toast.error("Couldn't play audio. Click play again.");
+        });
+      };
+      audio.onerror = (e) => {
+        console.error('Audio load error:', e);
+        toast.error("Audio couldn't be loaded");
+      };
+      audio.load();
     } catch (error) {
       console.error('Voice reminder error:', error);
       toast.error(`Failed: ${error.message || 'Unknown error'}`);
