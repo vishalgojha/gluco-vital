@@ -24,6 +24,10 @@ export default function VoiceReminderSettings({ user, profile, onUpdate }) {
 
   const handleSave = async () => {
     setSaving(true);
+    console.log('Saving voice settings...', settings);
+    console.log('User:', user?.email);
+    console.log('Profile ID:', profile?.id);
+    
     try {
       const updateData = {
         voice_reminders_enabled: settings.voice_reminders_enabled,
@@ -39,27 +43,35 @@ export default function VoiceReminderSettings({ user, profile, onUpdate }) {
         return;
       }
 
-      // Direct entity update/create
+      // Try to update existing profile or create new one
       if (profile?.id) {
+        console.log('Updating existing profile:', profile.id);
         await base44.entities.PatientProfile.update(profile.id, updateData);
+        console.log('Profile updated successfully');
       } else {
         // Check if profile exists
+        console.log('Looking for existing profile...');
         const existingProfiles = await base44.entities.PatientProfile.filter({ user_email: user.email });
+        console.log('Found profiles:', existingProfiles?.length);
+        
         if (existingProfiles && existingProfiles.length > 0) {
+          console.log('Updating found profile:', existingProfiles[0].id);
           await base44.entities.PatientProfile.update(existingProfiles[0].id, updateData);
         } else {
+          console.log('Creating new profile...');
           await base44.entities.PatientProfile.create({
             user_email: user.email,
             name: user.full_name || '',
             ...updateData
           });
         }
+        console.log('Save completed');
       }
 
-      toast.success("Voice reminder settings saved!");
-      onUpdate?.(settings);
+      toast.success("Settings saved!");
+      if (onUpdate) onUpdate(settings);
     } catch (error) {
-      console.error("Save error:", error);
+      console.error("Save error details:", error);
       toast.error("Failed to save: " + (error.message || "Unknown error"));
     } finally {
       setSaving(false);
