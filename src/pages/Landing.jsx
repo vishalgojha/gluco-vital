@@ -346,15 +346,13 @@ export default function Landing() {
       </section>
 
       {/* Languages */}
-      <section className="py-16 bg-gradient-to-br from-[#5b9a8b] to-[#4a8a7b] text-white">
+      <section className="py-6 lg:py-10 bg-gradient-to-br from-[#5b9a8b] to-[#4a8a7b] text-white">
         <div className="max-w-6xl mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-4">Speaks Your Language</h2>
-          <p className="text-white/80 mb-8 max-w-xl mx-auto">
-            Designed for people managing health in everyday life — across languages and cultures.
-          </p>
-          <div className="flex flex-wrap justify-center gap-3">
+          <h2 className="text-xl lg:text-2xl font-bold mb-2">Speaks Your Language</h2>
+          <p className="text-white/80 text-sm mb-4 max-w-xl mx-auto">21 languages supported</p>
+          <div className="flex flex-wrap justify-center gap-1.5 lg:gap-2">
             {["🇮🇳 Hindi", "🇮🇳 Tamil", "🇮🇳 Telugu", "🇮🇳 Marathi", "🇮🇳 Gujarati", "🇮🇳 Kannada", "🇮🇳 Malayalam", "🇮🇳 Punjabi", "🇮🇳 Bengali", "🇨🇳 中文", "🇺🇸 English", "🇵🇰 اردو", "🇧🇷 Português", "🇸🇦 العربية", "🇮🇩 Bahasa", "🇯🇵 日本語", "🇷🇺 Русский", "🇹🇷 Türkçe", "🇩🇪 Deutsch", "🇪🇸 Español", "🇲🇽 Hinglish"].map((lang, idx) => (
-              <span key={idx} className="px-4 py-2 bg-white/10 rounded-full text-sm backdrop-blur">
+              <span key={idx} className="px-2.5 py-1 bg-white/10 rounded-full text-xs backdrop-blur">
                 {lang}
               </span>
             ))}
