@@ -361,14 +361,10 @@ export default function Landing() {
       </section>
 
       {/* Pricing */}
-      <section className="py-16 bg-white/50">
+      <section className="py-6 lg:py-10 bg-white/50">
         <div className="max-w-5xl mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center text-slate-800 mb-4">
-            Simple, Transparent Pricing
-          </h2>
-          <p className="text-center text-slate-500 mb-12 max-w-xl mx-auto">
-            Start free forever. Upgrade when you need more.
-          </p>
+          <h2 className="text-xl lg:text-2xl font-bold text-center text-slate-800 mb-2">Simple, Transparent Pricing</h2>
+          <p className="text-center text-slate-500 text-sm mb-6">Start free forever. Upgrade when you need more.</p>
 
           <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {/* Free Tier */}
