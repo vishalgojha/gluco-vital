@@ -183,22 +183,27 @@ export default function Landing() {
       </section>
 
       {/* Features - Grid */}
-      <section className="py-10 md:py-14 px-4">
-        <div className="max-w-3xl mx-auto">
-          <h2 className="text-xl md:text-2xl font-bold text-slate-800 text-center mb-6">What you get</h2>
-          <div className="grid grid-cols-2 gap-3 md:gap-4">
+      <section className="py-16 md:py-20 px-4 bg-gradient-to-b from-slate-50 to-white">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-3">What you get</h2>
+            <p className="text-slate-600">Everything you need to manage diabetes better</p>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
             {[
-              { icon: MessageCircle, title: "WhatsApp logging", desc: "No app to learn" },
-              { icon: TrendingUp, title: "Pattern insights", desc: "Spot what affects you" },
-              { icon: Bell, title: "Gentle reminders", desc: "Never shaming" },
-              { icon: Shield, title: "Doctor reports", desc: "PDF summaries" },
-              { icon: Globe, title: "21 languages", desc: "Hindi, Tamil, Chinese..." },
-              { icon: Heart, title: "Streaks & badges", desc: "Stay motivated" },
+              { icon: MessageCircle, title: "WhatsApp logging", desc: "No app to learn — just text" },
+              { icon: TrendingUp, title: "Pattern insights", desc: "AI spots what affects your sugar" },
+              { icon: Bell, title: "Gentle reminders", desc: "Helpful nudges, never shaming" },
+              { icon: Shield, title: "Doctor reports", desc: "Clean PDF summaries" },
+              { icon: Globe, title: "21 languages", desc: "Hindi, Tamil, Chinese & more" },
+              { icon: Heart, title: "Streaks & badges", desc: "Stay motivated daily" },
             ].map((f, i) => (
-              <div key={i} className="bg-white rounded-xl p-3 md:p-4 border border-slate-100">
-                <f.icon className="w-5 h-5 text-[#5b9a8b] mb-2" />
-                <h3 className="font-medium text-sm text-slate-800">{f.title}</h3>
-                <p className="text-xs text-slate-500">{f.desc}</p>
+              <div key={i} className="bg-white rounded-2xl p-5 md:p-6 border border-slate-100 shadow-sm hover:shadow-lg hover:border-[#5b9a8b]/20 transition-all duration-300 group">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#5b9a8b]/15 to-[#5b9a8b]/5 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <f.icon className="w-6 h-6 text-[#5b9a8b]" />
+                </div>
+                <h3 className="font-bold text-base text-slate-800 mb-1">{f.title}</h3>
+                <p className="text-sm text-slate-500">{f.desc}</p>
               </div>
             ))}
           </div>
