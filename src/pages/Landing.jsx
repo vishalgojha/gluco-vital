@@ -482,43 +482,27 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Supported By */}
-      <section className="py-8 bg-white/50">
+      {/* Supported By + Footer */}
+      <footer className="py-6 border-t border-slate-200 bg-white/50">
         <div className="max-w-6xl mx-auto px-4 text-center">
-          <p className="text-xs text-slate-500 mb-3">Supported by</p>
-          <a href="https://elevenlabs.io/startup-grants" target="_blank" rel="noopener noreferrer">
-            <img 
-              src="https://eleven-public-cdn.elevenlabs.io/payloadcms/pwsc4vchsqt-ElevenLabsGrants.webp" 
-              alt="ElevenLabs Grants" 
-              className="mx-auto"
-              style={{ width: '180px' }}
-            />
+          <p className="text-[10px] text-slate-400 mb-2">Supported by</p>
+          <a href="https://elevenlabs.io/startup-grants" target="_blank" rel="noopener noreferrer" className="inline-block mb-4">
+            <img src="https://eleven-public-cdn.elevenlabs.io/payloadcms/pwsc4vchsqt-ElevenLabsGrants.webp" alt="ElevenLabs Grants" className="mx-auto" style={{ width: '140px' }} />
           </a>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="py-8 border-t border-slate-200">
-        <div className="max-w-6xl mx-auto px-4 text-center text-sm text-slate-500">
-          <div className="flex flex-wrap items-center justify-center gap-3 mb-3">
-            <a href={createPageUrl("About")} className="hover:text-[#5b9a8b] transition-colors">About</a>
+          <div className="flex flex-wrap items-center justify-center gap-2 mb-2 text-xs text-slate-500">
+            <a href={createPageUrl("About")} className="hover:text-[#5b9a8b]">About</a>
             <span>•</span>
-            <a href={createPageUrl("PrivacyPolicy")} className="hover:text-[#5b9a8b] transition-colors">Privacy Policy</a>
+            <a href={createPageUrl("PrivacyPolicy")} className="hover:text-[#5b9a8b]">Privacy</a>
             <span>•</span>
-            <a href={createPageUrl("Terms")} className="hover:text-[#5b9a8b] transition-colors">Terms of Service</a>
+            <a href={createPageUrl("Terms")} className="hover:text-[#5b9a8b]">Terms</a>
             <span>•</span>
-            <a href={createPageUrl("CancellationRefund")} className="hover:text-[#5b9a8b] transition-colors">Refund Policy</a>
+            <a href={createPageUrl("CancellationRefund")} className="hover:text-[#5b9a8b]">Refunds</a>
             <span>•</span>
-            <a href={createPageUrl("ContactUs")} className="hover:text-[#5b9a8b] transition-colors">Contact Us</a>
+            <a href={createPageUrl("ContactUs")} className="hover:text-[#5b9a8b]">Contact</a>
           </div>
-          <p className="text-xs text-slate-400 mb-2">
-            GlucoVital.fit is an experimental health project by <a href="https://www.chaoscraftlabs.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-[#5b9a8b]">Chaos Craft Labs LLP</a>,<br/>
-            built to explore frictionless diabetes logging and care.
+          <p className="text-[10px] text-slate-400">
+            <a href="https://www.chaoscraftlabs.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-[#5b9a8b]">Chaos Craft Labs LLP</a> • Made with ❤️ in India 🇮🇳 • © 2025
           </p>
-          <p className="flex items-center justify-center gap-1 mb-1">
-            Made with <span className="text-red-500">❤️</span> in India 🇮🇳
-          </p>
-          <p>© 2025 GlucoVital.fit • All rights reserved</p>
         </div>
       </footer>
     </div>
