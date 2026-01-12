@@ -4,49 +4,26 @@ import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { 
   MessageCircle, 
-  Smartphone, 
   TrendingUp, 
   Shield, 
   Globe, 
   Heart,
-  Droplet,
   Bell,
-  Trophy,
   ArrowRight,
-  Check
+  Check,
+  ChevronDown
 } from "lucide-react";
 
 export default function Landing() {
   useEffect(() => {
-    // SEO Meta Tags
-    document.title = "Gluco Vital - AI Diabetes Management on WhatsApp | Free Health Tracker";
+    document.title = "Gluco Vital - AI Diabetes Management on WhatsApp";
     
     const metaTags = [
-      { name: "description", content: "Manage diabetes with AI-powered WhatsApp assistant. Log sugar, BP & meals via simple messages. Get personalized insights in 14 languages. Free forever. Start tracking your health today!" },
-      { name: "keywords", content: "diabetes management, blood sugar tracker, AI health assistant, WhatsApp health app, glucose monitoring, diabetes care, health tracking app, insulin management, multilingual health app" },
-      { name: "author", content: "Gluco Vital" },
-      { name: "robots", content: "index, follow" },
+      { name: "description", content: "Manage diabetes with AI-powered WhatsApp assistant. Log sugar, BP & meals via simple messages. Get personalized insights in 21 languages. Free forever." },
       { name: "viewport", content: "width=device-width, initial-scale=1.0" },
-      
-      // Open Graph
-      { property: "og:title", content: "Gluco Vital - Your Personal Health Companion on WhatsApp" },
-      { property: "og:description", content: "Log sugar, BP & meals via WhatsApp. Get gentle insights, reminders, and clear summaries in your language. Free health tracking made simple." },
-      { property: "og:type", content: "website" },
-      { property: "og:url", content: "https://glucovital.fit" },
-      { property: "og:site_name", content: "Gluco Vital" },
-      { property: "og:locale", content: "en_US" },
-      
-      // Twitter Card
-      { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Gluco Vital - AI Diabetes Management on WhatsApp" },
-      { name: "twitter:description", content: "Manage diabetes with AI-powered WhatsApp assistant. Free, multilingual, and easy to use." },
-      
-      // Mobile
+      { property: "og:title", content: "Gluco Vital - Your Health Companion on WhatsApp" },
+      { property: "og:description", content: "Log sugar, BP & meals via WhatsApp. Get gentle insights and clear summaries in your language." },
       { name: "theme-color", content: "#5b9a8b" },
-      { name: "mobile-web-app-capable", content: "yes" },
-      { name: "apple-mobile-web-app-capable", content: "yes" },
-      { name: "apple-mobile-web-app-status-bar-style", content: "default" },
-      { name: "apple-mobile-web-app-title", content: "Gluco Vital" },
     ];
 
     metaTags.forEach(({ name, property, content }) => {
@@ -60,448 +37,264 @@ export default function Landing() {
       meta.setAttribute('content', content);
     });
 
-    // Canonical URL
-    let canonical = document.querySelector('link[rel="canonical"]');
-    if (!canonical) {
-      canonical = document.createElement('link');
-      canonical.setAttribute('rel', 'canonical');
-      document.head.appendChild(canonical);
-    }
-    canonical.setAttribute('href', 'https://glucovital.fit');
-
-    // JSON-LD Schema Markup
-    const schemaScript = document.createElement('script');
-    schemaScript.type = 'application/ld+json';
-    schemaScript.text = JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "HealthAndBeautyBusiness",
-      "name": "Gluco Vital",
-      "description": "AI-powered diabetes management platform accessible via WhatsApp. Personalized health tracking, insights, and reminders in 14 languages.",
-      "url": "https://glucovital.fit",
-      "logo": "https://glucovital.fit/logo.png",
-      "sameAs": [],
-      "address": {
-        "@type": "PostalAddress",
-        "addressCountry": "IN"
-      },
-      "areaServed": "Worldwide",
-      "availableLanguage": ["Hindi", "English", "Chinese", "Spanish", "Portuguese", "Arabic", "Bengali", "Russian", "Japanese", "Turkish", "Indonesian", "German", "Urdu"],
-      "priceRange": "Free",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD",
-        "availability": "https://schema.org/InStock"
-      },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "4.8",
-        "reviewCount": "500"
-      }
-    });
-    document.head.appendChild(schemaScript);
-
-    return () => {
-      document.title = "Gluco Vital";
-      if (schemaScript.parentNode) {
-        schemaScript.parentNode.removeChild(schemaScript);
-      }
-    };
+    return () => { document.title = "Gluco Vital"; };
   }, []);
-  const features = [
-    { icon: MessageCircle, title: "WhatsApp Logging", desc: "Log sugar, BP, meals or notes — no app learning curve" },
-    { icon: TrendingUp, title: "Pattern Insights", desc: "See trends over time and what influences your numbers" },
-    { icon: Bell, title: "Gentle Reminders", desc: "Timely nudges that fit your routine — never shaming" },
-    { icon: Trophy, title: "Consistency Signals", desc: "Simple streaks that reward showing up, not perfect numbers" },
-    { icon: Globe, title: "14 Languages", desc: "Hindi, Chinese, Spanish, Arabic & more" },
-    { icon: Shield, title: "Doctor-Ready Reports", desc: "Clear summaries for better doctor conversations" },
-  ];
 
-  const stats = [
-    { value: "537M", label: "People with diabetes globally" },
-    { value: "21", label: "Languages supported" },
-    { value: "24/7", label: "Health companion" },
-  ];
+  const handleGetStarted = async () => {
+    const isAuth = await base44.auth.isAuthenticated();
+    if (isAuth) {
+      window.location.href = createPageUrl("Home");
+    } else {
+      base44.auth.redirectToLogin(createPageUrl("Home"));
+    }
+  };
+
+  const handleDemo = () => {
+    window.location.href = createPageUrl("Home") + "?demo=true";
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#f0f7f4] via-white to-[#e8f4f0]">
-      {/* Hero Section - optimized for above-fold on 768px+ */}
-      <header className="relative overflow-hidden min-h-[calc(100vh-60px)] lg:min-h-0 lg:h-auto flex flex-col">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#5b9a8b]/10 to-transparent" />
-        <div className="max-w-6xl mx-auto px-4 py-2 lg:py-3">
-          <nav className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 lg:w-8 lg:h-8 rounded-lg bg-gradient-to-br from-[#5b9a8b] to-[#7eb8a8] flex items-center justify-center shadow-md" role="img" aria-label="Gluco Vital logo">
-                <Heart className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-white" />
-              </div>
-              <span className="text-base lg:text-lg font-bold text-[#3d6b5f]">Gluco Vital</span>
+    <div className="min-h-screen bg-[#f8faf9]">
+      {/* Hero - Mobile optimized, single screen */}
+      <section className="min-h-[100svh] flex flex-col px-4 py-3 md:py-4">
+        {/* Nav */}
+        <nav className="flex items-center justify-between mb-auto">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-[#5b9a8b] flex items-center justify-center">
+              <Heart className="w-4 h-4 text-white" />
             </div>
-          </nav>
+            <span className="font-bold text-[#3d6b5f]">Gluco Vital</span>
+          </div>
+          <Button variant="ghost" size="sm" onClick={handleGetStarted} className="text-[#5b9a8b] text-sm">
+            Sign In
+          </Button>
+        </nav>
+
+        {/* Hero Content */}
+        <div className="flex-1 flex flex-col justify-center max-w-lg mx-auto w-full py-6 md:py-8">
+          <div className="text-center">
+            <p className="text-[#5b9a8b] text-xs font-medium mb-2 tracking-wide">DIABETES MANAGEMENT MADE SIMPLE</p>
+            <h1 className="text-[clamp(1.75rem,6vw,2.75rem)] font-bold text-slate-800 leading-[1.1] mb-3">
+              Log your health<br />via <span className="text-[#5b9a8b]">WhatsApp</span>
+            </h1>
+            <p className="text-slate-600 text-sm md:text-base mb-6 leading-relaxed max-w-sm mx-auto">
+              Text your sugar, BP, or meals. Get insights, reminders, and doctor-ready reports — in 21 languages.
+            </p>
+
+            {/* Primary CTA */}
+            <Button 
+              size="lg"
+              onClick={handleGetStarted}
+              className="bg-[#5b9a8b] hover:bg-[#4a8a7b] h-12 px-8 text-base rounded-xl shadow-md w-full max-w-xs mx-auto"
+            >
+              Get Started Free <ArrowRight className="w-4 h-4 ml-2" />
+            </Button>
+            
+            {/* Secondary CTA */}
+            <button 
+              onClick={handleDemo}
+              className="mt-3 text-sm text-slate-500 hover:text-[#5b9a8b] transition-colors"
+            >
+              or try the demo →
+            </button>
+
+            {/* Trust signals - minimal */}
+            <div className="flex items-center justify-center gap-4 mt-6 text-xs text-slate-500">
+              <span>✓ Free forever</span>
+              <span>✓ No app needed</span>
+              <span>✓ 21 languages</span>
+            </div>
+          </div>
         </div>
 
-        <div className="max-w-6xl mx-auto px-4 py-2 lg:py-4 relative flex-1 flex items-center">
-          <div className="grid md:grid-cols-2 gap-3 lg:gap-6 items-center w-full">
-            <div className="text-center md:text-left">
-              <div className="inline-flex items-center gap-1.5 bg-white/80 backdrop-blur px-2.5 py-1 rounded-full text-[10px] lg:text-xs text-[#5b9a8b] font-medium mb-2 lg:mb-3 border border-[#5b9a8b]/20">
-                <Droplet className="w-3 h-3" aria-hidden="true" />
-                Diabetes & Health Management Made Simple
+        {/* Scroll hint */}
+        <div className="text-center pb-2 animate-bounce">
+          <ChevronDown className="w-5 h-5 text-slate-300 mx-auto" />
+        </div>
+      </section>
+
+      {/* How it Works - Compact */}
+      <section className="py-10 md:py-14 px-4 bg-white">
+        <div className="max-w-2xl mx-auto">
+          <h2 className="text-xl md:text-2xl font-bold text-slate-800 text-center mb-6">How it works</h2>
+          
+          {/* WhatsApp Preview */}
+          <div className="bg-[#e5ddd5] rounded-xl overflow-hidden shadow-lg max-w-[280px] mx-auto mb-8">
+            <div className="bg-[#075e54] text-white px-3 py-2 flex items-center gap-2">
+              <div className="w-7 h-7 rounded-full bg-[#5b9a8b] flex items-center justify-center">
+                <Heart className="w-3.5 h-3.5 text-white" />
               </div>
-              <h1 className="text-[clamp(1.5rem,5vw,2.5rem)] lg:text-[clamp(2rem,4vw,3rem)] font-bold text-slate-800 mb-2 lg:mb-3 leading-[1.15]">
-                Your Personal <span className="text-[#5b9a8b]">Health Companion</span><br />on WhatsApp
-              </h1>
-              <p className="text-sm lg:text-base text-slate-600 max-w-xl mb-3 lg:mb-4 leading-snug">
-                Log your sugar, BP, and meals via WhatsApp. Get gentle insights, reminders, and clear summaries — in your language.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-2 lg:gap-3 justify-center md:justify-start">
-                <Button 
-                  size="lg"
-                  onClick={async () => {
-                    const isAuth = await base44.auth.isAuthenticated();
-                    if (isAuth) {
-                      window.location.href = createPageUrl("Home");
-                    } else {
-                      base44.auth.redirectToLogin(createPageUrl("Home"));
-                    }
-                  }}
-                  className="bg-[#5b9a8b] hover:bg-[#4a8a7b] h-9 lg:h-10 px-5 lg:px-6 text-sm lg:text-base rounded-xl shadow-lg"
-                >
-                  Get Started Free <ArrowRight className="w-4 h-4 ml-1.5" />
-                </Button>
-                <Button 
-                  size="lg"
-                  variant="outline"
-                  onClick={() => {
-                    window.location.href = createPageUrl("Home") + "?demo=true";
-                  }}
-                  className="h-9 lg:h-10 px-5 lg:px-6 text-sm lg:text-base rounded-xl border-2 border-[#5b9a8b] text-[#5b9a8b] hover:bg-[#5b9a8b]/10"
-                >
-                  Try Demo 👀
-                </Button>
-              </div>
-              <div className="grid grid-cols-3 gap-2 lg:gap-3 max-w-xs lg:max-w-sm mt-3 lg:mt-4 mx-auto md:mx-0">
-                {stats.map((stat, idx) => (
-                  <div key={idx} className="text-center md:text-left">
-                    <p className="text-lg lg:text-xl font-bold text-[#5b9a8b]">{stat.value}</p>
-                    <p className="text-[9px] lg:text-[10px] text-slate-500 leading-tight">{stat.label}</p>
-                  </div>
-                ))}
+              <div>
+                <p className="font-medium text-xs">Gluco Vital</p>
+                <p className="text-[9px] text-green-200">online</p>
               </div>
             </div>
-            <div className="hidden md:block relative">
-              <div className="relative w-full max-w-[200px] lg:max-w-[280px] mx-auto">
-                <img 
-                  src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=400&h=400&fit=crop&q=80" 
-                  alt="Healthcare technology concept"
-                  className="rounded-xl lg:rounded-2xl shadow-xl shadow-[#5b9a8b]/20 object-cover w-full aspect-square"
-                />
-                <div className="absolute -bottom-1.5 -left-1.5 lg:-bottom-2 lg:-left-2 bg-white rounded-lg lg:rounded-xl p-1.5 lg:p-2 shadow-lg border border-slate-100">
-                  <div className="flex items-center gap-1.5 lg:gap-2">
-                    <div className="w-6 h-6 lg:w-7 lg:h-7 bg-green-100 rounded-full flex items-center justify-center">
-                      <Check className="w-3 h-3 lg:w-3.5 lg:h-3.5 text-green-600" />
-                    </div>
-                    <div>
-                      <p className="text-[10px] lg:text-xs font-medium text-slate-800">Sugar Logged</p>
-                      <p className="text-[8px] lg:text-[10px] text-slate-500">120 mg/dL • In Range</p>
-                    </div>
-                  </div>
+            <div className="p-2.5 space-y-1.5">
+              <div className="flex justify-end">
+                <div className="bg-[#dcf8c6] rounded-lg px-2.5 py-1.5 max-w-[85%]">
+                  <p className="text-xs text-slate-800">Fasting sugar 118</p>
+                  <p className="text-[8px] text-slate-500 text-right mt-0.5">9:15 AM ✓✓</p>
                 </div>
-                <div className="absolute -top-1.5 -right-1.5 lg:-top-2 lg:-right-2 bg-white rounded-lg lg:rounded-xl p-1.5 lg:p-2 shadow-lg border border-slate-100">
-                  <div className="flex items-center gap-1.5 lg:gap-2">
-                    <div className="w-6 h-6 lg:w-7 lg:h-7 bg-violet-100 rounded-full flex items-center justify-center">
-                      <MessageCircle className="w-3 h-3 lg:w-3.5 lg:h-3.5 text-violet-600" />
-                    </div>
-                    <div>
-                      <p className="text-[10px] lg:text-xs font-medium text-slate-800">WhatsApp</p>
-                      <p className="text-[8px] lg:text-[10px] text-slate-500">Connected ✓</p>
-                    </div>
-                  </div>
+              </div>
+              <div className="flex justify-start">
+                <div className="bg-white rounded-lg px-2.5 py-1.5 max-w-[90%]">
+                  <p className="text-xs text-slate-800">✅ 118 mg/dL — in range! 🌅</p>
+                  <p className="text-[8px] text-slate-500 text-right mt-0.5">9:15 AM</p>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </header>
 
-      {/* How it Works */}
-      <section className="py-6 lg:py-10 bg-white/50">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="flex flex-col md:flex-row items-center gap-4 lg:gap-6 mb-6 lg:mb-8">
-            <div className="md:w-1/3">
-              <div className="bg-[#e5ddd5] rounded-xl shadow-lg w-full max-w-[240px] mx-auto overflow-hidden">
-                <div className="bg-[#075e54] text-white px-3 py-2 flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#5b9a8b] to-[#7eb8a8] flex items-center justify-center">
-                    <Heart className="w-4 h-4 text-white" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-xs">Gluco Vital</p>
-                    <p className="text-[10px] text-green-200">online</p>
-                  </div>
+          {/* Steps */}
+          <div className="grid gap-4 md:grid-cols-3 text-center">
+            {[
+              { icon: MessageCircle, title: "Text your data", desc: '"Sugar 120" or "Ate rice dal"' },
+              { icon: TrendingUp, title: "See patterns", desc: "AI spots trends in your logs" },
+              { icon: Shield, title: "Share with doctor", desc: "Clean reports, better visits" },
+            ].map((step, i) => (
+              <div key={i} className="p-3">
+                <div className="w-10 h-10 rounded-xl bg-[#5b9a8b]/10 flex items-center justify-center mx-auto mb-2">
+                  <step.icon className="w-5 h-5 text-[#5b9a8b]" />
                 </div>
-                <div className="p-2 space-y-1.5">
-                  <div className="flex justify-end">
-                    <div className="bg-[#dcf8c6] rounded-lg px-2 py-1.5 max-w-[80%] shadow-sm">
-                      <p className="text-xs text-slate-800">Fasting sugar 118</p>
-                      <p className="text-[8px] text-slate-500 text-right">9:15 AM ✓✓</p>
-                    </div>
-                  </div>
-                  <div className="flex justify-start">
-                    <div className="bg-white rounded-lg px-2 py-1.5 max-w-[85%] shadow-sm">
-                      <p className="text-xs text-slate-800">✅ Logged! 118 mg/dL — in range. Great start! 🌅</p>
-                      <p className="text-[8px] text-slate-500 text-right">9:15 AM</p>
-                    </div>
-                  </div>
-                  <div className="flex justify-end">
-                    <div className="bg-[#dcf8c6] rounded-lg px-2 py-1.5 max-w-[80%] shadow-sm">
-                      <p className="text-xs text-slate-800">Took metformin</p>
-                      <p className="text-[8px] text-slate-500 text-right">9:16 AM ✓✓</p>
-                    </div>
-                  </div>
-                  <div className="flex justify-start">
-                    <div className="bg-white rounded-lg px-2 py-1.5 max-w-[85%] shadow-sm">
-                      <p className="text-xs text-slate-800">💊 Medication logged!</p>
-                      <p className="text-[8px] text-slate-500 text-right">9:16 AM</p>
-                    </div>
-                  </div>
-                </div>
+                <h3 className="font-semibold text-sm text-slate-800">{step.title}</h3>
+                <p className="text-xs text-slate-500 mt-1">{step.desc}</p>
               </div>
-            </div>
-            <div className="md:w-2/3 text-center md:text-left">
-              <h2 className="text-xl lg:text-2xl font-bold text-slate-800 mb-2">Simple as Sending a Message</h2>
-              <p className="text-slate-500 text-sm lg:text-base max-w-xl">
-                No complex apps to learn. Just text your health data on WhatsApp. Our AI understands natural language in 21 languages.
-              </p>
-            </div>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-3 lg:gap-4">
-            <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100 text-center">
-              <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-2">
-                <MessageCircle className="w-5 h-5 text-green-600" />
-              </div>
-              <h3 className="font-semibold text-sm text-slate-800 mb-1">1. Send a Message</h3>
-              <p className="text-slate-500 text-xs">Text "Sugar 120" or "BP 130/80" on WhatsApp.</p>
-              <div className="mt-2 p-2 bg-slate-50 rounded-lg text-left text-[10px]">
-                <p className="text-green-600 font-mono">"Fasting sugar 110"</p>
-                <p className="text-green-600 font-mono">"Ate roti dal"</p>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100 text-center">
-              <div className="w-10 h-10 bg-violet-100 rounded-xl flex items-center justify-center mx-auto mb-2">
-                <TrendingUp className="w-5 h-5 text-violet-600" />
-              </div>
-              <h3 className="font-semibold text-sm text-slate-800 mb-1">2. Get Pattern Insights</h3>
-              <p className="text-slate-500 text-xs">AI analyzes logs and highlights patterns.</p>
-              <div className="mt-2 p-2 bg-violet-50 rounded-lg text-left text-[10px] text-violet-700">
-                "Post-dinner readings higher than usual."
-              </div>
-            </div>
-
-            <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100 text-center">
-              <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-2">
-                <Smartphone className="w-5 h-5 text-blue-600" />
-              </div>
-              <h3 className="font-semibold text-sm text-slate-800 mb-1">3. Track Progress</h3>
-              <p className="text-slate-500 text-xs">Clear summaries to notice progress.</p>
-              <div className="mt-2 flex justify-center gap-1.5">
-                <div className="px-2 py-1 bg-amber-100 text-amber-700 rounded-full text-[10px] font-medium">🏆 7 days</div>
-                <div className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-[10px] font-medium">✓ In range</div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* CGM Positioning Section */}
-      <section className="py-6 lg:py-8 bg-white/50">
-        <div className="max-w-3xl mx-auto px-4 text-center">
-          <h2 className="text-lg lg:text-xl font-bold text-slate-800 mb-2">Not sure if you need a CGM yet?</h2>
-          <p className="text-slate-600 text-sm lg:text-base leading-relaxed">
-            Glucovital helps you understand patterns first — so you can decide if advanced monitoring makes sense. Works with or without a CGM.
+      {/* Features - Grid */}
+      <section className="py-10 md:py-14 px-4">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-xl md:text-2xl font-bold text-slate-800 text-center mb-6">What you get</h2>
+          <div className="grid grid-cols-2 gap-3 md:gap-4">
+            {[
+              { icon: MessageCircle, title: "WhatsApp logging", desc: "No app to learn" },
+              { icon: TrendingUp, title: "Pattern insights", desc: "Spot what affects you" },
+              { icon: Bell, title: "Gentle reminders", desc: "Never shaming" },
+              { icon: Shield, title: "Doctor reports", desc: "PDF summaries" },
+              { icon: Globe, title: "21 languages", desc: "Hindi, Tamil, Chinese..." },
+              { icon: Heart, title: "Streaks & badges", desc: "Stay motivated" },
+            ].map((f, i) => (
+              <div key={i} className="bg-white rounded-xl p-3 md:p-4 border border-slate-100">
+                <f.icon className="w-5 h-5 text-[#5b9a8b] mb-2" />
+                <h3 className="font-medium text-sm text-slate-800">{f.title}</h3>
+                <p className="text-xs text-slate-500">{f.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Languages - Compact banner */}
+      <section className="py-6 md:py-8 px-4 bg-[#5b9a8b]">
+        <div className="max-w-2xl mx-auto text-center text-white">
+          <p className="font-semibold mb-2">Speaks your language</p>
+          <p className="text-xs text-white/80 leading-relaxed">
+            Hindi • Tamil • Telugu • Marathi • Gujarati • Kannada • Malayalam • Bengali • Chinese • English • Urdu • Arabic • Spanish • Portuguese • Japanese • Russian • Turkish • German • Indonesian • Punjabi • Hinglish
           </p>
         </div>
       </section>
 
-      {/* Features */}
-      <section className="py-6 lg:py-10">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="text-center mb-6">
-            <h2 className="text-xl lg:text-2xl font-bold text-slate-800 mb-2">Everything You Need</h2>
-            <p className="text-slate-500 text-sm">Comprehensive diabetes management tools</p>
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-2 lg:gap-3">
-            {features.map((feature, idx) => (
-              <div key={idx} className="flex items-start gap-3 p-3 rounded-xl hover:bg-white/80 transition-colors">
-                <div className="p-2 bg-[#5b9a8b]/10 rounded-lg shrink-0">
-                  <feature.icon className="w-4 h-4 text-[#5b9a8b]" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-sm text-slate-800">{feature.title}</h3>
-                  <p className="text-xs text-slate-500">{feature.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Languages */}
-      <section className="py-6 lg:py-10 bg-gradient-to-br from-[#5b9a8b] to-[#4a8a7b] text-white">
-        <div className="max-w-6xl mx-auto px-4 text-center">
-          <h2 className="text-xl lg:text-2xl font-bold mb-2">Speaks Your Language</h2>
-          <p className="text-white/80 text-sm mb-4 max-w-xl mx-auto">21 languages supported</p>
-          <div className="flex flex-wrap justify-center gap-1.5 lg:gap-2">
-            {["🇮🇳 Hindi", "🇮🇳 Tamil", "🇮🇳 Telugu", "🇮🇳 Marathi", "🇮🇳 Gujarati", "🇮🇳 Kannada", "🇮🇳 Malayalam", "🇮🇳 Punjabi", "🇮🇳 Bengali", "🇨🇳 中文", "🇺🇸 English", "🇵🇰 اردو", "🇧🇷 Português", "🇸🇦 العربية", "🇮🇩 Bahasa", "🇯🇵 日本語", "🇷🇺 Русский", "🇹🇷 Türkçe", "🇩🇪 Deutsch", "🇪🇸 Español", "🇲🇽 Hinglish"].map((lang, idx) => (
-              <span key={idx} className="px-2.5 py-1 bg-white/10 rounded-full text-xs backdrop-blur">
-                {lang}
-              </span>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing */}
-      <section className="py-6 lg:py-10 bg-white/50">
-        <div className="max-w-5xl mx-auto px-4">
-          <h2 className="text-xl lg:text-2xl font-bold text-center text-slate-800 mb-2">Simple, Transparent Pricing</h2>
-          <p className="text-center text-slate-500 text-sm mb-6">Start free forever. Upgrade when you need more.</p>
-
-          <div className="grid md:grid-cols-3 gap-3 lg:gap-4 max-w-5xl mx-auto">
-            {/* Free Tier */}
-            <div className="bg-white rounded-xl p-4 border-2 border-slate-200 shadow-sm">
-              <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-[10px] font-medium">Free Forever</span>
-              <h3 className="text-lg font-bold text-slate-800 mt-2">Basic</h3>
-              <div className="my-2">
-                <span className="text-2xl font-bold text-slate-800">₹0</span>
-                <span className="text-slate-500 text-sm"> / forever</span>
-              </div>
-              <ul className="space-y-1.5 mb-4 text-xs text-slate-600">
-                {["Unlimited logging", "WhatsApp integration", "7-day history", "21 languages"].map((f, i) => (
+      {/* Pricing - Compact */}
+      <section className="py-10 md:py-14 px-4 bg-white">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-xl md:text-2xl font-bold text-slate-800 text-center mb-2">Simple pricing</h2>
+          <p className="text-center text-sm text-slate-500 mb-6">Free during early access</p>
+          
+          <div className="grid md:grid-cols-3 gap-3">
+            {/* Free */}
+            <div className="border border-slate-200 rounded-xl p-4">
+              <p className="text-xs text-green-600 font-medium">FREE FOREVER</p>
+              <p className="text-2xl font-bold text-slate-800 mt-1">₹0</p>
+              <ul className="mt-3 space-y-1.5 text-xs text-slate-600">
+                {["Unlimited logging", "WhatsApp integration", "7-day history"].map((f,i) => (
                   <li key={i} className="flex items-center gap-1.5"><Check className="w-3 h-3 text-green-500" />{f}</li>
                 ))}
               </ul>
-              <Button variant="outline" className="w-full h-9 rounded-lg text-sm" onClick={async () => {
-                const isAuth = await base44.auth.isAuthenticated();
-                isAuth ? window.location.href = createPageUrl("Home") : base44.auth.redirectToLogin(createPageUrl("Home"));
-              }}>Get Started Free</Button>
             </div>
-
+            
             {/* Premium */}
-            <div className="bg-gradient-to-br from-[#5b9a8b] to-[#4a8a7b] rounded-xl p-4 border-2 border-[#5b9a8b] shadow-lg text-white relative">
-              <div className="absolute -top-2.5 left-1/2 -translate-x-1/2">
-                <span className="px-3 py-0.5 bg-amber-400 text-amber-900 rounded-full text-[10px] font-bold">POPULAR</span>
-              </div>
-              <span className="px-2 py-0.5 bg-white/20 rounded-full text-[10px] font-medium">Premium</span>
-              <h3 className="text-lg font-bold mt-2">Premium</h3>
-              <div className="my-2">
-                <span className="text-2xl font-bold">₹299</span>
-                <span className="text-white/80 text-sm"> / mo</span>
-              </div>
-              <ul className="space-y-1.5 mb-4 text-xs text-white/90">
-                {["Everything in Basic", "Unlimited history", "AI insights", "Doctor reports", "Reminders"].map((f, i) => (
-                  <li key={i} className="flex items-center gap-1.5"><Check className="w-3 h-3 text-amber-300" />{f}</li>
+            <div className="border-2 border-[#5b9a8b] rounded-xl p-4 bg-[#5b9a8b]/5 relative">
+              <span className="absolute -top-2.5 left-3 px-2 py-0.5 bg-[#5b9a8b] text-white text-[10px] font-medium rounded-full">POPULAR</span>
+              <p className="text-xs text-[#5b9a8b] font-medium">PREMIUM</p>
+              <p className="text-2xl font-bold text-slate-800 mt-1">₹299<span className="text-sm font-normal text-slate-500">/mo</span></p>
+              <ul className="mt-3 space-y-1.5 text-xs text-slate-600">
+                {["Unlimited history", "AI insights", "Doctor reports", "Reminders"].map((f,i) => (
+                  <li key={i} className="flex items-center gap-1.5"><Check className="w-3 h-3 text-[#5b9a8b]" />{f}</li>
                 ))}
               </ul>
-              <Button className="w-full h-9 rounded-lg bg-white text-[#5b9a8b] hover:bg-white/90 text-sm font-semibold" onClick={async () => {
-                const isAuth = await base44.auth.isAuthenticated();
-                isAuth ? window.location.href = createPageUrl("Home") : base44.auth.redirectToLogin(createPageUrl("Home"));
-              }}>Upgrade Later</Button>
             </div>
-
+            
             {/* Family */}
-            <div className="bg-white rounded-xl p-4 border-2 border-violet-200 shadow-sm relative">
-              <div className="absolute -top-2.5 left-1/2 -translate-x-1/2">
-                <span className="px-3 py-0.5 bg-violet-100 text-violet-700 rounded-full text-[10px] font-bold">FAMILIES</span>
-              </div>
-              <span className="px-2 py-0.5 bg-violet-100 text-violet-700 rounded-full text-[10px] font-medium">Family</span>
-              <h3 className="text-lg font-bold text-slate-800 mt-2">Family Care</h3>
-              <div className="my-2">
-                <span className="text-2xl font-bold text-slate-800">₹499</span>
-                <span className="text-slate-500 text-sm"> / mo</span>
-              </div>
-              <ul className="space-y-1.5 mb-4 text-xs text-slate-600">
-                {["Everything in Premium", "3 family members", "Caregiver dashboard", "Real-time alerts"].map((f, i) => (
+            <div className="border border-violet-200 rounded-xl p-4">
+              <p className="text-xs text-violet-600 font-medium">FAMILY</p>
+              <p className="text-2xl font-bold text-slate-800 mt-1">₹499<span className="text-sm font-normal text-slate-500">/mo</span></p>
+              <ul className="mt-3 space-y-1.5 text-xs text-slate-600">
+                {["3 family members", "Caregiver dashboard", "Real-time alerts"].map((f,i) => (
                   <li key={i} className="flex items-center gap-1.5"><Check className="w-3 h-3 text-violet-500" />{f}</li>
                 ))}
               </ul>
-              <Button className="w-full h-9 rounded-lg bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold" onClick={async () => {
-                const isAuth = await base44.auth.isAuthenticated();
-                isAuth ? window.location.href = createPageUrl("Home") : base44.auth.redirectToLogin(createPageUrl("Home"));
-              }}>Upgrade Later</Button>
             </div>
           </div>
-          <p className="text-center text-xs text-slate-500 mt-4">🎉 All features free during early access!</p>
+          <p className="text-center text-xs text-[#5b9a8b] mt-4">🎉 All features free during early access</p>
         </div>
       </section>
 
-      {/* FAQ */}
-      <section className="py-6 lg:py-10 bg-slate-50/50">
-        <div className="max-w-3xl mx-auto px-4">
-          <h2 className="text-xl lg:text-2xl font-bold text-center text-slate-800 mb-4">FAQs</h2>
-          
+      {/* FAQ - Accordion */}
+      <section className="py-10 md:py-14 px-4">
+        <div className="max-w-xl mx-auto">
+          <h2 className="text-xl md:text-2xl font-bold text-slate-800 text-center mb-6">FAQ</h2>
           <div className="space-y-2">
             {[
-              { q: "Do I need a CGM?", a: "No. Works with finger-stick readings. Some add a CGM later, some never need one." },
-              { q: "Is it a replacement for my doctor?", a: "No. It helps you log and track, but doesn't diagnose or treat. Always consult your doctor." },
-              { q: "How do I log readings?", a: "Send a WhatsApp message like 'Sugar 120' or 'BP 130/80'. Natural language works." },
-              { q: "Is my data secure?", a: "Yes. Encrypted and never shared with third parties. You control your data." },
-              { q: "Is it free?", a: "Yes. Free during early access. Basic logging will always be free." },
-              { q: "Can I share with my doctor?", a: "Yes! Generate reports and share via email or PDF." }
-            ].map((faq, idx) => (
-              <details key={idx} className="group bg-white rounded-lg border border-slate-200 overflow-hidden">
-                <summary className="flex items-center justify-between p-3 cursor-pointer hover:bg-slate-50 text-sm">
-                  <span className="font-medium text-slate-800 pr-4">{faq.q}</span>
-                  <span className="text-[#5b9a8b] text-lg font-light group-open:rotate-45 transition-transform">+</span>
+              { q: "Do I need a CGM?", a: "No. Works with finger-stick readings." },
+              { q: "Is it a replacement for my doctor?", a: "No. It helps you log and track, not diagnose." },
+              { q: "How do I log readings?", a: 'Text "Sugar 120" or "BP 130/80" on WhatsApp.' },
+              { q: "Is my data secure?", a: "Yes. Encrypted and never shared." },
+            ].map((faq, i) => (
+              <details key={i} className="group bg-white rounded-lg border border-slate-200">
+                <summary className="flex items-center justify-between p-3 cursor-pointer text-sm font-medium text-slate-800">
+                  {faq.q}
+                  <span className="text-slate-400 group-open:rotate-45 transition-transform">+</span>
                 </summary>
-                <div className="px-3 pb-3 text-slate-600 text-xs">{faq.a}</div>
+                <p className="px-3 pb-3 text-xs text-slate-600">{faq.a}</p>
               </details>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-8 lg:py-12 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <img src="https://images.unsplash.com/photo-1505751172876-fa1923c5c528?w=1200&h=400&fit=crop&q=60" alt="" className="w-full h-full object-cover" />
-        </div>
-        <div className="max-w-2xl mx-auto px-4 text-center relative z-10">
-          <h2 className="text-xl lg:text-2xl font-bold text-slate-800 mb-2">Start with One Simple Log</h2>
-          <p className="text-slate-500 text-sm mb-4">Free. No credit card. 30 seconds to start.</p>
-          <Button size="lg" onClick={async () => {
-            const isAuth = await base44.auth.isAuthenticated();
-            isAuth ? window.location.href = createPageUrl("Home") : base44.auth.redirectToLogin(createPageUrl("Home"));
-          }} className="bg-[#5b9a8b] hover:bg-[#4a8a7b] h-10 px-6 text-sm rounded-xl shadow-lg">
-            Get Started Free <ArrowRight className="w-4 h-4 ml-1.5" />
+      {/* Final CTA */}
+      <section className="py-10 md:py-14 px-4 bg-[#f0f7f4]">
+        <div className="max-w-md mx-auto text-center">
+          <h2 className="text-xl md:text-2xl font-bold text-slate-800 mb-2">Ready to start?</h2>
+          <p className="text-sm text-slate-600 mb-5">Free. No credit card. 30 seconds.</p>
+          <Button 
+            size="lg"
+            onClick={handleGetStarted}
+            className="bg-[#5b9a8b] hover:bg-[#4a8a7b] h-12 px-8 text-base rounded-xl shadow-md"
+          >
+            Get Started Free <ArrowRight className="w-4 h-4 ml-2" />
           </Button>
-          <div className="flex flex-wrap items-center justify-center gap-3 mt-4 text-xs text-slate-500">
-            <span className="flex items-center gap-1"><Check className="w-3 h-3 text-green-500" /> Free</span>
-            <span className="flex items-center gap-1"><Check className="w-3 h-3 text-green-500" /> WhatsApp</span>
-            <span className="flex items-center gap-1"><Check className="w-3 h-3 text-green-500" /> AI-assisted</span>
-          </div>
         </div>
       </section>
 
-      {/* Supported By + Footer */}
-      <footer className="py-6 border-t border-slate-200 bg-white/50">
-        <div className="max-w-6xl mx-auto px-4 text-center">
-          <p className="text-[10px] text-slate-400 mb-2">Supported by</p>
-          <a href="https://elevenlabs.io/startup-grants" target="_blank" rel="noopener noreferrer" className="inline-block mb-4">
-            <img src="https://eleven-public-cdn.elevenlabs.io/payloadcms/pwsc4vchsqt-ElevenLabsGrants.webp" alt="ElevenLabs Grants" className="mx-auto" style={{ width: '140px' }} />
+      {/* Footer - Minimal */}
+      <footer className="py-6 px-4 border-t border-slate-200 bg-white">
+        <div className="max-w-2xl mx-auto text-center">
+          <a href="https://elevenlabs.io/startup-grants" target="_blank" rel="noopener noreferrer" className="inline-block mb-3">
+            <img src="https://eleven-public-cdn.elevenlabs.io/payloadcms/pwsc4vchsqt-ElevenLabsGrants.webp" alt="ElevenLabs Grants" className="h-6 mx-auto opacity-60 hover:opacity-100 transition-opacity" />
           </a>
-          <div className="flex flex-wrap items-center justify-center gap-2 mb-2 text-xs text-slate-500">
+          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-slate-500">
             <a href={createPageUrl("About")} className="hover:text-[#5b9a8b]">About</a>
-            <span>•</span>
             <a href={createPageUrl("PrivacyPolicy")} className="hover:text-[#5b9a8b]">Privacy</a>
-            <span>•</span>
             <a href={createPageUrl("Terms")} className="hover:text-[#5b9a8b]">Terms</a>
-            <span>•</span>
             <a href={createPageUrl("CancellationRefund")} className="hover:text-[#5b9a8b]">Refunds</a>
-            <span>•</span>
             <a href={createPageUrl("ContactUs")} className="hover:text-[#5b9a8b]">Contact</a>
           </div>
-          <p className="text-[10px] text-slate-400">
-            <a href="https://www.chaoscraftlabs.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-[#5b9a8b]">Chaos Craft Labs LLP</a> • Made with ❤️ in India 🇮🇳 • © 2025
+          <p className="text-[10px] text-slate-400 mt-2">
+            <a href="https://www.chaoscraftlabs.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#5b9a8b]">Chaos Craft Labs LLP</a> • Made in India 🇮🇳 • © 2025
           </p>
         </div>
       </footer>
