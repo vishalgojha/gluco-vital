@@ -71,16 +71,17 @@ Gluco Vital Team
     let emailError = null;
     
     try {
-      await base44.integrations.Core.SendEmail({
+      await base44.asServiceRole.integrations.Core.SendEmail({
         to: patient_email,
         subject: `Dr. ${user.full_name} invites you to connect on Gluco Vital`,
         body: emailBody,
         from_name: "Gluco Vital"
       });
       emailSent = true;
+      console.log('Email sent successfully to:', patient_email);
     } catch (err) {
       console.error('Email send error:', err);
-      emailError = err.message;
+      emailError = err.message || String(err);
     }
 
     return Response.json({ 
