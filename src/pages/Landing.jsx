@@ -210,11 +210,12 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Languages - Compact banner */}
-      <section className="py-6 md:py-8 px-4 bg-[#5b9a8b]">
-        <div className="max-w-2xl mx-auto text-center text-white">
-          <p className="font-semibold mb-2">Speaks your language</p>
-          <p className="text-xs text-white/80 leading-relaxed">
+      {/* Languages Banner */}
+      <section className="py-10 md:py-12 px-4 bg-gradient-to-r from-[#5b9a8b] to-[#4a8a7b]">
+        <div className="max-w-3xl mx-auto text-center text-white">
+          <Globe className="w-10 h-10 mx-auto mb-4 opacity-90" />
+          <h3 className="text-2xl font-bold mb-3">Speaks your language</h3>
+          <p className="text-sm text-white/90 leading-relaxed">
             Hindi • Tamil • Telugu • Marathi • Gujarati • Kannada • Malayalam • Bengali • Chinese • English • Urdu • Arabic • Spanish • Portuguese • Japanese • Russian • Turkish • German • Indonesian • Punjabi • Hinglish
           </p>
         </div>
