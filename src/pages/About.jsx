@@ -148,6 +148,19 @@ export default function About() {
               support@glucovital.fit
             </a>
           </div>
+
+          {/* Supported By */}
+          <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm text-center">
+            <p className="text-sm text-slate-500 mb-4">Supported by</p>
+            <a href="https://elevenlabs.io/startup-grants" target="_blank" rel="noopener noreferrer">
+              <img 
+                src="https://eleven-public-cdn.elevenlabs.io/payloadcms/pwsc4vchsqt-ElevenLabsGrants.webp" 
+                alt="ElevenLabs Grants" 
+                className="mx-auto"
+                style={{ width: '200px' }}
+              />
+            </a>
+          </div>
         </div>
       </div>
     </div>
