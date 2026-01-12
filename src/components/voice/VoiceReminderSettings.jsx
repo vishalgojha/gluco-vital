@@ -25,13 +25,33 @@ export default function VoiceReminderSettings({ user, profile, onUpdate }) {
   const handleSave = async () => {
     setSaving(true);
     try {
+      const updateData = {
+        voice_reminders_enabled: settings.voice_reminders_enabled,
+        voice_medication_reminders: settings.voice_medication_reminders,
+        voice_glucose_reminders: settings.voice_glucose_reminders,
+        voice_appointment_reminders: settings.voice_appointment_reminders,
+        language_preference: settings.preferred_voice_language
+      };
+      
       if (profile?.id) {
-        await base44.entities.PatientProfile.update(profile.id, settings);
+        await base44.entities.PatientProfile.update(profile.id, updateData);
+        toast.success("Voice reminder settings saved!");
+      } else if (user?.email) {
+        // Create new profile if doesn't exist
+        await base44.entities.PatientProfile.create({
+          user_email: user.email,
+          name: user.full_name || '',
+          ...updateData
+        });
+        toast.success("Voice reminder settings saved!");
+      } else {
+        toast.error("Please log in to save settings");
+        return;
       }
       onUpdate?.(settings);
-      toast.success("Voice reminder settings saved!");
     } catch (error) {
-      toast.error("Failed to save settings");
+      console.error("Save error:", error);
+      toast.error("Failed to save settings: " + (error.message || "Unknown error"));
     } finally {
       setSaving(false);
     }
