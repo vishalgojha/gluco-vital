@@ -125,34 +125,34 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#f0f7f4] via-white to-[#e8f4f0]">
-      {/* Hero Section */}
-      <header className="relative overflow-hidden">
+      {/* Hero Section - optimized for above-fold on 768px+ */}
+      <header className="relative overflow-hidden min-h-[calc(100vh-60px)] lg:min-h-0 lg:h-auto flex flex-col">
         <div className="absolute inset-0 bg-gradient-to-br from-[#5b9a8b]/10 to-transparent" />
-        <div className="max-w-6xl mx-auto px-4 py-3">
+        <div className="max-w-6xl mx-auto px-4 py-2 lg:py-3">
           <nav className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#5b9a8b] to-[#7eb8a8] flex items-center justify-center shadow-md" role="img" aria-label="Gluco Vital logo">
-                <Heart className="w-4 h-4 text-white" />
+              <div className="w-7 h-7 lg:w-8 lg:h-8 rounded-lg bg-gradient-to-br from-[#5b9a8b] to-[#7eb8a8] flex items-center justify-center shadow-md" role="img" aria-label="Gluco Vital logo">
+                <Heart className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-white" />
               </div>
-              <span className="text-lg font-bold text-[#3d6b5f]">Gluco Vital</span>
+              <span className="text-base lg:text-lg font-bold text-[#3d6b5f]">Gluco Vital</span>
             </div>
           </nav>
         </div>
 
-        <div className="max-w-6xl mx-auto px-4 pt-4 pb-6 relative">
-          <div className="grid md:grid-cols-2 gap-4 items-center">
+        <div className="max-w-6xl mx-auto px-4 py-2 lg:py-4 relative flex-1 flex items-center">
+          <div className="grid md:grid-cols-2 gap-3 lg:gap-6 items-center w-full">
             <div className="text-center md:text-left">
-              <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur px-3 py-1.5 rounded-full text-xs text-[#5b9a8b] font-medium mb-3 border border-[#5b9a8b]/20">
+              <div className="inline-flex items-center gap-1.5 bg-white/80 backdrop-blur px-2.5 py-1 rounded-full text-[10px] lg:text-xs text-[#5b9a8b] font-medium mb-2 lg:mb-3 border border-[#5b9a8b]/20">
                 <Droplet className="w-3 h-3" aria-hidden="true" />
                 Diabetes & Health Management Made Simple
               </div>
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-800 mb-3 leading-tight">
+              <h1 className="text-[clamp(1.5rem,5vw,2.5rem)] lg:text-[clamp(2rem,4vw,3rem)] font-bold text-slate-800 mb-2 lg:mb-3 leading-[1.15]">
                 Your Personal <span className="text-[#5b9a8b]">Health Companion</span><br />on WhatsApp
               </h1>
-              <p className="text-base md:text-lg text-slate-600 max-w-xl mb-4">
+              <p className="text-sm lg:text-base text-slate-600 max-w-xl mb-3 lg:mb-4 leading-snug">
                 Log your sugar, BP, and meals via WhatsApp. Get gentle insights, reminders, and clear summaries — in your language.
               </p>
-              <div className="flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
+              <div className="flex flex-col sm:flex-row gap-2 lg:gap-3 justify-center md:justify-start">
                 <Button 
                   size="lg"
                   onClick={async () => {
@@ -163,9 +163,9 @@ export default function Landing() {
                       base44.auth.redirectToLogin(createPageUrl("Home"));
                     }
                   }}
-                  className="bg-[#5b9a8b] hover:bg-[#4a8a7b] h-11 px-6 text-base rounded-xl shadow-lg"
+                  className="bg-[#5b9a8b] hover:bg-[#4a8a7b] h-9 lg:h-10 px-5 lg:px-6 text-sm lg:text-base rounded-xl shadow-lg"
                 >
-                  Get Started Free <ArrowRight className="w-4 h-4 ml-2" />
+                  Get Started Free <ArrowRight className="w-4 h-4 ml-1.5" />
                 </Button>
                 <Button 
                   size="lg"
@@ -173,46 +173,46 @@ export default function Landing() {
                   onClick={() => {
                     window.location.href = createPageUrl("Home") + "?demo=true";
                   }}
-                  className="h-11 px-6 text-base rounded-xl border-2 border-[#5b9a8b] text-[#5b9a8b] hover:bg-[#5b9a8b]/10"
+                  className="h-9 lg:h-10 px-5 lg:px-6 text-sm lg:text-base rounded-xl border-2 border-[#5b9a8b] text-[#5b9a8b] hover:bg-[#5b9a8b]/10"
                 >
                   Try Demo 👀
                 </Button>
               </div>
-              <div className="grid grid-cols-3 gap-3 max-w-sm mt-4 mx-auto md:mx-0">
+              <div className="grid grid-cols-3 gap-2 lg:gap-3 max-w-xs lg:max-w-sm mt-3 lg:mt-4 mx-auto md:mx-0">
                 {stats.map((stat, idx) => (
                   <div key={idx} className="text-center md:text-left">
-                    <p className="text-xl md:text-2xl font-bold text-[#5b9a8b]">{stat.value}</p>
-                    <p className="text-[10px] md:text-xs text-slate-500">{stat.label}</p>
+                    <p className="text-lg lg:text-xl font-bold text-[#5b9a8b]">{stat.value}</p>
+                    <p className="text-[9px] lg:text-[10px] text-slate-500 leading-tight">{stat.label}</p>
                   </div>
                 ))}
               </div>
             </div>
             <div className="hidden md:block relative">
-              <div className="relative w-full max-w-xs mx-auto">
+              <div className="relative w-full max-w-[200px] lg:max-w-[280px] mx-auto">
                 <img 
                   src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=400&h=400&fit=crop&q=80" 
                   alt="Healthcare technology concept"
-                  className="rounded-2xl shadow-xl shadow-[#5b9a8b]/20 object-cover w-full aspect-square"
+                  className="rounded-xl lg:rounded-2xl shadow-xl shadow-[#5b9a8b]/20 object-cover w-full aspect-square"
                 />
-                <div className="absolute -bottom-2 -left-2 bg-white rounded-xl p-2.5 shadow-lg border border-slate-100">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                      <Check className="w-4 h-4 text-green-600" />
+                <div className="absolute -bottom-1.5 -left-1.5 lg:-bottom-2 lg:-left-2 bg-white rounded-lg lg:rounded-xl p-1.5 lg:p-2 shadow-lg border border-slate-100">
+                  <div className="flex items-center gap-1.5 lg:gap-2">
+                    <div className="w-6 h-6 lg:w-7 lg:h-7 bg-green-100 rounded-full flex items-center justify-center">
+                      <Check className="w-3 h-3 lg:w-3.5 lg:h-3.5 text-green-600" />
                     </div>
                     <div>
-                      <p className="text-xs font-medium text-slate-800">Sugar Logged</p>
-                      <p className="text-[10px] text-slate-500">120 mg/dL • In Range</p>
+                      <p className="text-[10px] lg:text-xs font-medium text-slate-800">Sugar Logged</p>
+                      <p className="text-[8px] lg:text-[10px] text-slate-500">120 mg/dL • In Range</p>
                     </div>
                   </div>
                 </div>
-                <div className="absolute -top-2 -right-2 bg-white rounded-xl p-2.5 shadow-lg border border-slate-100">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-violet-100 rounded-full flex items-center justify-center">
-                      <MessageCircle className="w-4 h-4 text-violet-600" />
+                <div className="absolute -top-1.5 -right-1.5 lg:-top-2 lg:-right-2 bg-white rounded-lg lg:rounded-xl p-1.5 lg:p-2 shadow-lg border border-slate-100">
+                  <div className="flex items-center gap-1.5 lg:gap-2">
+                    <div className="w-6 h-6 lg:w-7 lg:h-7 bg-violet-100 rounded-full flex items-center justify-center">
+                      <MessageCircle className="w-3 h-3 lg:w-3.5 lg:h-3.5 text-violet-600" />
                     </div>
                     <div>
-                      <p className="text-xs font-medium text-slate-800">WhatsApp</p>
-                      <p className="text-[10px] text-slate-500">Connected ✓</p>
+                      <p className="text-[10px] lg:text-xs font-medium text-slate-800">WhatsApp</p>
+                      <p className="text-[8px] lg:text-[10px] text-slate-500">Connected ✓</p>
                     </div>
                   </div>
                 </div>
