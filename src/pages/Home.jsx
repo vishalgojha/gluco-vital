@@ -9,7 +9,7 @@ import { createPageUrl } from "@/utils";
 import StatCard from "@/components/dashboard/StatCard";
 import LogCard from "@/components/dashboard/LogCard";
 import SugarChart from "@/components/dashboard/SugarChart";
-import InsightCard from "@/components/dashboard/InsightCard";
+import VoiceInsightCard from "@/components/voice/VoiceInsightCard";
 import WhatsAppConnect from "@/components/WhatsAppConnect";
 import PointsDisplay from "@/components/gamification/PointsDisplay";
 import WeeklyChallenge from "@/components/gamification/WeeklyChallenge";
@@ -303,8 +303,8 @@ export default function Home() {
                 </div>
                 <div className="grid md:grid-cols-2 gap-4">
                   {insights.map((insight, idx) => (
-                    <InsightCard key={idx} {...insight} />
-                  ))}
+                              <VoiceInsightCard key={idx} {...insight} />
+                            ))}
                 </div>
               </div>
             )}
