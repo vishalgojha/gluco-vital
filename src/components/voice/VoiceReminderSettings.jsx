@@ -33,21 +33,27 @@ export default function VoiceReminderSettings({ user, profile, onUpdate }) {
         language_preference: settings.preferred_voice_language
       };
       
-      if (profile?.id) {
-        await base44.entities.PatientProfile.update(profile.id, updateData);
-        toast.success("Voice reminder settings saved!");
-      } else if (user?.email) {
-        // Create new profile if doesn't exist
-        await base44.entities.PatientProfile.create({
-          user_email: user.email,
-          name: user.full_name || '',
-          ...updateData
-        });
-        toast.success("Voice reminder settings saved!");
-      } else {
+      if (!user?.email) {
         toast.error("Please log in to save settings");
         return;
       }
+
+      // Use upsert via backend function for reliability
+      const response = await base44.functions.invoke('entityOperations', {
+        operation: 'upsert',
+        entity: 'PatientProfile',
+        data: {
+          user_email: user.email,
+          name: user.full_name || profile?.name || '',
+          ...updateData
+        }
+      });
+
+      if (response.data?.error) {
+        throw new Error(response.data.error);
+      }
+
+      toast.success("Voice reminder settings saved!");
       onUpdate?.(settings);
     } catch (error) {
       console.error("Save error:", error);
