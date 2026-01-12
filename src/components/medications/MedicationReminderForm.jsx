@@ -5,9 +5,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Clock, Plus, X, Bell, BellRing, BellOff, QrCode, Camera } from "lucide-react";
+import { Clock, Plus, X, Bell, BellRing, BellOff, Camera } from "lucide-react";
 import MedicationScanner from "./MedicationScanner";
-import { InteractionWarningBadge } from "./DrugInteractionChecker";
 
 const TIMING_OPTIONS = [
   { value: "specific_time", label: "At specific times", icon: "⏰" },
@@ -40,7 +39,8 @@ const MEAL_OFFSETS = [
   { value: 120, label: "2 hours after" },
 ];
 
-export default function MedicationReminderForm({ reminder, onSave, onCancel, existingMedications = [], allReminders = [] }) {
+export default function MedicationReminderForm({ reminder, onSave, onCancel, existingMedications = [] }) {
+  const [showScanner, setShowScanner] = useState(false);
   const [form, setForm] = useState(reminder || {
     medication_name: "",
     dosage: "",
@@ -55,16 +55,16 @@ export default function MedicationReminderForm({ reminder, onSave, onCancel, exi
     notes: "",
     is_active: true
   });
-  const [showScanner, setShowScanner] = useState(false);
 
-  const handleScanComplete = (scannedData) => {
-    setForm({
-      ...form,
-      medication_name: scannedData.medication_name || form.medication_name,
-      dosage: scannedData.dosage || form.dosage,
-      strength: scannedData.strength || form.strength,
-      notes: scannedData.notes || form.notes
-    });
+  const handleScannedMedication = (medData) => {
+    setForm(prev => ({
+      ...prev,
+      medication_name: medData.medication_name || prev.medication_name,
+      dosage: medData.dosage || prev.dosage,
+      strength: medData.strength || prev.strength,
+      notes: medData.notes || prev.notes,
+      pills_per_strip: medData.pills_per_strip || prev.pills_per_strip
+    }));
   };
 
   const addTime = () => {
@@ -98,14 +98,8 @@ export default function MedicationReminderForm({ reminder, onSave, onCancel, exi
         className="w-full border-dashed border-violet-300 text-violet-600 hover:bg-violet-50"
       >
         <Camera className="w-4 h-4 mr-2" />
-        Scan Medication Package
+        Scan Medication Packaging
       </Button>
-
-      <MedicationScanner
-        open={showScanner}
-        onOpenChange={setShowScanner}
-        onScanComplete={handleScanComplete}
-      />
 
       {/* Medication Selection or Input */}
       <div className="space-y-2">
@@ -136,15 +130,13 @@ export default function MedicationReminderForm({ reminder, onSave, onCancel, exi
             placeholder="Enter medication name"
           />
         )}
-        
-        {/* Drug Interaction Warning */}
-        {form.medication_name && form.medication_name !== "__custom__" && allReminders.length > 0 && (
-          <InteractionWarningBadge
-            medications={allReminders.filter(r => r.id !== reminder?.id)}
-            newMedicationName={form.medication_name}
-          />
-        )}
       </div>
+
+      <MedicationScanner
+        open={showScanner}
+        onOpenChange={setShowScanner}
+        onMedicationFound={handleScannedMedication}
+      />
 
       {/* Dosage with Unit Selection */}
       <div className="space-y-2">
