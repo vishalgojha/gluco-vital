@@ -439,49 +439,21 @@ export default function Landing() {
         <div className="max-w-3xl mx-auto px-4">
           <h2 className="text-xl lg:text-2xl font-bold text-center text-slate-800 mb-4">FAQs</h2>
           
-          <div className="space-y-4">
+          <div className="space-y-2">
             {[
-                {
-                                      q: "Do I need a CGM to use Gluco Vital?",
-                                      a: "No. Gluco Vital works with finger-stick readings and manual logs. Many people use Gluco Vital before considering a CGM to build consistency, understand patterns, and share clearer data with their doctor. Some later add a CGM. Some never need one. Gluco Vital works in both cases. Your doctor can help you decide when—or if—a CGM makes sense."
-                                    },
-                {
-                  q: "Is Gluco Vital a replacement for my doctor?",
-                  a: "No. Gluco Vital helps you log and track your health data, but it does not diagnose, treat, or replace medical care. Always consult your doctor for medical decisions."
-                },
-              {
-                q: "How do I log my readings?",
-                a: "Simply send a WhatsApp message like 'Sugar 120' or 'BP 130/80'. You can also log meals, medications, and symptoms using natural language."
-              },
-              {
-                q: "Is my health data private and secure?",
-                a: "Yes. Your data is encrypted and stored securely. We never share your personal health information with third parties. You control your data."
-              },
-              {
-                q: "What languages are supported?",
-                a: "We support 14 languages including Hindi, English, Chinese, Spanish, Arabic, Bengali, Urdu, Portuguese, and more. The app responds in your preferred language."
-              },
-              {
-                q: "Is Gluco Vital free to use?",
-                a: "Yes. Gluco Vital is currently free to use, with no credit card required. We may introduce optional paid features in the future, but basic logging will always remain simple and accessible."
-              },
-              {
-                q: "Can I share my reports with my doctor?",
-                a: "Absolutely! You can generate clear, organized health reports and share them directly with your doctor via email or as a PDF."
-              },
-              {
-                q: "What if I have an emergency reading?",
-                a: "If your sugar is very high (>300) or very low (<70), or BP is critically high (>180/120), Gluco Vital will immediately advise you to seek medical help. It does not replace emergency care."
-              }
+              { q: "Do I need a CGM?", a: "No. Works with finger-stick readings. Some add a CGM later, some never need one." },
+              { q: "Is it a replacement for my doctor?", a: "No. It helps you log and track, but doesn't diagnose or treat. Always consult your doctor." },
+              { q: "How do I log readings?", a: "Send a WhatsApp message like 'Sugar 120' or 'BP 130/80'. Natural language works." },
+              { q: "Is my data secure?", a: "Yes. Encrypted and never shared with third parties. You control your data." },
+              { q: "Is it free?", a: "Yes. Free during early access. Basic logging will always be free." },
+              { q: "Can I share with my doctor?", a: "Yes! Generate reports and share via email or PDF." }
             ].map((faq, idx) => (
-              <details key={idx} className="group bg-white rounded-xl border border-slate-200 overflow-hidden">
-                <summary className="flex items-center justify-between p-5 cursor-pointer hover:bg-slate-50 transition-colors">
+              <details key={idx} className="group bg-white rounded-lg border border-slate-200 overflow-hidden">
+                <summary className="flex items-center justify-between p-3 cursor-pointer hover:bg-slate-50 text-sm">
                   <span className="font-medium text-slate-800 pr-4">{faq.q}</span>
-                  <span className="text-[#5b9a8b] text-xl font-light group-open:rotate-45 transition-transform">+</span>
+                  <span className="text-[#5b9a8b] text-lg font-light group-open:rotate-45 transition-transform">+</span>
                 </summary>
-                <div className="px-5 pb-5 text-slate-600 text-sm leading-relaxed">
-                  {faq.a}
-                </div>
+                <div className="px-3 pb-3 text-slate-600 text-xs">{faq.a}</div>
               </details>
             ))}
           </div>
