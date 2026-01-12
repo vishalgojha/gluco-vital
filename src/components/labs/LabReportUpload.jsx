@@ -134,73 +134,7 @@ export default function LabReportUpload({ userEmail, onReportUploaded, onResults
     }
   };
 
-  const handleExtract = async () => {
-    if (!uploadedReport?.document_url) return;
-    
-    setExtracting(true);
-    try {
-      // Update status to processing
-      await base44.entities.LabReport.update(uploadedReport.id, {
-        extraction_status: "processing"
-      });
 
-      // Extract data using AI
-      const extractionResult = await base44.integrations.Core.ExtractDataFromUploadedFile({
-        file_url: uploadedReport.document_url,
-        json_schema: {
-          type: "object",
-          properties: {
-            lab_name: { type: "string" },
-            report_date: { type: "string" },
-            patient_name: { type: "string" },
-            results: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  test_name: { type: "string" },
-                  test_type: { 
-                    type: "string",
-                    enum: ["hba1c", "fasting_glucose", "post_meal_glucose", "total_cholesterol", "ldl", "hdl", "triglycerides", "creatinine", "egfr", "hemoglobin", "tsh", "vitamin_d", "vitamin_b12", "liver_sgpt", "liver_sgot", "other"]
-                  },
-                  value: { type: "number" },
-                  unit: { type: "string" },
-                  reference_range: { type: "string" },
-                  status: { 
-                    type: "string",
-                    enum: ["normal", "low", "high", "critical_low", "critical_high"]
-                  }
-                }
-              }
-            }
-          }
-        }
-      });
-
-      if (extractionResult.status === "success" && extractionResult.output?.results) {
-        setExtractedResults(extractionResult.output.results);
-        
-        // Update report status
-        await base44.entities.LabReport.update(uploadedReport.id, {
-          extracted: true,
-          extraction_status: "completed",
-          lab_name: extractionResult.output.lab_name || reportData.lab_name
-        });
-
-        toast.success(`Extracted ${extractionResult.output.results.length} results!`);
-      } else {
-        await base44.entities.LabReport.update(uploadedReport.id, {
-          extraction_status: "failed"
-        });
-        toast.error("Could not extract data. Please add results manually.");
-      }
-    } catch (error) {
-      toast.error("Extraction failed");
-      console.error(error);
-    } finally {
-      setExtracting(false);
-    }
-  };
 
   const handleSaveExtracted = async () => {
     if (!extractedResults?.length) return;
