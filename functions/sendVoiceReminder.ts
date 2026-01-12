@@ -82,6 +82,9 @@ Deno.serve(async (req) => {
     const fullMessage = `Hello ${patientName}. ${reminderMessage}`;
 
     // Generate voice with ElevenLabs
+    console.log('Calling ElevenLabs API with voice:', voiceId);
+    console.log('Message:', fullMessage);
+    
     const ttsResponse = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
       method: 'POST',
       headers: {
@@ -100,6 +103,8 @@ Deno.serve(async (req) => {
         }
       })
     });
+
+    console.log('ElevenLabs response status:', ttsResponse.status);
 
     if (!ttsResponse.ok) {
       const errorText = await ttsResponse.text();
