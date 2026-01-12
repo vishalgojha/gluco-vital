@@ -55,10 +55,10 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen bg-[#f8faf9]">
-      {/* Hero - Mobile optimized, single screen */}
-      <section className="min-h-[100svh] flex flex-col px-4 py-3 md:py-4">
+      {/* Hero - Compact, no wasted space */}
+      <section className="px-4 py-3">
         {/* Nav */}
-        <nav className="flex items-center justify-between mb-auto">
+        <nav className="flex items-center justify-between mb-6 md:mb-8">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-[#5b9a8b] flex items-center justify-center">
               <Heart className="w-4 h-4 text-white" />
@@ -71,45 +71,41 @@ export default function Landing() {
         </nav>
 
         {/* Hero Content */}
-        <div className="flex-1 flex flex-col justify-center max-w-lg mx-auto w-full py-6 md:py-8">
-          <div className="text-center">
-            <p className="text-[#5b9a8b] text-xs font-medium mb-2 tracking-wide">DIABETES MANAGEMENT MADE SIMPLE</p>
-            <h1 className="text-[clamp(1.75rem,6vw,2.75rem)] font-bold text-slate-800 leading-[1.1] mb-3">
-              Log your health<br />via <span className="text-[#5b9a8b]">WhatsApp</span>
-            </h1>
-            <p className="text-slate-600 text-sm md:text-base mb-6 leading-relaxed max-w-sm mx-auto">
-              Text your sugar, BP, or meals. Get insights, reminders, and doctor-ready reports — in 21 languages.
-            </p>
+        <div className="max-w-lg mx-auto text-center py-8 md:py-12">
+          <h1 className="text-3xl md:text-4xl font-bold text-slate-800 leading-tight mb-2">
+            Gluco Vital
+          </h1>
+          <p className="text-[#5b9a8b] text-xs font-medium mb-4 tracking-wide">DIABETES MANAGEMENT MADE SIMPLE</p>
+          <h2 className="text-xl md:text-2xl font-semibold text-slate-700 mb-3">
+            Log your health via <span className="text-[#5b9a8b]">WhatsApp</span>
+          </h2>
+          <p className="text-slate-600 text-sm mb-6 max-w-sm mx-auto">
+            Text your sugar, BP, or meals. Get insights, reminders, and doctor-ready reports — in 21 languages.
+          </p>
 
-            {/* Primary CTA */}
-            <Button 
-              size="lg"
-              onClick={handleGetStarted}
-              className="bg-[#5b9a8b] hover:bg-[#4a8a7b] h-12 px-8 text-base rounded-xl shadow-md w-full max-w-xs mx-auto"
-            >
-              Get Started Free <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
-            
-            {/* Secondary CTA */}
-            <button 
-              onClick={handleDemo}
-              className="mt-3 text-sm text-slate-500 hover:text-[#5b9a8b] transition-colors"
-            >
-              or try the demo →
-            </button>
+          {/* Primary CTA */}
+          <Button 
+            size="lg"
+            onClick={handleGetStarted}
+            className="bg-[#5b9a8b] hover:bg-[#4a8a7b] h-11 px-6 text-sm rounded-xl shadow-md"
+          >
+            Get Started Free <ArrowRight className="w-4 h-4 ml-2" />
+          </Button>
+          
+          {/* Secondary CTA */}
+          <button 
+            onClick={handleDemo}
+            className="ml-3 text-sm text-slate-500 hover:text-[#5b9a8b] transition-colors"
+          >
+            or try the demo →
+          </button>
 
-            {/* Trust signals - minimal */}
-            <div className="flex items-center justify-center gap-4 mt-6 text-xs text-slate-500">
-              <span>✓ Free forever</span>
-              <span>✓ No app needed</span>
-              <span>✓ 21 languages</span>
-            </div>
+          {/* Trust signals */}
+          <div className="flex items-center justify-center gap-4 mt-5 text-xs text-slate-500">
+            <span>✓ Free forever</span>
+            <span>✓ No app needed</span>
+            <span>✓ 21 languages</span>
           </div>
-        </div>
-
-        {/* Scroll hint */}
-        <div className="text-center pb-2 animate-bounce">
-          <ChevronDown className="w-5 h-5 text-slate-300 mx-auto" />
         </div>
       </section>
 
