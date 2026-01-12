@@ -68,15 +68,20 @@ Deno.serve(async (req) => {
         reminderMessage = `${timeGreeting}! This is your health reminder from Gluco Vital. Take a moment to check in with your health today.`;
     }
 
-    // Voice ID mapping
+    // Voice ID mapping - using ElevenLabs multilingual voices
+    // Sarah (EXAVITQu4vr4xnSDxMaL) - natural English female voice
+    // Rachel (21m00Tcm4TlvDq8ikWAM) - clear English female voice
+    // For Hindi/Hinglish, the multilingual model handles it well with any voice
     const voiceMap = {
-      english: 'EXAVITQu4vr4xnSDxMaL',
-      hindi: 'pFZP5JQG7iQjIQuC4Bku',
-      hinglish: 'pFZP5JQG7iQjIQuC4Bku',
-      tamil: 'pFZP5JQG7iQjIQuC4Bku',
-      telugu: 'pFZP5JQG7iQjIQuC4Bku',
-      default: 'EXAVITQu4vr4xnSDxMaL'
+      english: '21m00Tcm4TlvDq8ikWAM', // Rachel - clear and warm
+      hindi: '21m00Tcm4TlvDq8ikWAM',
+      hinglish: '21m00Tcm4TlvDq8ikWAM',
+      tamil: '21m00Tcm4TlvDq8ikWAM',
+      telugu: '21m00Tcm4TlvDq8ikWAM',
+      default: '21m00Tcm4TlvDq8ikWAM'
     };
+    
+    console.log('Voice map lookup for language:', preferredLanguage.toLowerCase());
 
     const voiceId = voiceMap[preferredLanguage.toLowerCase()] || voiceMap.default;
     const fullMessage = `Hello ${patientName}. ${reminderMessage}`;
