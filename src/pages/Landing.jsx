@@ -642,6 +642,21 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* Supported By */}
+      <section className="py-8 bg-white/50">
+        <div className="max-w-6xl mx-auto px-4 text-center">
+          <p className="text-xs text-slate-500 mb-3">Supported by</p>
+          <a href="https://elevenlabs.io/startup-grants" target="_blank" rel="noopener noreferrer">
+            <img 
+              src="https://eleven-public-cdn.elevenlabs.io/payloadcms/pwsc4vchsqt-ElevenLabsGrants.webp" 
+              alt="ElevenLabs Grants" 
+              className="mx-auto"
+              style={{ width: '180px' }}
+            />
+          </a>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="py-8 border-t border-slate-200">
         <div className="max-w-6xl mx-auto px-4 text-center text-sm text-slate-500">
