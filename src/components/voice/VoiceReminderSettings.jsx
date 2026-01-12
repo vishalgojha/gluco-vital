@@ -9,14 +9,28 @@ import { toast } from "sonner";
 
 export default function VoiceReminderSettings({ user, profile, onUpdate }) {
   const [settings, setSettings] = useState({
-    voice_reminders_enabled: profile?.voice_reminders_enabled || false,
-    voice_medication_reminders: profile?.voice_medication_reminders ?? true,
-    voice_glucose_reminders: profile?.voice_glucose_reminders ?? true,
-    voice_appointment_reminders: profile?.voice_appointment_reminders ?? true,
-    preferred_voice_language: profile?.language_preference || 'english'
+    voice_reminders_enabled: false,
+    voice_medication_reminders: true,
+    voice_glucose_reminders: true,
+    voice_appointment_reminders: true,
+    preferred_voice_language: 'english'
   });
   const [testing, setTesting] = useState(null);
   const [saving, setSaving] = useState(false);
+
+  // Load settings from profile when it changes
+  React.useEffect(() => {
+    if (profile) {
+      console.log('Loading profile settings:', profile);
+      setSettings({
+        voice_reminders_enabled: profile.voice_reminders_enabled === true,
+        voice_medication_reminders: profile.voice_medication_reminders !== false,
+        voice_glucose_reminders: profile.voice_glucose_reminders !== false,
+        voice_appointment_reminders: profile.voice_appointment_reminders !== false,
+        preferred_voice_language: profile.language_preference || 'english'
+      });
+    }
+  }, [profile]);
 
   const handleToggle = (key) => {
     setSettings(prev => ({ ...prev, [key]: !prev[key] }));
