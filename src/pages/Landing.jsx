@@ -313,16 +313,11 @@ export default function Landing() {
       </section>
 
       {/* CGM Positioning Section */}
-      <section className="py-12 bg-white/50">
+      <section className="py-6 lg:py-8 bg-white/50">
         <div className="max-w-3xl mx-auto px-4 text-center">
-          <h2 className="text-2xl font-bold text-slate-800 mb-4">
-            Not sure if you need a CGM yet?
-          </h2>
-          <p className="text-slate-600 leading-relaxed">
-            Many people start with finger-stick testing and logging. Glucovital helps you understand patterns, habits, and context first — so you can decide if and when advanced monitoring like a CGM makes sense. Some users later add a CGM. Some never need one. Glucovital works in both cases.
-          </p>
-          <p className="text-slate-500 text-sm mt-3">
-            Used by people managing diabetes at different stages.
+          <h2 className="text-lg lg:text-xl font-bold text-slate-800 mb-2">Not sure if you need a CGM yet?</h2>
+          <p className="text-slate-600 text-sm lg:text-base leading-relaxed">
+            Glucovital helps you understand patterns first — so you can decide if advanced monitoring makes sense. Works with or without a CGM.
           </p>
         </div>
       </section>
