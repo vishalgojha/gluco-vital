@@ -366,147 +366,71 @@ export default function Landing() {
           <h2 className="text-xl lg:text-2xl font-bold text-center text-slate-800 mb-2">Simple, Transparent Pricing</h2>
           <p className="text-center text-slate-500 text-sm mb-6">Start free forever. Upgrade when you need more.</p>
 
-          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-3 lg:gap-4 max-w-5xl mx-auto">
             {/* Free Tier */}
-            <div className="bg-white rounded-2xl p-6 border-2 border-slate-200 shadow-sm">
-              <div className="mb-4">
-                <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">Free Forever</span>
+            <div className="bg-white rounded-xl p-4 border-2 border-slate-200 shadow-sm">
+              <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-[10px] font-medium">Free Forever</span>
+              <h3 className="text-lg font-bold text-slate-800 mt-2">Basic</h3>
+              <div className="my-2">
+                <span className="text-2xl font-bold text-slate-800">₹0</span>
+                <span className="text-slate-500 text-sm"> / forever</span>
               </div>
-              <h3 className="text-2xl font-bold text-slate-800 mb-2">Basic</h3>
-              <p className="text-slate-500 text-sm mb-4">Start tracking your health</p>
-              <div className="mb-6">
-                <span className="text-4xl font-bold text-slate-800">₹0</span>
-                <span className="text-slate-500"> / forever</span>
-              </div>
-              <ul className="space-y-2.5 mb-6">
-                {[
-                  "Unlimited sugar & BP logging",
-                  "Meal & medication tracking",
-                  "WhatsApp integration",
-                  "7-day history view",
-                  "Basic trends & charts",
-                  "14 language support"
-                ].map((feature, idx) => (
-                  <li key={idx} className="flex items-center gap-2 text-sm text-slate-600">
-                    <Check className="w-4 h-4 text-green-500 shrink-0" />
-                    {feature}
-                  </li>
+              <ul className="space-y-1.5 mb-4 text-xs text-slate-600">
+                {["Unlimited logging", "WhatsApp integration", "7-day history", "21 languages"].map((f, i) => (
+                  <li key={i} className="flex items-center gap-1.5"><Check className="w-3 h-3 text-green-500" />{f}</li>
                 ))}
               </ul>
-              <Button 
-                variant="outline"
-                className="w-full h-11 rounded-xl border-2"
-                onClick={async () => {
-                  const isAuth = await base44.auth.isAuthenticated();
-                  if (isAuth) {
-                    window.location.href = createPageUrl("Home");
-                  } else {
-                    base44.auth.redirectToLogin(createPageUrl("Home"));
-                  }
-                }}
-              >
-                Get Started Free
-              </Button>
+              <Button variant="outline" className="w-full h-9 rounded-lg text-sm" onClick={async () => {
+                const isAuth = await base44.auth.isAuthenticated();
+                isAuth ? window.location.href = createPageUrl("Home") : base44.auth.redirectToLogin(createPageUrl("Home"));
+              }}>Get Started Free</Button>
             </div>
 
-            {/* Premium Tier */}
-            <div className="bg-gradient-to-br from-[#5b9a8b] to-[#4a8a7b] rounded-2xl p-6 border-2 border-[#5b9a8b] shadow-lg text-white relative">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                <span className="px-4 py-1 bg-amber-400 text-amber-900 rounded-full text-xs font-bold shadow-md">MOST POPULAR</span>
+            {/* Premium */}
+            <div className="bg-gradient-to-br from-[#5b9a8b] to-[#4a8a7b] rounded-xl p-4 border-2 border-[#5b9a8b] shadow-lg text-white relative">
+              <div className="absolute -top-2.5 left-1/2 -translate-x-1/2">
+                <span className="px-3 py-0.5 bg-amber-400 text-amber-900 rounded-full text-[10px] font-bold">POPULAR</span>
               </div>
-              <div className="mb-4 mt-2">
-                <span className="px-3 py-1 bg-white/20 text-white rounded-full text-xs font-medium">Premium</span>
+              <span className="px-2 py-0.5 bg-white/20 rounded-full text-[10px] font-medium">Premium</span>
+              <h3 className="text-lg font-bold mt-2">Premium</h3>
+              <div className="my-2">
+                <span className="text-2xl font-bold">₹299</span>
+                <span className="text-white/80 text-sm"> / mo</span>
               </div>
-              <h3 className="text-2xl font-bold mb-2">Premium</h3>
-              <p className="text-white/80 text-sm mb-4">Advanced insights & AI</p>
-              <div className="mb-2">
-                <span className="text-4xl font-bold">₹299</span>
-                <span className="text-white/80"> / month</span>
-              </div>
-              <p className="text-white/60 text-xs mb-6">or $5/month international</p>
-              <ul className="space-y-2.5 mb-6">
-                {[
-                  "Everything in Basic",
-                  "Unlimited history & reports",
-                  "AI-powered insights",
-                  "Doctor sharing & reports",
-                  "Medication reminders",
-                  "Weekly health summaries",
-                  "Priority support",
-                  "Works with finger-stick testing"
-                ].map((feature, idx) => (
-                  <li key={idx} className="flex items-center gap-2 text-sm text-white/90">
-                    <Check className="w-4 h-4 text-amber-300 shrink-0" />
-                    {feature}
-                  </li>
+              <ul className="space-y-1.5 mb-4 text-xs text-white/90">
+                {["Everything in Basic", "Unlimited history", "AI insights", "Doctor reports", "Reminders"].map((f, i) => (
+                  <li key={i} className="flex items-center gap-1.5"><Check className="w-3 h-3 text-amber-300" />{f}</li>
                 ))}
               </ul>
-              <Button 
-                className="w-full h-11 rounded-xl bg-white text-[#5b9a8b] hover:bg-white/90 font-semibold"
-                onClick={async () => {
-                  const isAuth = await base44.auth.isAuthenticated();
-                  if (isAuth) {
-                    window.location.href = createPageUrl("Home");
-                  } else {
-                    base44.auth.redirectToLogin(createPageUrl("Home"));
-                  }
-                }}
-              >
-                Start Free, Upgrade Later
-              </Button>
+              <Button className="w-full h-9 rounded-lg bg-white text-[#5b9a8b] hover:bg-white/90 text-sm font-semibold" onClick={async () => {
+                const isAuth = await base44.auth.isAuthenticated();
+                isAuth ? window.location.href = createPageUrl("Home") : base44.auth.redirectToLogin(createPageUrl("Home"));
+              }}>Upgrade Later</Button>
             </div>
 
-            {/* Family Tier */}
-            <div className="bg-white rounded-2xl p-6 border-2 border-violet-200 shadow-sm relative">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                <span className="px-4 py-1 bg-violet-100 text-violet-700 rounded-full text-xs font-bold">FOR FAMILIES</span>
+            {/* Family */}
+            <div className="bg-white rounded-xl p-4 border-2 border-violet-200 shadow-sm relative">
+              <div className="absolute -top-2.5 left-1/2 -translate-x-1/2">
+                <span className="px-3 py-0.5 bg-violet-100 text-violet-700 rounded-full text-[10px] font-bold">FAMILIES</span>
               </div>
-              <div className="mb-4 mt-2">
-                <span className="px-3 py-1 bg-violet-100 text-violet-700 rounded-full text-xs font-medium">Family</span>
+              <span className="px-2 py-0.5 bg-violet-100 text-violet-700 rounded-full text-[10px] font-medium">Family</span>
+              <h3 className="text-lg font-bold text-slate-800 mt-2">Family Care</h3>
+              <div className="my-2">
+                <span className="text-2xl font-bold text-slate-800">₹499</span>
+                <span className="text-slate-500 text-sm"> / mo</span>
               </div>
-              <h3 className="text-2xl font-bold text-slate-800 mb-2">Family Care</h3>
-              <p className="text-slate-500 text-sm mb-4">Care for your loved ones</p>
-              <div className="mb-2">
-                <span className="text-4xl font-bold text-slate-800">₹499</span>
-                <span className="text-slate-500"> / month</span>
-              </div>
-              <p className="text-slate-400 text-xs mb-6">or $9/month international</p>
-              <ul className="space-y-2.5 mb-6">
-                {[
-                  "Everything in Premium",
-                  "Up to 3 family members",
-                  "Caregiver dashboard",
-                  "Real-time alerts for family",
-                  "Shared health reports",
-                  "Emergency notifications",
-                  "Family health insights",
-                  "Dedicated family support"
-                ].map((feature, idx) => (
-                  <li key={idx} className="flex items-center gap-2 text-sm text-slate-600">
-                    <Check className="w-4 h-4 text-violet-500 shrink-0" />
-                    {feature}
-                  </li>
+              <ul className="space-y-1.5 mb-4 text-xs text-slate-600">
+                {["Everything in Premium", "3 family members", "Caregiver dashboard", "Real-time alerts"].map((f, i) => (
+                  <li key={i} className="flex items-center gap-1.5"><Check className="w-3 h-3 text-violet-500" />{f}</li>
                 ))}
               </ul>
-              <Button 
-                className="w-full h-11 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-semibold"
-                onClick={async () => {
-                  const isAuth = await base44.auth.isAuthenticated();
-                  if (isAuth) {
-                    window.location.href = createPageUrl("Home");
-                  } else {
-                    base44.auth.redirectToLogin(createPageUrl("Home"));
-                  }
-                }}
-              >
-                Start Free, Upgrade Later
-              </Button>
+              <Button className="w-full h-9 rounded-lg bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold" onClick={async () => {
+                const isAuth = await base44.auth.isAuthenticated();
+                isAuth ? window.location.href = createPageUrl("Home") : base44.auth.redirectToLogin(createPageUrl("Home"));
+              }}>Upgrade Later</Button>
             </div>
           </div>
-
-          <p className="text-center text-sm text-slate-500 mt-8">
-            🎉 Currently all features are free during our early access period!
-          </p>
+          <p className="text-center text-xs text-slate-500 mt-4">🎉 All features free during early access!</p>
         </div>
       </section>
 
