@@ -123,53 +123,61 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* How it Works - Compact */}
-      <section className="py-10 md:py-14 px-4 bg-white">
-        <div className="max-w-2xl mx-auto">
-          <h2 className="text-xl md:text-2xl font-bold text-slate-800 text-center mb-6">How it works</h2>
-          
-          {/* WhatsApp Preview */}
-          <div className="bg-[#e5ddd5] rounded-xl overflow-hidden shadow-lg max-w-[280px] mx-auto mb-8">
-            <div className="bg-[#075e54] text-white px-3 py-2 flex items-center gap-2">
-              <div className="w-7 h-7 rounded-full bg-[#5b9a8b] flex items-center justify-center">
-                <Heart className="w-3.5 h-3.5 text-white" />
-              </div>
-              <div>
-                <p className="font-medium text-xs">Gluco Vital</p>
-                <p className="text-[9px] text-green-200">online</p>
-              </div>
-            </div>
-            <div className="p-2.5 space-y-1.5">
-              <div className="flex justify-end">
-                <div className="bg-[#dcf8c6] rounded-lg px-2.5 py-1.5 max-w-[85%]">
-                  <p className="text-xs text-slate-800">Fasting sugar 118</p>
-                  <p className="text-[8px] text-slate-500 text-right mt-0.5">9:15 AM ✓✓</p>
-                </div>
-              </div>
-              <div className="flex justify-start">
-                <div className="bg-white rounded-lg px-2.5 py-1.5 max-w-[90%]">
-                  <p className="text-xs text-slate-800">✅ 118 mg/dL — in range! 🌅</p>
-                  <p className="text-[8px] text-slate-500 text-right mt-0.5">9:15 AM</p>
-                </div>
-              </div>
-            </div>
+      {/* How it Works */}
+      <section className="py-16 md:py-20 px-4 bg-white">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-3">How it works</h2>
+            <p className="text-slate-600">Simple as texting a friend</p>
           </div>
-
-          {/* Steps */}
-          <div className="grid gap-4 md:grid-cols-3 text-center">
-            {[
-              { icon: MessageCircle, title: "Text your data", desc: '"Sugar 120" or "Ate rice dal"' },
-              { icon: TrendingUp, title: "See patterns", desc: "AI spots trends in your logs" },
-              { icon: Shield, title: "Share with doctor", desc: "Clean reports, better visits" },
-            ].map((step, i) => (
-              <div key={i} className="p-3">
-                <div className="w-10 h-10 rounded-xl bg-[#5b9a8b]/10 flex items-center justify-center mx-auto mb-2">
-                  <step.icon className="w-5 h-5 text-[#5b9a8b]" />
+          
+          <div className="grid md:grid-cols-2 gap-8 items-center">
+            {/* WhatsApp Preview - Larger */}
+            <div className="bg-[#e5ddd5] rounded-2xl overflow-hidden shadow-2xl max-w-[320px] mx-auto">
+              <div className="bg-[#075e54] text-white px-4 py-3 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#5b9a8b] to-[#4a8a7b] flex items-center justify-center">
+                  <Heart className="w-5 h-5 text-white" />
                 </div>
-                <h3 className="font-semibold text-sm text-slate-800">{step.title}</h3>
-                <p className="text-xs text-slate-500 mt-1">{step.desc}</p>
+                <div>
+                  <p className="font-semibold text-sm">Gluco Vital</p>
+                  <p className="text-xs text-green-200">online</p>
+                </div>
               </div>
-            ))}
+              <div className="p-4 space-y-3">
+                <div className="flex justify-end">
+                  <div className="bg-[#dcf8c6] rounded-xl px-4 py-2.5 max-w-[85%] shadow-sm">
+                    <p className="text-sm text-slate-800">Fasting sugar 118</p>
+                    <p className="text-[10px] text-slate-500 text-right mt-1">9:15 AM ✓✓</p>
+                  </div>
+                </div>
+                <div className="flex justify-start">
+                  <div className="bg-white rounded-xl px-4 py-2.5 max-w-[90%] shadow-sm">
+                    <p className="text-sm text-slate-800">✅ 118 mg/dL — in range! 🌅</p>
+                    <p className="text-[10px] text-slate-500 mt-1.5">Your 7-day average: 124 mg/dL (improving!)</p>
+                    <p className="text-[10px] text-slate-500 text-right mt-1">9:15 AM</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Steps */}
+            <div className="space-y-6">
+              {[
+                { icon: MessageCircle, num: "1", title: "Text your data", desc: 'Just say "Sugar 120" or "Ate rice dal" — no forms, no apps' },
+                { icon: TrendingUp, num: "2", title: "See patterns", desc: "AI analyzes your readings and spots trends you might miss" },
+                { icon: Shield, num: "3", title: "Share with doctor", desc: "Generate clean PDF reports for better consultations" },
+              ].map((step, i) => (
+                <div key={i} className="flex gap-4 items-start">
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#5b9a8b]/20 to-[#5b9a8b]/5 flex items-center justify-center flex-shrink-0 border border-[#5b9a8b]/10">
+                    <step.icon className="w-6 h-6 text-[#5b9a8b]" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-lg text-slate-800">{step.title}</h3>
+                    <p className="text-slate-600 text-sm mt-1">{step.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
