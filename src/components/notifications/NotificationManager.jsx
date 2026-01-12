@@ -6,11 +6,12 @@ import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { format, isAfter, isBefore, addMinutes, parseISO } from "date-fns";
 
-// Notification sound URLs (using Web Audio API for reliability)
+// Notification sound configurations (using Web Audio API for reliability)
+// Louder, longer, more attention-grabbing sounds
 const NOTIFICATION_SOUNDS = {
-  gentle: { frequency: 440, duration: 200, pattern: [1] },
-  urgent: { frequency: 880, duration: 150, pattern: [1, 0.5, 1, 0.5, 1] },
-  success: { frequency: 523, duration: 150, pattern: [1, 0.3, 1.2] }
+  gentle: { frequency: 520, duration: 400, pattern: [1, 1.25, 1.5], gap: 0.15, volume: 0.6 },
+  urgent: { frequency: 700, duration: 350, pattern: [1, 0.8, 1, 0.8, 1.2], gap: 0.12, volume: 0.8 },
+  success: { frequency: 600, duration: 300, pattern: [1, 1.33, 1.5], gap: 0.1, volume: 0.5 }
 };
 
 // Create audio context for notifications
@@ -22,8 +23,15 @@ const playNotificationSound = (type = "gentle") => {
       audioContext = new (window.AudioContext || window.webkitAudioContext)();
     }
     
+    // Resume audio context if suspended (required for mobile)
+    if (audioContext.state === "suspended") {
+      audioContext.resume();
+    }
+    
     const sound = NOTIFICATION_SOUNDS[type] || NOTIFICATION_SOUNDS.gentle;
     const now = audioContext.currentTime;
+    const gap = sound.gap || 0.15;
+    const volume = sound.volume || 0.5;
     
     sound.pattern.forEach((multiplier, index) => {
       const oscillator = audioContext.createOscillator();
@@ -35,14 +43,20 @@ const playNotificationSound = (type = "gentle") => {
       oscillator.frequency.value = sound.frequency * multiplier;
       oscillator.type = "sine";
       
-      gainNode.gain.setValueAtTime(0.3, now + (index * 0.3));
-      gainNode.gain.exponentialRampToValueAtTime(0.01, now + (index * 0.3) + (sound.duration / 1000));
+      const startTime = now + (index * gap);
+      const duration = sound.duration / 1000;
       
-      oscillator.start(now + (index * 0.3));
-      oscillator.stop(now + (index * 0.3) + (sound.duration / 1000));
+      // Envelope: attack -> sustain -> release for fuller sound
+      gainNode.gain.setValueAtTime(0, startTime);
+      gainNode.gain.linearRampToValueAtTime(volume, startTime + 0.02); // Quick attack
+      gainNode.gain.setValueAtTime(volume, startTime + duration * 0.7); // Sustain
+      gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + duration); // Release
+      
+      oscillator.start(startTime);
+      oscillator.stop(startTime + duration);
     });
   } catch (e) {
-    console.log("Audio not supported");
+    console.log("Audio not supported:", e);
   }
 };
 
