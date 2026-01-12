@@ -461,42 +461,23 @@ export default function Landing() {
       </section>
 
       {/* CTA */}
-                  <section className="py-20 relative overflow-hidden">
-                    <div className="absolute inset-0 opacity-10">
-                      <img 
-                        src="https://images.unsplash.com/photo-1505751172876-fa1923c5c528?w=1200&h=600&fit=crop&q=60"
-                        alt=""
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div className="max-w-2xl mx-auto px-4 text-center relative z-10">
-                      <h2 className="text-3xl font-bold text-slate-800 mb-4">
-                        Start with One Simple Log
-                      </h2>
-                      <p className="text-slate-500 mb-8">
-                        Free to use. No credit card. Takes less than 30 seconds to send your first message.
-                      </p>
-          <Button 
-            size="lg"
-            onClick={async () => {
-              const isAuth = await base44.auth.isAuthenticated();
-              if (isAuth) {
-                window.location.href = createPageUrl("Home");
-              } else {
-                base44.auth.redirectToLogin(createPageUrl("Home"));
-              }
-            }}
-            className="bg-[#5b9a8b] hover:bg-[#4a8a7b] h-14 px-10 text-lg rounded-xl shadow-lg"
-          >
-            Get Started Free <ArrowRight className="w-5 h-5 ml-2" />
+      <section className="py-8 lg:py-12 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10">
+          <img src="https://images.unsplash.com/photo-1505751172876-fa1923c5c528?w=1200&h=400&fit=crop&q=60" alt="" className="w-full h-full object-cover" />
+        </div>
+        <div className="max-w-2xl mx-auto px-4 text-center relative z-10">
+          <h2 className="text-xl lg:text-2xl font-bold text-slate-800 mb-2">Start with One Simple Log</h2>
+          <p className="text-slate-500 text-sm mb-4">Free. No credit card. 30 seconds to start.</p>
+          <Button size="lg" onClick={async () => {
+            const isAuth = await base44.auth.isAuthenticated();
+            isAuth ? window.location.href = createPageUrl("Home") : base44.auth.redirectToLogin(createPageUrl("Home"));
+          }} className="bg-[#5b9a8b] hover:bg-[#4a8a7b] h-10 px-6 text-sm rounded-xl shadow-lg">
+            Get Started Free <ArrowRight className="w-4 h-4 ml-1.5" />
           </Button>
-          <p className="text-sm text-slate-500 mt-4">
-            After signing up, connect WhatsApp to log your health data via messages
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6 mt-6 text-sm text-slate-500">
-            <span className="flex items-center gap-1"><Check className="w-4 h-4 text-green-500" /> Free to use</span>
-            <span className="flex items-center gap-1"><Check className="w-4 h-4 text-green-500" /> WhatsApp-based</span>
-            <span className="flex items-center gap-1"><Check className="w-4 h-4 text-green-500" /> AI-assisted (not medical advice)</span>
+          <div className="flex flex-wrap items-center justify-center gap-3 mt-4 text-xs text-slate-500">
+            <span className="flex items-center gap-1"><Check className="w-3 h-3 text-green-500" /> Free</span>
+            <span className="flex items-center gap-1"><Check className="w-3 h-3 text-green-500" /> WhatsApp</span>
+            <span className="flex items-center gap-1"><Check className="w-3 h-3 text-green-500" /> AI-assisted</span>
           </div>
         </div>
       </section>
