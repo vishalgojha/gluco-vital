@@ -77,7 +77,7 @@ export default function VoiceReminderSettings({ user, profile, onUpdate }) {
       }
 
       if (response.data?.audio_url) {
-        // Play the audio
+        // Play the audio from URL
         const audio = new Audio(response.data.audio_url);
         audio.oncanplaythrough = () => {
           audio.play().catch(e => {
@@ -90,9 +90,17 @@ export default function VoiceReminderSettings({ user, profile, onUpdate }) {
           toast.error("Audio file couldn't be loaded");
         };
         toast.success("Playing voice reminder!");
+      } else if (response.data?.audio_base64) {
+        // Play from base64 if URL upload failed
+        const audio = new Audio(`data:audio/mpeg;base64,${response.data.audio_base64}`);
+        audio.play().catch(e => {
+          console.error('Audio play failed:', e);
+          toast.error("Couldn't play audio");
+        });
+        toast.success("Playing voice reminder!");
       } else {
-        toast.error("No audio URL returned");
-        console.error('No audio_url in response:', response.data);
+        toast.error("No audio returned");
+        console.error('No audio in response:', response.data);
       }
     } catch (error) {
       console.error('Voice reminder error:', error);
