@@ -63,10 +63,11 @@ const playNotificationSound = (type = "gentle") => {
 const triggerVibration = (type = "gentle") => {
   if (!navigator.vibrate) return;
   
+  // Longer, more noticeable vibration patterns
   const patterns = {
-    gentle: [100],
-    urgent: [200, 100, 200, 100, 200],
-    success: [100, 50, 100]
+    gentle: [300, 100, 300],
+    urgent: [400, 150, 400, 150, 400, 150, 400],
+    success: [200, 100, 200]
   };
   
   navigator.vibrate(patterns[type] || patterns.gentle);
