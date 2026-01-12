@@ -47,17 +47,90 @@ export default function LabReportUpload({ userEmail, onReportUploaded, onResults
         document_url: file_url,
         document_type: file.type.includes("pdf") ? "pdf" : "image",
         extracted: false,
-        extraction_status: "pending"
+        extraction_status: "processing"
       });
 
       setUploadedReport(report);
-      toast.success("Report uploaded successfully!");
+      toast.success("Report uploaded! Extracting data...");
       onReportUploaded?.(report);
+      
+      // Auto-extract after upload
+      await autoExtract(report, file_url);
     } catch (error) {
       toast.error("Failed to upload report");
       console.error(error);
     } finally {
       setUploading(false);
+    }
+  };
+
+  const autoExtract = async (report, fileUrl) => {
+    setExtracting(true);
+    try {
+      // Extract data using AI
+      const extractionResult = await base44.integrations.Core.ExtractDataFromUploadedFile({
+        file_url: fileUrl,
+        json_schema: {
+          type: "object",
+          properties: {
+            lab_name: { type: "string" },
+            report_date: { type: "string" },
+            patient_name: { type: "string" },
+            results: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  test_name: { type: "string" },
+                  test_type: { 
+                    type: "string",
+                    enum: ["hba1c", "fasting_glucose", "post_meal_glucose", "random_glucose", "total_cholesterol", "ldl", "hdl", "triglycerides", "creatinine", "egfr", "urea", "uric_acid", "hemoglobin", "wbc", "platelets", "tsh", "t3", "t4", "vitamin_d", "vitamin_b12", "iron", "ferritin", "liver_sgpt", "liver_sgot", "bilirubin", "sodium", "potassium", "calcium", "albumin_creatinine_ratio", "microalbumin", "c_peptide", "insulin_fasting", "other"]
+                  },
+                  value: { type: "number" },
+                  unit: { type: "string" },
+                  reference_range: { type: "string" },
+                  status: { 
+                    type: "string",
+                    enum: ["normal", "low", "high", "critical_low", "critical_high"]
+                  }
+                }
+              }
+            }
+          }
+        }
+      });
+
+      if (extractionResult.status === "success" && extractionResult.output?.results) {
+        setExtractedResults(extractionResult.output.results);
+        
+        // Update report with extracted lab name if found
+        const updatedLabName = extractionResult.output.lab_name || reportData.lab_name;
+        await base44.entities.LabReport.update(report.id, {
+          extracted: true,
+          extraction_status: "completed",
+          lab_name: updatedLabName
+        });
+        
+        // Update local state
+        if (extractionResult.output.lab_name && !reportData.lab_name) {
+          setReportData(prev => ({ ...prev, lab_name: extractionResult.output.lab_name }));
+        }
+
+        toast.success(`Found ${extractionResult.output.results.length} test results!`);
+      } else {
+        await base44.entities.LabReport.update(report.id, {
+          extraction_status: "failed"
+        });
+        toast.error("Could not extract data. Please add results manually.");
+      }
+    } catch (error) {
+      toast.error("Extraction failed. You can add results manually.");
+      console.error(error);
+      await base44.entities.LabReport.update(report.id, {
+        extraction_status: "failed"
+      });
+    } finally {
+      setExtracting(false);
     }
   };
 
