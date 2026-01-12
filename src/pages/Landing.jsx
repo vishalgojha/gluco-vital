@@ -323,26 +323,21 @@ export default function Landing() {
       </section>
 
       {/* Features */}
-                  <section className="py-16">
-                    <div className="max-w-6xl mx-auto px-4">
-                      <div className="text-center mb-12">
-                        <h2 className="text-3xl font-bold text-slate-800 mb-4">
-                          Everything You Need
-                        </h2>
-                        <p className="text-slate-500 max-w-xl mx-auto">
-                          Comprehensive diabetes management tools designed for real life
-                        </p>
-                      </div>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <section className="py-6 lg:py-10">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center mb-6">
+            <h2 className="text-xl lg:text-2xl font-bold text-slate-800 mb-2">Everything You Need</h2>
+            <p className="text-slate-500 text-sm">Comprehensive diabetes management tools</p>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-2 lg:gap-3">
             {features.map((feature, idx) => (
-              <div key={idx} className="flex items-start gap-4 p-4 rounded-xl hover:bg-white/80 transition-colors">
-                <div className="p-2.5 bg-[#5b9a8b]/10 rounded-xl shrink-0">
-                  <feature.icon className="w-5 h-5 text-[#5b9a8b]" />
+              <div key={idx} className="flex items-start gap-3 p-3 rounded-xl hover:bg-white/80 transition-colors">
+                <div className="p-2 bg-[#5b9a8b]/10 rounded-lg shrink-0">
+                  <feature.icon className="w-4 h-4 text-[#5b9a8b]" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-slate-800">{feature.title}</h3>
-                  <p className="text-sm text-slate-500">{feature.desc}</p>
+                  <h3 className="font-semibold text-sm text-slate-800">{feature.title}</h3>
+                  <p className="text-xs text-slate-500">{feature.desc}</p>
                 </div>
               </div>
             ))}
