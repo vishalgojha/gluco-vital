@@ -112,7 +112,7 @@ export default function DoctorFeedback() {
         {/* Header */}
         <div className="flex items-center gap-3 sm:gap-4 mb-6 md:mb-8">
           <Link to={createPageUrl(`PatientDetail?email=${connection?.patient_email}&connection=${connectionId}`)}>
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" className="flex-shrink-0">
               <ArrowLeft className="w-5 h-5" />
             </Button>
           </Link>
@@ -173,7 +173,7 @@ export default function DoctorFeedback() {
                     />
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div>
                       <Label>Priority</Label>
                       <Select
@@ -222,7 +222,7 @@ export default function DoctorFeedback() {
           </div>
 
           {/* Previous Feedback */}
-          <div className="md:col-span-1">
+          <div>
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg">Previous Feedback</CardTitle>

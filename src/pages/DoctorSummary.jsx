@@ -73,9 +73,9 @@ export default function DoctorSummary() {
         </div>
 
         {/* Filters */}
-        <div className="flex flex-wrap items-center gap-2 sm:gap-4 mb-4 sm:mb-6">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mb-4 md:mb-6">
           <Select value={selectedPatient} onValueChange={setSelectedPatient}>
-            <SelectTrigger className="w-48">
+            <SelectTrigger className="w-full sm:w-48">
               <Users className="w-4 h-4 mr-2 text-slate-400" />
               <SelectValue placeholder="All patients" />
             </SelectTrigger>
@@ -100,10 +100,10 @@ export default function DoctorSummary() {
         </div>
 
         {/* Info Banner */}
-        <div className="bg-slate-100 border border-slate-200 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6">
+        <div className="bg-slate-100 border border-slate-200 rounded-lg p-3 sm:p-4 mb-4 md:mb-6">
           <p className="text-xs sm:text-sm text-slate-600">
             <strong>Reading this view:</strong> Decision states show patient coping patterns. 
-            Fatigue signals indicate burnout risk. Actions suggest workflow routing.
+            Fatigue signals indicate burnout risk. Actions suggest workflow routing — not medical decisions.
           </p>
         </div>
 
@@ -115,7 +115,7 @@ export default function DoctorSummary() {
             ))}
           </div>
         ) : displaySummaries.length === 0 ? (
-          <div className="text-center py-10 sm:py-16 bg-white rounded-xl border border-slate-100">
+          <div className="text-center py-12 sm:py-16 bg-white rounded-xl border border-slate-100">
             <Clock className="w-10 h-10 sm:w-12 sm:h-12 text-slate-300 mx-auto mb-3" />
             <p className="text-slate-500 text-sm sm:text-base">No summaries generated yet</p>
             <p className="text-xs sm:text-sm text-slate-400 mt-1">
@@ -132,12 +132,12 @@ export default function DoctorSummary() {
 
         {/* Generate for connected patients */}
         {connections.length > 0 && (
-          <div className="mt-8 p-4 bg-white rounded-xl border border-slate-100">
-            <h3 className="font-medium text-slate-700 mb-3">Generate Summary</h3>
+          <div className="mt-6 md:mt-8 p-3 sm:p-4 bg-white rounded-xl border border-slate-100">
+            <h3 className="font-medium text-slate-700 mb-3 text-sm sm:text-base">Generate Summary</h3>
             <div className="space-y-2">
               {connections.map(conn => (
-                <div key={conn.id} className="flex items-center justify-between p-2 bg-slate-50 rounded-lg">
-                  <span className="text-sm text-slate-700">{conn.patient_name || conn.patient_email}</span>
+                <div key={conn.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2 bg-slate-50 rounded-lg">
+                  <span className="text-sm text-slate-700 truncate">{conn.patient_name || conn.patient_email}</span>
                   <DoctorSummaryGenerator 
                     patientEmail={conn.patient_email}
                     patientName={conn.patient_name}
