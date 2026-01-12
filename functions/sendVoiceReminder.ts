@@ -120,27 +120,27 @@ Deno.serve(async (req) => {
     const audioBuffer = await ttsResponse.arrayBuffer();
     console.log('Audio buffer size:', audioBuffer.byteLength);
     
-    const audioBlob = new Blob([audioBuffer], { type: 'audio/mpeg' });
-    const fileName = `voice_reminder_${reminder_type}_${Date.now()}.mp3`;
-    const file = new File([audioBlob], fileName, { type: 'audio/mpeg' });
+    // Convert to base64 for reliable delivery
+    const uint8Array = new Uint8Array(audioBuffer);
+    let binaryString = '';
+    for (let i = 0; i < uint8Array.length; i++) {
+      binaryString += String.fromCharCode(uint8Array[i]);
+    }
+    const base64Audio = btoa(binaryString);
     
-    console.log('Uploading audio file...');
-    let uploadResult;
+    // Try to upload, but always return base64 as fallback
+    let uploadResult = null;
     try {
+      const audioBlob = new Blob([audioBuffer], { type: 'audio/mpeg' });
+      const fileName = `voice_reminder_${reminder_type}_${Date.now()}.mp3`;
+      const file = new File([audioBlob], fileName, { type: 'audio/mpeg' });
+      
+      console.log('Uploading audio file...');
       uploadResult = await base44.integrations.Core.UploadFile({ file });
       console.log('Upload result:', JSON.stringify(uploadResult));
     } catch (uploadError) {
       console.error('Upload error:', uploadError);
-      // Return audio as base64 if upload fails
-      const base64Audio = btoa(String.fromCharCode(...new Uint8Array(audioBuffer)));
-      return Response.json({
-        success: true,
-        audio_base64: base64Audio,
-        audio_type: 'audio/mpeg',
-        message: fullMessage,
-        reminder_type,
-        note: 'Upload failed, returning base64 audio'
-      });
+      // Continue with base64 fallback
     }
 
     // Log the voice reminder sent
@@ -168,7 +168,8 @@ Deno.serve(async (req) => {
 
     return Response.json({
       success: true,
-      audio_url: uploadResult.file_url,
+      audio_url: uploadResult?.file_url || null,
+      audio_base64: base64Audio,
       message: fullMessage,
       reminder_type,
       sent_to: targetEmail
