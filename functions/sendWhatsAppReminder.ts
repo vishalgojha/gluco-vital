@@ -1,6 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 
-// Send WhatsApp reminders to users
+// Send WhatsApp reminders to users via Meta Cloud API
 
 Deno.serve(async (req) => {
   try {
