@@ -28,35 +28,51 @@ Deno.serve(async (req) => {
     const body = await req.json();
     console.log('ElevenLabs webhook received:', JSON.stringify(body, null, 2));
 
-    // Extract conversation data
+    // Extract conversation data - ElevenLabs sends user_id for WhatsApp number
     const { 
       conversation_id,
       agent_id,
       phone_number,
+      user_id,
       transcript,
       messages,
       metadata,
-      event_type
+      event_type,
+      analysis
     } = body;
 
+    // ElevenLabs sends WhatsApp number as user_id
+    const whatsappNumber = user_id || phone_number;
+    
     console.log('Event type:', event_type);
+    console.log('User ID (WhatsApp):', user_id);
     console.log('Phone:', phone_number);
 
     const base44 = getServiceClient();
 
-    // Find user by phone number
+    // Find user by WhatsApp number (user_id from ElevenLabs)
     let userEmail = null;
-    if (phone_number) {
-      const cleanPhone = phone_number.replace(/\D/g, '');
+    if (whatsappNumber) {
+      const cleanPhone = whatsappNumber.replace(/\D/g, '');
+      console.log('Looking for phone:', cleanPhone);
+      
       const profiles = await base44.entities.PatientProfile.filter({});
+      console.log('Found profiles:', profiles.length);
+      
       const matchedProfile = profiles.find(p => {
         const profilePhone = (p.whatsapp_number || '').replace(/\D/g, '');
-        return profilePhone === cleanPhone || profilePhone.endsWith(cleanPhone.slice(-10));
+        const match = profilePhone === cleanPhone || 
+                      profilePhone.endsWith(cleanPhone.slice(-10)) ||
+                      cleanPhone.endsWith(profilePhone.slice(-10));
+        if (profilePhone) console.log('Comparing:', profilePhone, 'vs', cleanPhone, '=', match);
+        return match;
       });
       
       if (matchedProfile) {
         userEmail = matchedProfile.user_email;
         console.log('Matched user:', userEmail);
+      } else {
+        console.log('No profile matched for phone:', cleanPhone);
       }
     }
 
