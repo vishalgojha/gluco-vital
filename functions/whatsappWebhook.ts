@@ -180,11 +180,9 @@ async function processIncomingMessage(phoneNumber, messageBody, messageType) {
 
 function createServiceClient() {
   // Create a service-level client for webhook processing
-  const { Base44 } = require('npm:@base44/sdk@0.8.6');
-  return new Base44({
-    appId: Deno.env.get('BASE44_APP_ID'),
-    serviceRoleKey: 'service'
-  });
+  const { Base44 } = eval("require")('npm:@base44/sdk@0.8.6');
+  const client = new Base44({ appId: Deno.env.get('BASE44_APP_ID') });
+  return client.asServiceRole;
 }
 
 async function sendWhatsAppMessage(to, message) {

@@ -22,6 +22,7 @@ import { NotificationSettings } from "@/components/notifications/NotificationMan
 import CalendarExport from "@/components/medications/CalendarExport";
 import SubscriptionManager from "@/components/subscription/SubscriptionManager";
 import VoiceReminderSettings from "@/components/voice/VoiceReminderSettings";
+import WhatsAppOptIn from "@/components/whatsapp/WhatsAppOptIn";
 
 export default function Profile() {
   const queryClient = useQueryClient();
@@ -577,6 +578,13 @@ export default function Profile() {
           {/* Voice Reminders */}
           <VoiceReminderSettings 
             user={user} 
+            profile={profile}
+            onUpdate={() => queryClient.invalidateQueries({ queryKey: ['patient-profile'] })}
+          />
+
+          {/* WhatsApp Reminders */}
+          <WhatsAppOptIn
+            user={user}
             profile={profile}
             onUpdate={() => queryClient.invalidateQueries({ queryKey: ['patient-profile'] })}
           />
