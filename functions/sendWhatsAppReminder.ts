@@ -102,16 +102,25 @@ Deno.serve(async (req) => {
     );
     
     const result = await response.json();
-    console.log('WhatsApp send result:', result);
+    console.log('WhatsApp API response:', JSON.stringify(result, null, 2));
+    console.log('Sent to phone:', phone_number);
+    console.log('Using Phone ID:', PHONE_NUMBER_ID);
     
     if (result.error) {
-      return Response.json({ error: result.error.message }, { status: 400 });
+      console.error('WhatsApp error:', result.error);
+      return Response.json({ 
+        error: result.error.message,
+        error_code: result.error.code,
+        error_details: result.error
+      }, { status: 400 });
     }
     
     return Response.json({
       success: true,
       message_id: result.messages?.[0]?.id,
-      message_sent: message
+      message_sent: message,
+      phone_sent_to: phone_number,
+      wa_response: result
     });
     
   } catch (error) {
