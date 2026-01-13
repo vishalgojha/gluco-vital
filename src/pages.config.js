@@ -23,6 +23,7 @@ import Progress from './pages/Progress';
 import Reports from './pages/Reports';
 import Subscription from './pages/Subscription';
 import Terms from './pages/Terms';
+import WhatsAppTest from './pages/WhatsAppTest';
 import __Layout from './Layout.jsx';
 
 
@@ -52,6 +53,7 @@ export const PAGES = {
     "Reports": Reports,
     "Subscription": Subscription,
     "Terms": Terms,
+    "WhatsAppTest": WhatsAppTest,
 }
 
 export const pagesConfig = {
