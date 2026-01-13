@@ -50,8 +50,10 @@ Deno.serve(async (req) => {
 
     const base44 = getServiceClient();
 
-    // Find user by WhatsApp number (user_id from ElevenLabs)
+    // WhatsApp-first: Find or CREATE user by WhatsApp number
     let userEmail = null;
+    let profile = null;
+    
     if (whatsappNumber) {
       const cleanPhone = whatsappNumber.replace(/\D/g, '');
       console.log('Looking for phone:', cleanPhone);
@@ -59,20 +61,33 @@ Deno.serve(async (req) => {
       const profiles = await base44.entities.PatientProfile.filter({});
       console.log('Found profiles:', profiles.length);
       
-      const matchedProfile = profiles.find(p => {
+      profile = profiles.find(p => {
         const profilePhone = (p.whatsapp_number || '').replace(/\D/g, '');
         const match = profilePhone === cleanPhone || 
                       profilePhone.endsWith(cleanPhone.slice(-10)) ||
                       cleanPhone.endsWith(profilePhone.slice(-10));
-        if (profilePhone) console.log('Comparing:', profilePhone, 'vs', cleanPhone, '=', match);
         return match;
       });
       
-      if (matchedProfile) {
-        userEmail = matchedProfile.user_email;
-        console.log('Matched user:', userEmail);
+      if (profile) {
+        userEmail = profile.user_email;
+        console.log('Matched existing user:', userEmail);
       } else {
-        console.log('No profile matched for phone:', cleanPhone);
+        // WhatsApp-first: Auto-create profile for new users
+        // WhatsApp number IS the identity
+        userEmail = `wa_${cleanPhone}@whatsapp.glucovital.fit`;
+        console.log('Creating new WhatsApp user:', userEmail);
+        
+        profile = await base44.entities.PatientProfile.create({
+          user_email: userEmail,
+          name: `WhatsApp User ${cleanPhone.slice(-4)}`,
+          whatsapp_number: cleanPhone,
+          whatsapp_connected: true,
+          whatsapp_reminders_enabled: true,
+          language_preference: 'hinglish',
+          timezone: 'Asia/Kolkata'
+        });
+        console.log('Created new profile:', profile.id);
       }
     }
 
