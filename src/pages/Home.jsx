@@ -10,7 +10,7 @@ import StatCard from "@/components/dashboard/StatCard";
 import LogCard from "@/components/dashboard/LogCard";
 import SugarChart from "@/components/dashboard/SugarChart";
 import VoiceInsightCard from "@/components/voice/VoiceInsightCard";
-import WhatsAppConnect from "@/components/WhatsAppConnect";
+import WhatsAppOnboarding from "@/components/onboarding/WhatsAppOnboarding";
 import PointsDisplay from "@/components/gamification/PointsDisplay";
 import WeeklyChallenge from "@/components/gamification/WeeklyChallenge";
 import RecommendedSchedule from "@/components/dashboard/RecommendedSchedule";
@@ -354,7 +354,12 @@ export default function Home() {
               progress={achievements?.weekly_challenge_progress || 0}
             />
 
-            {!isDemo && <WhatsAppConnect isConnected={profile?.whatsapp_connected} />}
+            {!isDemo && (
+              <WhatsAppOnboarding 
+                profile={profile} 
+                onComplete={() => queryClient.invalidateQueries({ queryKey: ['patient-profile'] })} 
+              />
+            )}
             
             {isDemo && (
               <div className="space-y-4">
