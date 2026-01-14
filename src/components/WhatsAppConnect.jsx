@@ -55,13 +55,13 @@ export default function WhatsAppConnect({ isConnected = false }) {
         </div>
 
         <a 
-          href={`https://wa.me/${WHATSAPP_NUMBER}?text=Hi%20Mr.%20Gluco!%20I%20want%20to%20start%20tracking%20my%20health.`} 
+          href={`https://wa.me/${WHATSAPP_NUMBER}?text=Hi%20Asha!%20I%20want%20to%20start%20tracking%20my%20health.`} 
           target="_blank" 
           rel="noopener noreferrer"
         >
           <Button className="w-full bg-white text-emerald-600 hover:bg-green-50 font-semibold h-12 rounded-xl">
             <MessageCircle className="w-5 h-5 mr-2" />
-            Chat with Mr. Gluco
+            Chat with Asha
           </Button>
         </a>
       </div>
