@@ -15,6 +15,7 @@ import MedicationCalendar from "@/components/medications/MedicationCalendar";
 
 import PrescriptionUpload from "@/components/profile/PrescriptionUpload";
 import MyDataSection from "@/components/profile/MyDataSection";
+import DataAccessAuditLog from "@/components/sharing/DataAccessAuditLog";
 import LabResultsList from "@/components/labs/LabResultsList";
 import LabReportUpload from "@/components/labs/LabReportUpload";
 import HbA1cTrendChart from "@/components/labs/HbA1cTrendChart";
@@ -604,6 +605,9 @@ export default function Profile() {
 
           {/* My Data - DPDP Compliance */}
           <MyDataSection user={user} profile={profile} />
+
+          {/* Data Access Audit Log */}
+          <DataAccessAuditLog userEmail={user?.email} />
 
           {/* Doctor */}
           <Card className="border-slate-100 shadow-sm">

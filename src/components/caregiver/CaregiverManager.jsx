@@ -11,10 +11,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Switch } from "@/components/ui/switch";
 import { 
   Users, Plus, UserPlus, Eye, Edit3, Shield, Clock, 
-  Mail, Trash2, Pause, Play, AlertTriangle, X, Loader2, Check
+  Mail, Trash2, Pause, Play, AlertTriangle, X, Loader2, Check, Calendar, Infinity
 } from "lucide-react";
 import { toast } from "sonner";
-import { format } from "date-fns";
+import { format, addDays, addMonths } from "date-fns";
+import TimeBoundAccessSelector, { calculateExpiryDate } from "@/components/sharing/TimeBoundAccessSelector";
 
 const relationLabels = {
   spouse: "Spouse",
@@ -57,6 +58,9 @@ export default function CaregiverManager({ userEmail, userName }) {
     caregiver_email: "",
     relation: "spouse",
     access_level: "view_only",
+    access_duration: "permanent",
+    custom_expiry_date: "",
+    permissions: ["view_readings", "view_trends", "view_medications", "receive_alerts"],
     alert_preferences: {
       high_sugar: true,
       low_sugar: true,
@@ -74,13 +78,27 @@ export default function CaregiverManager({ userEmail, userName }) {
   const createMutation = useMutation({
     mutationFn: async (data) => {
       const inviteCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+      const expiryDate = calculateExpiryDate(data.access_duration, data.custom_expiry_date);
+      
       const caregiver = await base44.entities.CaregiverAccess.create({
         ...data,
         patient_email: userEmail,
         patient_name: userName,
         invite_code: inviteCode,
         status: data.caregiver_email ? "active" : "pending",
-        granted_at: new Date().toISOString()
+        granted_at: new Date().toISOString(),
+        expires_at: expiryDate,
+        permissions: data.permissions
+      });
+      
+      // Log access grant
+      await base44.entities.DataAccessLog.create({
+        patient_email: userEmail,
+        accessor_email: data.caregiver_email,
+        accessor_name: data.caregiver_name,
+        accessor_type: "caregiver",
+        access_type: "view_dashboard",
+        access_details: `Access granted: ${data.access_level} level, expires: ${expiryDate ? format(new Date(expiryDate), "MMM d, yyyy") : "Never"}`
       });
 
       // Send email notification if caregiver has email
@@ -146,6 +164,9 @@ GlucoVital.fit Team`
       caregiver_email: "",
       relation: "spouse",
       access_level: "view_only",
+      access_duration: "permanent",
+      custom_expiry_date: "",
+      permissions: ["view_readings", "view_trends", "view_medications", "receive_alerts"],
       alert_preferences: {
         high_sugar: true,
         low_sugar: true,
@@ -328,6 +349,52 @@ GlucoVital.fit Team`
               </div>
             </div>
 
+            {/* Time-Bound Access */}
+            <TimeBoundAccessSelector
+              value={formData.access_duration}
+              onChange={(value) => setFormData(prev => ({ ...prev, access_duration: value }))}
+              customDate={formData.custom_expiry_date}
+              onCustomDateChange={(date) => setFormData(prev => ({ ...prev, custom_expiry_date: date }))}
+            />
+
+            {/* Granular Permissions */}
+            <div>
+              <Label>Data Permissions</Label>
+              <div className="grid grid-cols-2 gap-2 mt-2">
+                {[
+                  { key: "view_readings", label: "Sugar & BP Readings" },
+                  { key: "view_trends", label: "Trends & Charts" },
+                  { key: "view_medications", label: "Medication Schedule" },
+                  { key: "view_reports", label: "Health Reports" },
+                  { key: "receive_alerts", label: "Receive Alerts" },
+                  { key: "view_lab_results", label: "Lab Results" }
+                ].map(perm => (
+                  <label 
+                    key={perm.key}
+                    className={`flex items-center gap-2 p-2 rounded-lg border cursor-pointer text-sm ${
+                      formData.permissions.includes(perm.key)
+                        ? 'border-violet-300 bg-violet-50'
+                        : 'border-slate-200'
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={formData.permissions.includes(perm.key)}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setFormData(prev => ({ ...prev, permissions: [...prev.permissions, perm.key] }));
+                        } else {
+                          setFormData(prev => ({ ...prev, permissions: prev.permissions.filter(p => p !== perm.key) }));
+                        }
+                      }}
+                      className="rounded border-slate-300"
+                    />
+                    <span className="text-slate-700">{perm.label}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
             <div className="p-3 bg-blue-50 rounded-lg border border-blue-100">
               <p className="text-xs text-blue-700">
                 📧 Caregiver will receive an email invite and can view your health data by logging into GlucoVital with their email.
@@ -412,11 +479,23 @@ function CaregiverCard({ caregiver, onToggleStatus, onRevoke, onEdit, compact })
       </div>
 
       <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-50">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <Badge className={accessInfo.color}>
             <AccessIcon className="w-3 h-3 mr-1" />
             {accessInfo.label}
           </Badge>
+          {caregiver.expires_at && (
+            <Badge variant="outline" className="text-xs">
+              <Clock className="w-3 h-3 mr-1" />
+              Expires {format(new Date(caregiver.expires_at), "MMM d, yyyy")}
+            </Badge>
+          )}
+          {!caregiver.expires_at && (
+            <Badge variant="outline" className="text-xs text-slate-500">
+              <Infinity className="w-3 h-3 mr-1" />
+              Permanent
+            </Badge>
+          )}
           {caregiver.last_viewed_at && (
             <span className="text-xs text-slate-400">
               Last viewed: {format(new Date(caregiver.last_viewed_at), "MMM d")}
