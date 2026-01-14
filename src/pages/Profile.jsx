@@ -14,6 +14,7 @@ import AdherenceTracker from "@/components/medications/AdherenceTracker";
 import MedicationCalendar from "@/components/medications/MedicationCalendar";
 
 import PrescriptionUpload from "@/components/profile/PrescriptionUpload";
+import MyDataSection from "@/components/profile/MyDataSection";
 import LabResultsList from "@/components/labs/LabResultsList";
 import LabReportUpload from "@/components/labs/LabReportUpload";
 import HbA1cTrendChart from "@/components/labs/HbA1cTrendChart";
@@ -600,6 +601,9 @@ export default function Profile() {
 
           {/* Subscription Management */}
           <SubscriptionManager user={user} />
+
+          {/* My Data - DPDP Compliance */}
+          <MyDataSection user={user} profile={profile} />
 
           {/* Doctor */}
           <Card className="border-slate-100 shadow-sm">
