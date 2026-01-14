@@ -205,9 +205,12 @@ async function processIncomingMessage(phoneNumber, messageBody, messageType, ima
 
 function createServiceClient() {
   // Create a service-level client for webhook processing
-  const { Base44 } = eval("require")('npm:@base44/sdk@0.8.6');
-  const client = new Base44({ appId: Deno.env.get('BASE44_APP_ID') });
-  return client.asServiceRole;
+  const { createClient } = require('npm:@base44/sdk@0.8.6');
+  const client = createClient({
+    appId: Deno.env.get('BASE44_APP_ID'),
+    apiKey: Deno.env.get('BASE44_SERVICE_ROLE_KEY')
+  });
+  return client;
 }
 
 // Process image messages (prescriptions, lab reports)
