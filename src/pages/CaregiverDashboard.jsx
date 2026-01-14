@@ -123,12 +123,28 @@ export default function CaregiverDashboard() {
   // Log activity when viewing (skip in demo mode)
   useEffect(() => {
     if (selectedPatient && !isDemo) {
+      // Check if access has expired
+      if (selectedPatient.expires_at && new Date(selectedPatient.expires_at) < new Date()) {
+        return; // Don't log if expired
+      }
+      
       base44.entities.CaregiverActivityLog.create({
         caregiver_access_id: selectedPatient.id,
         patient_email: selectedPatient.patient_email,
         caregiver_email: user?.email,
         action_type: "viewed_dashboard",
         source: "app"
+      }).catch(() => {});
+      
+      // Log to DataAccessLog for audit trail
+      base44.entities.DataAccessLog.create({
+        patient_email: selectedPatient.patient_email,
+        accessor_email: user?.email,
+        accessor_name: user?.full_name,
+        accessor_type: "caregiver",
+        access_type: "view_dashboard",
+        access_details: `Viewed dashboard as ${selectedPatient.relation}`,
+        connection_id: selectedPatient.id
       }).catch(() => {});
       
       // Update last_viewed_at
@@ -217,7 +233,18 @@ export default function CaregiverDashboard() {
         {/* Auto-select first patient */}
         {!selectedPatient && caregiverAccess.length > 0 && setSelectedPatient(caregiverAccess[0])}
 
-        {selectedPatient && (
+        {selectedPatient && selectedPatient.expires_at && new Date(selectedPatient.expires_at) < new Date() && (
+          <div className="max-w-2xl mx-auto text-center py-16 bg-white rounded-2xl border border-amber-200">
+            <Clock className="w-16 h-16 text-amber-400 mx-auto mb-4" />
+            <h2 className="text-xl font-semibold text-slate-700 mb-2">Access Expired</h2>
+            <p className="text-slate-500 max-w-md mx-auto">
+              Your access to {selectedPatient.patient_name}'s data expired on {format(new Date(selectedPatient.expires_at), "MMMM d, yyyy")}. 
+              Please ask them to renew your access.
+            </p>
+          </div>
+        )}
+
+        {selectedPatient && (!selectedPatient.expires_at || new Date(selectedPatient.expires_at) >= new Date()) && (
           <div className="grid lg:grid-cols-3 gap-6">
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-6">
@@ -399,6 +426,27 @@ export default function CaregiverDashboard() {
                       {format(new Date(selectedPatient.granted_at), "MMM d, yyyy")}
                     </span>
                   </div>
+                  {selectedPatient.expires_at && (
+                    <div className="flex items-center justify-between pt-2 border-t border-slate-100 mt-2">
+                      <span className="text-sm text-slate-600">Expires on</span>
+                      <Badge variant="outline" className="text-amber-600 border-amber-300">
+                        <Clock className="w-3 h-3 mr-1" />
+                        {format(new Date(selectedPatient.expires_at), "MMM d, yyyy")}
+                      </Badge>
+                    </div>
+                  )}
+                  {selectedPatient.permissions?.length > 0 && (
+                    <div className="pt-2 border-t border-slate-100 mt-2">
+                      <span className="text-xs text-slate-500 block mb-2">Permissions</span>
+                      <div className="flex flex-wrap gap-1">
+                        {selectedPatient.permissions.map(p => (
+                          <Badge key={p} variant="outline" className="text-xs">
+                            {p.replace(/_/g, ' ')}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 
@@ -445,6 +493,8 @@ export default function CaregiverDashboard() {
             </div>
           </div>
         )}
+
+        {selectedPatient && (!selectedPatient.expires_at || new Date(selectedPatient.expires_at) >= new Date()) && null}
 
         {/* Report Viewer for Caregivers */}
         {selectedReport && (
