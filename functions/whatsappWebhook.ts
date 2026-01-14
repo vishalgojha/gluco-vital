@@ -116,61 +116,135 @@ async function processIncomingMessage(phoneNumber, messageBody, messageType, ima
       return;
     }
     
-    // Route ALL text messages through the AI Agent
-    console.log('Routing to health_buddy agent:', messageBody);
-    const agentResponse = await routeToAgent(base44, userEmail, messageBody);
-    await sendWhatsAppMessage(phoneNumber, agentResponse);
+    // Route ALL text messages through AI
+    console.log('Processing message with AI:', messageBody);
+    const aiResponse = await processWithAI(base44, userEmail, messageBody, profile);
+    await sendWhatsAppMessage(phoneNumber, aiResponse);
     
   } catch (error) {
-    console.error('Process message error:', error.message);
-    // Fallback response if agent fails
+    console.error('Process message error:', error.message, error.stack);
+    // Fallback response if AI fails
     await sendWhatsAppMessage(phoneNumber, 
-      "Sorry, I'm having trouble processing your message. Please try again or send 'help' for options."
+      "Sorry, I'm having trouble right now. You can still log:\n• Sugar: \"sugar 120\"\n• BP: \"130/85\"\n• Medication: \"taken\""
     );
   }
 }
 
-// Route message through Base44 AI Agent (health_buddy)
-async function routeToAgent(base44, userEmail, message) {
+// Process message with AI (InvokeLLM)
+async function processWithAI(base44, userEmail, message, profile) {
   try {
-    // Find or create conversation for this user
-    let conversations = await base44.agents.listConversations({ agent_name: 'health_buddy' });
-    let conversation = conversations.find(c => c.metadata?.user_email === userEmail);
+    // Get recent health logs for context
+    const recentLogs = await base44.entities.HealthLog.filter({ user_email: userEmail });
+    const last5Logs = recentLogs.slice(0, 5);
     
-    if (!conversation) {
-      // Create new conversation
-      conversation = await base44.agents.createConversation({
-        agent_name: 'health_buddy',
-        metadata: {
-          user_email: userEmail,
-          source: 'whatsapp',
-          name: `WhatsApp: ${userEmail}`
-        }
-      });
-      console.log('Created new agent conversation:', conversation.id);
-    }
+    const contextSummary = last5Logs.length > 0 
+      ? last5Logs.map(l => `${l.log_type}: ${l.value} (${l.time_of_day || 'unknown time'})`).join('\n')
+      : 'No recent logs';
     
-    // Add user message and get response
-    const result = await base44.agents.addMessage(conversation, {
-      role: 'user',
-      content: message
+    const systemPrompt = `You are GlucoVital, a friendly diabetes health companion on WhatsApp.
+
+USER INFO:
+- Name: ${profile.name || 'User'}
+- Email: ${userEmail}
+- Language: ${profile.language_preference || 'english'} (respond in this language)
+
+RECENT HEALTH DATA:
+${contextSummary}
+
+YOUR CAPABILITIES:
+1. LOG HEALTH DATA - If user mentions sugar/glucose numbers, BP readings, or medication taken, extract and confirm
+2. ANSWER QUESTIONS - About diabetes management, their data patterns, general health info
+3. PROVIDE SUPPORT - Be warm, encouraging, non-judgmental
+
+RESPONSE FORMAT:
+- Keep responses SHORT (2-4 sentences max for WhatsApp)
+- Use simple language
+- No markdown formatting (no *, #, etc.)
+- Add relevant emoji sparingly
+
+IF USER SHARES A READING:
+- Acknowledge it warmly
+- Note if it's high (>180) or low (<70) with gentle guidance
+- Ask what time/context if not clear
+
+IMPORTANT: You cannot actually save data - just acknowledge and guide. The system will parse your response.`;
+
+    const response = await base44.integrations.Core.InvokeLLM({
+      prompt: `${systemPrompt}\n\nUser message: "${message}"\n\nRespond naturally:`,
     });
     
-    // Get the assistant's response from the conversation
-    // The addMessage returns the updated conversation with the new response
-    const messages = result.messages || [];
-    const lastAssistantMessage = messages.filter(m => m.role === 'assistant').pop();
+    // Also try to extract and log any health data from the message
+    await tryExtractAndLogHealthData(base44, userEmail, message);
     
-    if (lastAssistantMessage?.content) {
-      return lastAssistantMessage.content;
-    }
-    
-    // Fallback if no response
-    return "I received your message. How can I help you with your health tracking today?";
+    return response || "I'm here to help with your health tracking. What would you like to log today?";
     
   } catch (error) {
-    console.error('Agent routing error:', error.message);
+    console.error('AI processing error:', error.message);
     throw error;
+  }
+}
+
+// Try to extract health data from message and log it
+async function tryExtractAndLogHealthData(base44, userEmail, message) {
+  const lowerMessage = message.toLowerCase();
+  
+  // Extract sugar readings
+  const sugarMatch = lowerMessage.match(/(\d{2,3})\s*(?:mg|sugar|glucose|fasting|after|before|random)?/i);
+  if (sugarMatch) {
+    const value = parseInt(sugarMatch[1]);
+    if (value >= 50 && value <= 500) {
+      let timeOfDay = 'other';
+      if (lowerMessage.includes('fasting') || lowerMessage.includes('morning')) timeOfDay = 'morning_fasting';
+      else if (lowerMessage.includes('after')) timeOfDay = 'after_breakfast';
+      else if (lowerMessage.includes('before')) timeOfDay = 'before_breakfast';
+      
+      await base44.entities.HealthLog.create({
+        user_email: userEmail,
+        log_type: 'sugar',
+        value: `${value} mg/dL`,
+        numeric_value: value,
+        time_of_day: timeOfDay,
+        source: 'whatsapp',
+        status: 'active',
+        measured_at: new Date().toISOString(),
+        notes: `Via WhatsApp: "${message}"`
+      });
+      console.log('Logged sugar reading:', value);
+    }
+  }
+  
+  // Extract BP readings
+  const bpMatch = lowerMessage.match(/(\d{2,3})\s*[\/\\]\s*(\d{2,3})/);
+  if (bpMatch) {
+    const systolic = parseInt(bpMatch[1]);
+    const diastolic = parseInt(bpMatch[2]);
+    if (systolic >= 70 && systolic <= 250 && diastolic >= 40 && diastolic <= 150) {
+      await base44.entities.HealthLog.create({
+        user_email: userEmail,
+        log_type: 'blood_pressure',
+        value: `${systolic}/${diastolic} mmHg`,
+        numeric_value: systolic,
+        source: 'whatsapp',
+        status: 'active',
+        measured_at: new Date().toISOString(),
+        notes: `Via WhatsApp: "${message}"`
+      });
+      console.log('Logged BP:', systolic, diastolic);
+    }
+  }
+  
+  // Extract medication confirmation
+  if (lowerMessage.includes('taken') || lowerMessage.includes('done') || 
+      lowerMessage.includes('ले ली') || lowerMessage.includes('medicine')) {
+    await base44.entities.MedicationAdherence.create({
+      user_email: userEmail,
+      medication_name: 'Via WhatsApp',
+      scheduled_time: new Date().toISOString(),
+      status: 'taken',
+      taken_at: new Date().toISOString(),
+      confirmed_via: 'whatsapp'
+    });
+    console.log('Logged medication adherence');
   }
 }
 
