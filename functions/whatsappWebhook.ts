@@ -249,11 +249,12 @@ async function tryExtractAndLogHealthData(base44, userEmail, message) {
 }
 
 function createServiceClient() {
+  // Use the built-in service role client from Base44 SDK
   const client = createClient({
-    appId: Deno.env.get('BASE44_APP_ID'),
-    apiKey: Deno.env.get('BASE44_SERVICE_ROLE_KEY')
+    appId: Deno.env.get('BASE44_APP_ID')
   });
-  return client;
+  // Return with service role capabilities
+  return client.asServiceRole;
 }
 
 // Process image messages (prescriptions, lab reports)
