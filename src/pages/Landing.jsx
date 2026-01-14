@@ -88,11 +88,11 @@ export default function Landing() {
             </h1>
             
             <h2 className="text-xl md:text-2xl font-semibold text-slate-700 mb-4">
-              Log your health via <span className="text-[#5b9a8b] underline decoration-[#5b9a8b]/30 decoration-4 underline-offset-4">WhatsApp</span>
+              <span className="text-[#5b9a8b] underline decoration-[#5b9a8b]/30 decoration-4 underline-offset-4">Call or text</span> on WhatsApp
             </h2>
-            
+
             <p className="text-slate-600 text-base md:text-lg mb-8 max-w-md mx-auto leading-relaxed">
-              Text your sugar, BP, or meals. Get insights, reminders, and doctor-ready reports — in <strong>21 languages</strong>.
+              Speak or type your sugar, BP, or meals. Get instant AI insights and doctor-ready reports — in <strong>21 languages</strong>.
             </p>
 
             {/* CTAs */}
@@ -116,7 +116,7 @@ export default function Landing() {
             {/* Trust signals */}
             <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-slate-600">
               <span className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-500" /> Free forever</span>
-              <span className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-500" /> No app needed</span>
+              <span className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-500" /> Voice & text</span>
               <span className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-500" /> 21 languages</span>
             </div>
           </div>
@@ -163,7 +163,7 @@ export default function Landing() {
             {/* Steps */}
             <div className="space-y-6">
               {[
-                { icon: MessageCircle, num: "1", title: "Text your data", desc: 'Just say "Sugar 120" or "Ate rice dal" — no forms, no apps' },
+                { icon: MessageCircle, num: "1", title: "Call or text", desc: 'Say "Sugar 120" or type it — voice or text, your choice' },
                 { icon: TrendingUp, num: "2", title: "See patterns", desc: "AI analyzes your readings and spots trends you might miss" },
                 { icon: Shield, num: "3", title: "Share with doctor", desc: "Generate clean PDF reports for better consultations" },
               ].map((step, i) => (
@@ -191,7 +191,7 @@ export default function Landing() {
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
             {[
-              { icon: MessageCircle, title: "WhatsApp logging", desc: "No app to learn — just text" },
+              { icon: MessageCircle, title: "Voice & text logging", desc: "Call or message — your choice" },
               { icon: TrendingUp, title: "Pattern insights", desc: "AI spots what affects your sugar" },
               { icon: Bell, title: "Gentle reminders", desc: "Helpful nudges, never shaming" },
               { icon: Shield, title: "Doctor reports", desc: "Clean PDF summaries" },
