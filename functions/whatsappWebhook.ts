@@ -1,6 +1,7 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
+import { createClient } from 'npm:@base44/sdk@0.8.6';
 
 // Meta WhatsApp Webhook Handler
+// Routes text messages through Base44 AI Agent (health_buddy)
 // Handles verification and incoming messages
 
 Deno.serve(async (req) => {
@@ -99,9 +100,10 @@ async function processIncomingMessage(phoneNumber, messageBody, messageType, ima
       });
       console.log('Created new WhatsApp profile:', profile.id);
       
-      await sendWhatsAppMessage(phoneNumber, 
-        "🩺 Welcome to GlucoVital!\n\nYour account is set up. Start logging:\n• Sugar: \"120 fasting\" or \"sugar 150\"\n• BP: \"130/85\"\n• Prescription: Send a photo 📸\n\nLet's track your health! 💚"
-      );
+      // Send welcome via agent
+      const welcomeResponse = await routeToAgent(base44, profile.user_email, "hi");
+      await sendWhatsAppMessage(phoneNumber, welcomeResponse);
+      return;
     }
     
     const userEmail = profile.user_email;
@@ -114,98 +116,65 @@ async function processIncomingMessage(phoneNumber, messageBody, messageType, ima
       return;
     }
     
-    // Parse the message for health data
-    const lowerMessage = messageBody.toLowerCase().trim();
-    
-    // Check for sugar/glucose readings (e.g., "sugar 120", "glucose 145", "120 fasting")
-    const sugarMatch = lowerMessage.match(/(?:sugar|glucose|शुगर|ब्लड शुगर)?\s*(\d{2,3})\s*(?:mg\/dl|fasting|after food|before food|random)?/i) ||
-                       lowerMessage.match(/(\d{2,3})\s*(?:fasting|after|before|random|सुबह|खाने के बाद)?/i);
-    
-    if (sugarMatch) {
-      const value = parseInt(sugarMatch[1]);
-      if (value >= 50 && value <= 500) {
-        // Determine time of day
-        let timeOfDay = 'other';
-        if (lowerMessage.includes('fasting') || lowerMessage.includes('सुबह')) {
-          timeOfDay = 'morning_fasting';
-        } else if (lowerMessage.includes('after') || lowerMessage.includes('बाद')) {
-          timeOfDay = 'after_breakfast';
-        } else if (lowerMessage.includes('before') || lowerMessage.includes('पहले')) {
-          timeOfDay = 'before_breakfast';
-        }
-        
-        // Log the reading
-        await base44.entities.HealthLog.create({
-          user_email: userEmail,
-          log_type: 'sugar',
-          value: `${value} mg/dL`,
-          numeric_value: value,
-          time_of_day: timeOfDay,
-          source: 'whatsapp',
-          status: 'active',
-          measured_at: new Date().toISOString(),
-          notes: `Logged via WhatsApp: "${messageBody}"`
-        });
-        
-        // Send confirmation
-        let response = language === 'hindi' 
-          ? `✅ शुगर रीडिंग लॉग हो गई: ${value} mg/dL\n\nआपका ख्याल रखें! 💚`
-          : `✅ Sugar reading logged: ${value} mg/dL\n\nTake care! 💚`;
-        
-        // Add warning for extreme values
-        if (value < 70) {
-          response += language === 'hindi'
-            ? '\n\n⚠️ यह कम है। कृपया कुछ मीठा खाएं और डॉक्टर से संपर्क करें।'
-            : '\n\n⚠️ This is low. Please have some glucose and contact your doctor if needed.';
-        } else if (value > 300) {
-          response += language === 'hindi'
-            ? '\n\n⚠️ यह बहुत ज्यादा है। कृपया अपने डॉक्टर से संपर्क करें।'
-            : '\n\n⚠️ This is very high. Please contact your doctor.';
-        }
-        
-        await sendWhatsAppMessage(phoneNumber, response);
-        return;
-      }
-    }
-    
-    // Check for medication confirmation
-    if (lowerMessage.includes('taken') || lowerMessage.includes('done') || 
-        lowerMessage.includes('ले ली') || lowerMessage.includes('हो गया') ||
-        lowerMessage === 'yes' || lowerMessage === 'ok' || lowerMessage === 'हां') {
-      
-      // Log medication adherence
-      await base44.entities.MedicationAdherence.create({
-        user_email: userEmail,
-        medication_name: 'Via WhatsApp confirmation',
-        scheduled_time: new Date().toISOString(),
-        status: 'taken',
-        taken_at: new Date().toISOString(),
-        confirmed_via: 'whatsapp'
-      });
-      
-      const response = language === 'hindi'
-        ? '✅ दवाई लेने की पुष्टि हो गई। बहुत अच्छे! 💪'
-        : '✅ Medication confirmed. Great job! 💪';
-      
-      await sendWhatsAppMessage(phoneNumber, response);
-      return;
-    }
-    
-    // Default response - help message
-    const helpMessage = language === 'hindi'
-      ? `🩺 GlucoVital में आपका स्वागत है!\n\nआप भेज सकते हैं:\n• शुगर रीडिंग: "sugar 120" या "120 fasting"\n• दवाई की पुष्टि: "taken" या "done"\n\nमदद के लिए "help" भेजें।`
-      : `🩺 Welcome to GlucoVital!\n\nYou can send:\n• Sugar readings: "sugar 120" or "120 fasting"\n• Medication confirmation: "taken" or "done"\n\nSend "help" for more options.`;
-    
-    await sendWhatsAppMessage(phoneNumber, helpMessage);
+    // Route ALL text messages through the AI Agent
+    console.log('Routing to health_buddy agent:', messageBody);
+    const agentResponse = await routeToAgent(base44, userEmail, messageBody);
+    await sendWhatsAppMessage(phoneNumber, agentResponse);
     
   } catch (error) {
     console.error('Process message error:', error.message);
+    // Fallback response if agent fails
+    await sendWhatsAppMessage(phoneNumber, 
+      "Sorry, I'm having trouble processing your message. Please try again or send 'help' for options."
+    );
+  }
+}
+
+// Route message through Base44 AI Agent (health_buddy)
+async function routeToAgent(base44, userEmail, message) {
+  try {
+    // Find or create conversation for this user
+    let conversations = await base44.agents.listConversations({ agent_name: 'health_buddy' });
+    let conversation = conversations.find(c => c.metadata?.user_email === userEmail);
+    
+    if (!conversation) {
+      // Create new conversation
+      conversation = await base44.agents.createConversation({
+        agent_name: 'health_buddy',
+        metadata: {
+          user_email: userEmail,
+          source: 'whatsapp',
+          name: `WhatsApp: ${userEmail}`
+        }
+      });
+      console.log('Created new agent conversation:', conversation.id);
+    }
+    
+    // Add user message and get response
+    const result = await base44.agents.addMessage(conversation, {
+      role: 'user',
+      content: message
+    });
+    
+    // Get the assistant's response from the conversation
+    // The addMessage returns the updated conversation with the new response
+    const messages = result.messages || [];
+    const lastAssistantMessage = messages.filter(m => m.role === 'assistant').pop();
+    
+    if (lastAssistantMessage?.content) {
+      return lastAssistantMessage.content;
+    }
+    
+    // Fallback if no response
+    return "I received your message. How can I help you with your health tracking today?";
+    
+  } catch (error) {
+    console.error('Agent routing error:', error.message);
+    throw error;
   }
 }
 
 function createServiceClient() {
-  // Create a service-level client for webhook processing
-  const { createClient } = require('npm:@base44/sdk@0.8.6');
   const client = createClient({
     appId: Deno.env.get('BASE44_APP_ID'),
     apiKey: Deno.env.get('BASE44_SERVICE_ROLE_KEY')
