@@ -19,52 +19,127 @@ const PLANS = {
     priceYearly: 0,
     features: [
       "Unlimited sugar & BP logging",
-      "WhatsApp integration",
+      "WhatsApp text logging",
       "7-day history",
-      "Basic trends",
+      "Basic daily trends",
       "14 languages"
     ],
+    limitations: [
+      "No AI insights",
+      "No reports/exports",
+      "No doctor sharing"
+    ],
     icon: Zap,
-    color: "slate"
+    color: "slate",
+    tagline: "Always Free"
+  },
+  starter: {
+    name: "Starter",
+    price: 99,
+    priceYearly: 999,
+    features: [
+      "Everything in Basic",
+      "30-day history",
+      "Weekly AI insights",
+      "Basic PDF reports",
+      "Medication reminders",
+      "Email support"
+    ],
+    limitations: [
+      "No voice reminders",
+      "No doctor sharing",
+      "No caregiver access"
+    ],
+    icon: Star,
+    color: "blue",
+    tagline: "First month FREE"
   },
   premium: {
     name: "Premium",
-    price: 299,
-    priceYearly: 2999,
-    features: [
-      "Everything in Basic",
-      "Unlimited history & reports",
-      "AI-powered insights",
-      "Doctor sharing",
-      "Medication reminders",
-      "Weekly summaries",
-      "Priority support"
-    ],
-    icon: Crown,
-    color: "amber",
-    popular: true
-  },
-  family: {
-    name: "Family",
     price: 499,
     priceYearly: 4999,
     features: [
-      "Everything in Premium",
-      "Up to 3 family members",
-      "Caregiver dashboard",
-      "Real-time alerts",
-      "Family health insights",
-      "Dedicated support"
+      "Everything in Starter",
+      "Unlimited history",
+      "Daily AI coaching (Nurse)",
+      "Advanced analytics",
+      "Doctor sharing & summaries",
+      "Voice reminders (Asha)",
+      "Lab report analysis",
+      "Priority WhatsApp support"
     ],
+    limitations: [],
+    icon: Crown,
+    color: "amber",
+    popular: true,
+    tagline: "Most Popular"
+  },
+  family: {
+    name: "Family",
+    price: 799,
+    priceYearly: 7999,
+    features: [
+      "Everything in Premium",
+      "Up to 5 family members",
+      "Caregiver dashboard",
+      "Real-time health alerts",
+      "Family health insights",
+      "Dedicated support line",
+      "Emergency escalation"
+    ],
+    limitations: [],
     icon: Users,
-    color: "violet"
+    color: "violet",
+    tagline: "Best for Families"
   }
 };
+
+// Feature access control - what requires which plan
+export const FEATURE_ACCESS = {
+  // Basic (Free)
+  basic_logging: "basic",
+  whatsapp_text: "basic",
+  seven_day_history: "basic",
+  basic_trends: "basic",
+  
+  // Starter (₹99)
+  thirty_day_history: "starter",
+  weekly_ai_insights: "starter",
+  basic_reports: "starter",
+  medication_reminders: "starter",
+  
+  // Premium (₹499)
+  unlimited_history: "premium",
+  daily_ai_coaching: "premium",
+  advanced_analytics: "premium",
+  doctor_sharing: "premium",
+  voice_reminders: "premium",
+  lab_analysis: "premium",
+  clinical_summaries: "premium",
+  
+  // Family (₹799)
+  family_members: "family",
+  caregiver_dashboard: "family",
+  realtime_alerts: "family",
+  emergency_escalation: "family"
+};
+
+// Helper to check if user has access to a feature
+export function hasFeatureAccess(userPlan, feature) {
+  const requiredPlan = FEATURE_ACCESS[feature];
+  if (!requiredPlan) return true; // Feature not restricted
+  
+  const planHierarchy = ["basic", "starter", "premium", "family"];
+  const userPlanIndex = planHierarchy.indexOf(userPlan || "basic");
+  const requiredPlanIndex = planHierarchy.indexOf(requiredPlan);
+  
+  return userPlanIndex >= requiredPlanIndex;
+}
 
 export default function SubscriptionManager({ user }) {
   const isAdmin = user?.role === 'admin';
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState("premium");
+  const [selectedPlan, setSelectedPlan] = useState("starter");
   const [billingCycle, setBillingCycle] = useState("monthly");
   const [processing, setProcessing] = useState(false);
   const [showSecretsInfo, setShowSecretsInfo] = useState(false);
@@ -167,6 +242,14 @@ export default function SubscriptionManager({ user }) {
               {currentPlan === "basic" ? (
                 <Button 
                   onClick={() => setShowUpgradeDialog(true)}
+                  className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
+                >
+                  <Star className="w-4 h-4 mr-2" />
+                  Try Starter FREE for 1 Month
+                </Button>
+              ) : currentPlan === "starter" ? (
+                <Button 
+                  onClick={() => { setSelectedPlan("premium"); setShowUpgradeDialog(true); }}
                   className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700"
                 >
                   <Crown className="w-4 h-4 mr-2" />
@@ -215,23 +298,26 @@ export default function SubscriptionManager({ user }) {
           </div>
 
           {/* Plan Cards */}
-          <div className="grid md:grid-cols-2 gap-4 mt-4">
-            {["premium", "family"].map(planKey => {
+          <div className="grid md:grid-cols-3 gap-3 mt-4">
+            {["starter", "premium", "family"].map(planKey => {
               const plan = PLANS[planKey];
               const price = billingCycle === "yearly" ? plan.priceYearly : plan.price;
               const Icon = plan.icon;
               const isSelected = selectedPlan === planKey;
+              
+              const colorClasses = {
+                starter: { border: 'border-blue-400', bg: 'bg-blue-50', icon: 'bg-blue-100', iconText: 'text-blue-600', check: 'text-blue-500', badge: 'bg-blue-500' },
+                premium: { border: 'border-amber-400', bg: 'bg-amber-50', icon: 'bg-amber-100', iconText: 'text-amber-600', check: 'text-amber-500', badge: 'bg-amber-500' },
+                family: { border: 'border-violet-400', bg: 'bg-violet-50', icon: 'bg-violet-100', iconText: 'text-violet-600', check: 'text-violet-500', badge: 'bg-violet-500' }
+              };
+              const colors = colorClasses[planKey];
 
               return (
                 <div
                   key={planKey}
                   onClick={() => setSelectedPlan(planKey)}
                   className={`relative p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                    isSelected 
-                      ? planKey === 'premium' 
-                        ? 'border-amber-400 bg-amber-50' 
-                        : 'border-violet-400 bg-violet-50'
-                      : 'border-slate-200 hover:border-slate-300'
+                    isSelected ? `${colors.border} ${colors.bg}` : 'border-slate-200 hover:border-slate-300'
                   }`}
                 >
                   {plan.popular && (
@@ -239,42 +325,43 @@ export default function SubscriptionManager({ user }) {
                       Most Popular
                     </Badge>
                   )}
+                  
+                  {planKey === 'starter' && (
+                    <Badge className="absolute -top-2 left-1/2 -translate-x-1/2 bg-green-500">
+                      First Month FREE
+                    </Badge>
+                  )}
 
                   <div className="flex items-center gap-3 mb-3">
-                    <div className={`p-2 rounded-lg ${
-                      planKey === 'premium' ? 'bg-amber-100' : 'bg-violet-100'
-                    }`}>
-                      <Icon className={`w-5 h-5 ${
-                        planKey === 'premium' ? 'text-amber-600' : 'text-violet-600'
-                      }`} />
+                    <div className={`p-2 rounded-lg ${colors.icon}`}>
+                      <Icon className={`w-5 h-5 ${colors.iconText}`} />
                     </div>
                     <div>
                       <h3 className="font-semibold">{plan.name}</h3>
                       <p className="text-lg font-bold">
                         ₹{price}
                         <span className="text-sm font-normal text-slate-500">
-                          /{billingCycle === "yearly" ? "year" : "month"}
+                          /{billingCycle === "yearly" ? "year" : "mo"}
                         </span>
                       </p>
                     </div>
                   </div>
 
-                  <ul className="space-y-2">
-                    {plan.features.map((feature, idx) => (
-                      <li key={idx} className="flex items-start gap-2 text-sm">
-                        <Check className={`w-4 h-4 mt-0.5 ${
-                          planKey === 'premium' ? 'text-amber-500' : 'text-violet-500'
-                        }`} />
+                  <ul className="space-y-1.5">
+                    {plan.features.slice(0, 6).map((feature, idx) => (
+                      <li key={idx} className="flex items-start gap-2 text-xs">
+                        <Check className={`w-3.5 h-3.5 mt-0.5 ${colors.check}`} />
                         <span className="text-slate-600">{feature}</span>
                       </li>
                     ))}
+                    {plan.features.length > 6 && (
+                      <li className="text-xs text-slate-400 pl-5">+{plan.features.length - 6} more</li>
+                    )}
                   </ul>
 
                   {isSelected && (
                     <div className="absolute top-2 right-2">
-                      <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                        planKey === 'premium' ? 'bg-amber-500' : 'bg-violet-500'
-                      }`}>
+                      <div className={`w-6 h-6 rounded-full flex items-center justify-center ${colors.badge}`}>
                         <Check className="w-4 h-4 text-white" />
                       </div>
                     </div>
@@ -289,9 +376,11 @@ export default function SubscriptionManager({ user }) {
             onClick={handleSubscribe}
             disabled={processing}
             className={`w-full h-12 text-lg ${
-              selectedPlan === 'premium' 
-                ? 'bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700'
-                : 'bg-gradient-to-r from-violet-500 to-violet-600 hover:from-violet-600 hover:to-violet-700'
+              selectedPlan === 'starter'
+                ? 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700'
+                : selectedPlan === 'premium' 
+                  ? 'bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700'
+                  : 'bg-gradient-to-r from-violet-500 to-violet-600 hover:from-violet-600 hover:to-violet-700'
             }`}
           >
             {processing ? (
@@ -301,10 +390,16 @@ export default function SubscriptionManager({ user }) {
               </>
             ) : (
               <>
-                Subscribe to {PLANS[selectedPlan].name} - ₹{billingCycle === "yearly" ? PLANS[selectedPlan].priceYearly : PLANS[selectedPlan].price}/{billingCycle === "yearly" ? "year" : "month"}
+                {selectedPlan === 'starter' ? 'Start Free Trial' : `Subscribe to ${PLANS[selectedPlan].name}`} - ₹{billingCycle === "yearly" ? PLANS[selectedPlan].priceYearly : PLANS[selectedPlan].price}/{billingCycle === "yearly" ? "yr" : "mo"}
               </>
             )}
           </Button>
+          
+          {selectedPlan === 'starter' && (
+            <p className="text-xs text-center text-green-600 font-medium">
+              🎉 First month completely FREE, then ₹99/month
+            </p>
+          )}
 
           <p className="text-xs text-center text-slate-400">
             Secure payment powered by Razorpay. Cancel anytime.
