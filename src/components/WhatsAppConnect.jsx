@@ -1,8 +1,7 @@
-import { MessageCircle, CheckCircle, Smartphone, Phone } from "lucide-react";
+import { MessageCircle, CheckCircle, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { base44 } from "@/api/base44Client";
 
-// ElevenLabs WhatsApp Agent Number
+// Single WhatsApp Number for all interactions (voice + text logging)
 const WHATSAPP_NUMBER = "919819471310";
 
 export default function WhatsAppConnect({ isConnected = false }) {
@@ -55,29 +54,16 @@ export default function WhatsAppConnect({ isConnected = false }) {
           </div>
         </div>
 
-        <div className="space-y-3">
-          <a 
-            href={`https://wa.me/${WHATSAPP_NUMBER}?text=Hi%20Asha!%20I%20want%20to%20start%20tracking%20my%20health.`} 
-            target="_blank" 
-            rel="noopener noreferrer"
-          >
-            <Button className="w-full bg-white text-emerald-600 hover:bg-green-50 font-semibold h-12 rounded-xl">
-              <Phone className="w-5 h-5 mr-2" />
-              Talk to Asha (Voice)
-            </Button>
-          </a>
-
-          <a 
-            href={base44.agents.getWhatsAppConnectURL('health_buddy')} 
-            target="_blank" 
-            rel="noopener noreferrer"
-          >
-            <Button className="w-full bg-white text-emerald-600 hover:bg-green-50 font-semibold h-12 rounded-xl">
-              <MessageCircle className="w-5 h-5 mr-2" />
-              Chat to Log (Text)
-            </Button>
-          </a>
-        </div>
+        <a 
+          href={`https://wa.me/${WHATSAPP_NUMBER}?text=Hi%20Asha!%20I%20want%20to%20start%20tracking%20my%20health.`} 
+          target="_blank" 
+          rel="noopener noreferrer"
+        >
+          <Button className="w-full bg-white text-emerald-600 hover:bg-green-50 font-semibold h-12 rounded-xl">
+            <MessageCircle className="w-5 h-5 mr-2" />
+            Chat with Asha
+          </Button>
+        </a>
       </div>
     </div>
   );
