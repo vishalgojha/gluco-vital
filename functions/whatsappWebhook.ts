@@ -138,7 +138,9 @@ async function processIncomingMessage(phoneNumber, messageBody, messageType, ima
   }
 }
 
-async function routeToAgent(base44, userEmail, message) {
+async function routeToAgent(userEmail, message) {
+  const base44 = getBase44();
+  
   try {
     // Get user profile for context
     const profiles = await base44.entities.PatientProfile.filter({ user_email: userEmail });
@@ -195,7 +197,7 @@ Respond naturally as Asha:`
     });
     
     // Also try to extract and log any health data
-    await tryExtractAndLogHealthData(base44, userEmail, message);
+    await tryExtractAndLogHealthData(userEmail, message);
     
     return response || "Hi! I'm Asha, your health buddy. How can I help you today? 💚";
     
