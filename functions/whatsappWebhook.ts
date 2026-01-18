@@ -217,7 +217,7 @@ async function tryExtractAndLogHealthData(base44, userEmail, message) {
       const isFasting = lowerMsg.includes('fasting') || lowerMsg.includes('morning') || lowerMsg.includes('empty');
       const isPostMeal = lowerMsg.includes('pp') || lowerMsg.includes('post') || lowerMsg.includes('after');
       
-      await base44.asServiceRole.entities.HealthLog.create({
+      await base44.entities.HealthLog.create({
         user_email: userEmail,
         log_type: 'sugar',
         value: `${value} mg/dL`,
