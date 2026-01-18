@@ -161,7 +161,7 @@ async function routeToAgent(base44, userEmail, message) {
     const userName = profile.name || 'User';
     
     // Use direct LLM call
-    const response = await base44.asServiceRole.integrations.Core.InvokeLLM({
+    const response = await base44.integrations.Core.InvokeLLM({
       prompt: `You are Asha from GlucoVital, a warm and friendly diabetes health companion on WhatsApp.
 
 USER INFO:
