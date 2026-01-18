@@ -1,15 +1,8 @@
-import { createClient } from 'npm:@base44/sdk@0.8.6';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 
 // Meta WhatsApp Webhook Handler
 // Routes text messages through Base44 AI
 // Handles verification and incoming messages
-
-// Create service role client for webhook (no user auth needed)
-function getBase44Client() {
-  return createClient({
-    appId: Deno.env.get('BASE44_APP_ID')
-  }).asServiceRole;
-}
 
 Deno.serve(async (req) => {
   const url = new URL(req.url);
