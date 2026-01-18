@@ -356,14 +356,46 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Languages Banner */}
-      <section className="py-10 md:py-12 px-4 bg-gradient-to-r from-[#5b9a8b] to-[#4a8a7b]">
-        <div className="max-w-3xl mx-auto text-center text-white">
-          <Globe className="w-10 h-10 mx-auto mb-4 opacity-90" />
-          <h3 className="text-2xl font-bold mb-3">Speaks your language</h3>
-          <p className="text-sm text-white/90 leading-relaxed">
-            Hindi • Tamil • Telugu • Marathi • Gujarati • Kannada • Malayalam • Bengali • Chinese • English • Urdu • Arabic • Spanish • Portuguese • Japanese • Russian • Turkish • German • Indonesian • Punjabi • Hinglish
-          </p>
+      {/* Languages Section - Expandable */}
+      <section className="py-12 md:py-16 px-4 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-6">
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white/10 backdrop-blur mb-4">
+              <Globe className="w-7 h-7 text-white" />
+            </div>
+            <h3 className="text-2xl md:text-3xl font-bold mb-2">Speaks your language</h3>
+            <p className="text-slate-300">Log in the language you're comfortable with</p>
+          </div>
+          
+          {/* Popular languages */}
+          <div className="flex flex-wrap justify-center gap-2 mb-4">
+            {["English", "हिंदी", "தமிழ்", "తెలుగు", "मराठी", "ગુજરાતી", "বাংলা"].map((lang, i) => (
+              <span key={i} className="px-4 py-2 bg-white/10 backdrop-blur rounded-full text-sm font-medium hover:bg-white/20 transition-colors cursor-default">
+                {lang}
+              </span>
+            ))}
+          </div>
+          
+          {/* Expandable section */}
+          <div className="text-center">
+            <button 
+              onClick={() => setShowAllLanguages(!showAllLanguages)}
+              className="inline-flex items-center gap-2 text-sm text-slate-300 hover:text-white transition-colors"
+            >
+              {showAllLanguages ? "Show less" : "See all 21 languages"}
+              {showAllLanguages ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            </button>
+            
+            {showAllLanguages && (
+              <div className="mt-4 flex flex-wrap justify-center gap-2">
+                {["Kannada", "Malayalam", "Punjabi", "Chinese", "Urdu", "Arabic", "Spanish", "Portuguese", "Japanese", "Russian", "Turkish", "German", "Indonesian", "Hinglish"].map((lang, i) => (
+                  <span key={i} className="px-3 py-1.5 bg-white/5 rounded-full text-xs text-slate-400">
+                    {lang}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </section>
 
