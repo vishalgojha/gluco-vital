@@ -116,16 +116,16 @@ export default function Landing() {
                 <span className="text-[#5b9a8b] underline decoration-[#5b9a8b]/30 decoration-4 underline-offset-4">Call or text</span> on WhatsApp
               </h2>
 
-              <p className="text-slate-600 text-base md:text-lg mb-6 max-w-md mx-auto lg:mx-0 leading-relaxed">
+              <p className="text-slate-600 text-base md:text-lg mb-6 max-w-md mx-auto md:mx-0 leading-relaxed">
                 Speak or type your sugar, BP, or meals. Get instant AI insights and doctor-ready reports — in <strong>21 languages</strong>.
               </p>
 
               {/* CTAs */}
-              <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-3 mb-6">
+              <div className="flex flex-col sm:flex-row items-center md:items-start justify-center md:justify-start gap-3 mb-4">
                 <Button 
                   size="lg"
                   onClick={handleGetStarted}
-                  className="bg-gradient-to-r from-[#25D366] to-[#128C7E] hover:from-[#128C7E] hover:to-[#075E54] h-14 px-8 text-base rounded-2xl shadow-xl shadow-green-500/25 w-full sm:w-auto"
+                  className="bg-gradient-to-r from-[#25D366] to-[#128C7E] hover:from-[#128C7E] hover:to-[#075E54] h-12 md:h-14 px-6 md:px-8 text-sm md:text-base rounded-2xl shadow-xl shadow-green-500/25 w-full sm:w-auto"
                 >
                   <MessageCircle className="w-5 h-5 mr-2" /> Get Started Free
                 </Button>
@@ -139,11 +139,11 @@ export default function Landing() {
               </div>
 
               {/* Trust line */}
-              <p className="text-sm text-slate-500 mb-4">Free. No credit card. Setup in 30 seconds.</p>
+              <p className="text-sm text-slate-500">Free. No credit card. Setup in 30 seconds.</p>
             </div>
 
             {/* Right - Product Mock */}
-            <div className="relative max-w-[340px] mx-auto lg:mx-0 lg:ml-auto">
+            <div className="relative max-w-[300px] md:max-w-[320px] mx-auto md:mx-0 md:ml-auto">
               {/* Phone Frame */}
               <div className="bg-slate-900 rounded-[2.5rem] p-2 shadow-2xl shadow-slate-900/30">
                 <div className="bg-[#e5ddd5] rounded-[2rem] overflow-hidden">
