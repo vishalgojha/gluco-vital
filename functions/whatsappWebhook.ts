@@ -50,11 +50,11 @@ Deno.serve(async (req) => {
         
         console.log(`Message from ${from}: ${messageBody} (type: ${messageType})`);
         
-        // Create base44 service client (webhook doesn't have user auth)
-        const base44 = getBase44Client();
+        // Create base44 service client from request
+        const base44 = createClientFromRequest(req);
 
         // Process the message (with image support)
-        await processIncomingMessage(base44, from, messageBody, messageType, imageId, imageCaption);
+        await processIncomingMessage(base44.asServiceRole, from, messageBody, messageType, imageId, imageCaption);
       }
       
       // Handle status updates (delivered, read, etc.)
