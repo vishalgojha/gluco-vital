@@ -291,28 +291,65 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Features - Grid */}
-      <section className="py-16 md:py-20 px-4 bg-gradient-to-b from-slate-50 to-white">
-        <div className="max-w-4xl mx-auto">
+      {/* Features - 2x3 Grid with micro-UI */}
+      <section className="py-14 md:py-20 px-4 bg-white">
+        <div className="max-w-5xl mx-auto">
           <div className="text-center mb-10">
             <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-3">What you get</h2>
             <p className="text-slate-600">Everything you need to manage diabetes better</p>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-5">
             {[
-              { icon: MessageCircle, title: "Voice & text logging", desc: "Call or message — your choice" },
-              { icon: TrendingUp, title: "Pattern insights", desc: "AI spots what affects your sugar" },
-              { icon: Bell, title: "Gentle reminders", desc: "Helpful nudges, never shaming" },
-              { icon: Shield, title: "Doctor reports", desc: "Clean PDF summaries" },
-              { icon: Globe, title: "21 languages", desc: "Hindi, Tamil, Chinese & more" },
-              { icon: Heart, title: "Streaks & badges", desc: "Stay motivated daily" },
+              { 
+                icon: MessageCircle, 
+                title: "Voice & text logging", 
+                desc: "Call or message — your choice",
+                preview: <div className="flex gap-1 mt-2"><span className="px-2 py-0.5 bg-green-100 text-green-700 rounded text-[10px] font-medium">Voice</span><span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-[10px] font-medium">Text</span></div>,
+                color: "from-green-500/20 to-green-500/5"
+              },
+              { 
+                icon: TrendingUp, 
+                title: "Pattern insights", 
+                desc: "AI spots what affects your sugar",
+                preview: <div className="mt-2 text-xs text-slate-500">📊 "Readings drop 15% after walks"</div>,
+                color: "from-[#5b9a8b]/20 to-[#5b9a8b]/5"
+              },
+              { 
+                icon: Bell, 
+                title: "Gentle reminders", 
+                desc: "Helpful nudges, never shaming",
+                preview: <div className="mt-2 text-xs text-amber-600">🔔 "Time for your evening check!"</div>,
+                color: "from-amber-500/20 to-amber-500/5"
+              },
+              { 
+                icon: FileText, 
+                title: "Doctor reports", 
+                desc: "Clean PDF summaries",
+                preview: <div className="mt-2 flex items-center gap-1 text-[10px] text-violet-600"><FileText className="w-3 h-3" /> Weekly_Report.pdf</div>,
+                color: "from-violet-500/20 to-violet-500/5"
+              },
+              { 
+                icon: Globe, 
+                title: "21 languages", 
+                desc: "Hindi, Tamil, Chinese & more",
+                preview: <div className="mt-2 flex gap-1 flex-wrap">{["हिंदी", "தமிழ்", "中文"].map((l,i) => <span key={i} className="px-1.5 py-0.5 bg-blue-50 text-blue-700 rounded text-[9px]">{l}</span>)}</div>,
+                color: "from-blue-500/20 to-blue-500/5"
+              },
+              { 
+                icon: Award, 
+                title: "Streaks & badges", 
+                desc: "Stay motivated daily",
+                preview: <div className="mt-2 flex items-center gap-1"><span className="text-lg">🔥</span><span className="text-xs font-bold text-orange-600">7 day streak!</span></div>,
+                color: "from-orange-500/20 to-orange-500/5"
+              },
             ].map((f, i) => (
-              <div key={i} className="bg-white rounded-2xl p-5 md:p-6 border border-slate-100 shadow-sm hover:shadow-lg hover:border-[#5b9a8b]/20 transition-all duration-300 group">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#5b9a8b]/15 to-[#5b9a8b]/5 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                  <f.icon className="w-6 h-6 text-[#5b9a8b]" />
+              <div key={i} className="bg-white rounded-2xl p-4 md:p-5 border border-slate-100 shadow-sm hover:shadow-lg hover:border-[#5b9a8b]/20 transition-all duration-300 group">
+                <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${f.color} flex items-center justify-center mb-3 group-hover:scale-110 transition-transform border border-slate-100`}>
+                  <f.icon className="w-5 h-5 text-[#5b9a8b]" />
                 </div>
-                <h3 className="font-bold text-base text-slate-800 mb-1">{f.title}</h3>
-                <p className="text-sm text-slate-500">{f.desc}</p>
+                <h3 className="font-bold text-sm md:text-base text-slate-800 mb-1">{f.title}</h3>
+                <p className="text-xs md:text-sm text-slate-500">{f.desc}</p>
+                {f.preview}
               </div>
             ))}
           </div>
