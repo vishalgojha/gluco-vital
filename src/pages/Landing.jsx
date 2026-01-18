@@ -465,23 +465,48 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* FAQ - Accordion */}
-      <section className="py-10 md:py-14 px-4">
-        <div className="max-w-xl mx-auto">
-          <h2 className="text-xl md:text-2xl font-bold text-slate-800 text-center mb-6">FAQ</h2>
-          <div className="space-y-2">
+      {/* Trust Panel + FAQ */}
+      <section className="py-12 md:py-16 px-4 bg-slate-50">
+        <div className="max-w-4xl mx-auto">
+          {/* Trust Panel */}
+          <div className="bg-white rounded-2xl border border-slate-200 p-6 mb-8 shadow-sm">
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center flex-shrink-0">
+                  <Lock className="w-6 h-6 text-green-600" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-slate-800 mb-1">Is my data secure?</h4>
+                  <p className="text-sm text-slate-600">Yes. Encrypted and never shared. You control your health data.</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center flex-shrink-0">
+                  <Heart className="w-6 h-6 text-blue-600" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-slate-800 mb-1">Is it a replacement for my doctor?</h4>
+                  <p className="text-sm text-slate-600">No. It helps you log and track, not diagnose. Always consult your doctor.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* FAQ Accordion */}
+          <h2 className="text-xl md:text-2xl font-bold text-slate-800 text-center mb-5">Frequently asked questions</h2>
+          <div className="space-y-2 max-w-2xl mx-auto">
             {[
-              { q: "Do I need a CGM?", a: "No. Works with finger-stick readings." },
-              { q: "Is it a replacement for my doctor?", a: "No. It helps you log and track, not diagnose." },
-              { q: "How do I log readings?", a: 'Text "Sugar 120" or "BP 130/80" on WhatsApp.' },
-              { q: "Is my data secure?", a: "Yes. Encrypted and never shared." },
+              { q: "Do I need a CGM?", a: "No. Works with finger-stick readings. Just tell Asha your reading via voice or text." },
+              { q: "How do I log readings?", a: 'Text "Sugar 120" or say "BP 130/80" on WhatsApp. Asha understands natural language in 21 languages.' },
+              { q: "What does Premium include?", a: "Unlimited history, daily AI coaching, voice reminders from Asha, doctor sharing, and lab report analysis." },
+              { q: "Can I share data with my doctor?", a: "Yes! Generate clean PDF reports instantly and share via WhatsApp or email." },
             ].map((faq, i) => (
-              <details key={i} className="group bg-white rounded-lg border border-slate-200">
-                <summary className="flex items-center justify-between p-3 cursor-pointer text-sm font-medium text-slate-800">
+              <details key={i} className="group bg-white rounded-xl border border-slate-200 overflow-hidden">
+                <summary className="flex items-center justify-between p-4 cursor-pointer text-sm font-semibold text-slate-800 hover:bg-slate-50 transition-colors">
                   {faq.q}
-                  <span className="text-slate-400 group-open:rotate-45 transition-transform">+</span>
+                  <span className="text-slate-400 group-open:rotate-45 transition-transform text-xl">+</span>
                 </summary>
-                <p className="px-3 pb-3 text-xs text-slate-600">{faq.a}</p>
+                <p className="px-4 pb-4 text-sm text-slate-600 border-t border-slate-100 pt-3">{faq.a}</p>
               </details>
             ))}
           </div>
