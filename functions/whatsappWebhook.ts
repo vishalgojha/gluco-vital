@@ -392,9 +392,9 @@ Respond in a structured way.`,
       if (extractionResult.special_instructions) updateData.prescription_notes = extractionResult.special_instructions;
       
       // Find and update profile
-      const profiles = await base44.asServiceRole.entities.PatientProfile.filter({ user_email: userEmail });
+      const profiles = await base44.entities.PatientProfile.filter({ user_email: userEmail });
       if (profiles.length > 0) {
-        await base44.asServiceRole.entities.PatientProfile.update(profiles[0].id, updateData);
+        await base44.entities.PatientProfile.update(profiles[0].id, updateData);
       }
       
       // Create medication reminders
