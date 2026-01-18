@@ -400,7 +400,7 @@ Respond in a structured way.`,
       // Create medication reminders
       if (extractionResult.medications?.length > 0) {
         for (const med of extractionResult.medications) {
-          await base44.asServiceRole.entities.MedicationReminder.create({
+          await base44.entities.MedicationReminder.create({
             user_email: userEmail,
             medication_name: med.name,
             dosage: med.dosage || '',
