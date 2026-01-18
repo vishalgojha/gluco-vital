@@ -236,7 +236,7 @@ async function tryExtractAndLogHealthData(base44, userEmail, message) {
       const systolic = parseInt(bpMatch[1]);
       const diastolic = parseInt(bpMatch[2]);
       if (systolic >= 80 && systolic <= 200 && diastolic >= 40 && diastolic <= 130) {
-        await base44.asServiceRole.entities.HealthLog.create({
+        await base44.entities.HealthLog.create({
           user_email: userEmail,
           log_type: 'blood_pressure',
           value: `${systolic}/${diastolic} mmHg`,
