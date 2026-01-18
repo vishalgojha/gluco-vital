@@ -133,61 +133,130 @@ async function processIncomingMessage(base44, phoneNumber, messageBody, messageT
 
 async function routeToAgent(base44, userEmail, message) {
   try {
-    // Create a new conversation with the health_buddy agent
-    const conversation = await base44.asServiceRole.agents.createConversation({
-      agent_name: "health_buddy",
-      metadata: {
-        user_email: userEmail,
-        source: "whatsapp"
-      }
-    });
-
-    // Add the user's message
-    await base44.asServiceRole.agents.addMessage(conversation, {
-      role: "user",
-      content: message
-    });
-
-    // Poll for agent response (agents process asynchronously)
-    let attempts = 0;
-    const maxAttempts = 30; // 30 seconds max wait
+    // Get user profile for context
+    const profiles = await base44.asServiceRole.entities.PatientProfile.filter({ user_email: userEmail });
+    const profile = profiles[0] || {};
     
-    while (attempts < maxAttempts) {
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second
-      
-      const updatedConversation = await base44.asServiceRole.agents.getConversation(conversation.id);
-      const lastMessage = updatedConversation.messages?.[updatedConversation.messages.length - 1];
-      
-      // Check if agent has responded
-      if (lastMessage && lastMessage.role === 'assistant' && lastMessage.content) {
-        console.log('Agent response received:', lastMessage.content.substring(0, 100));
-        return lastMessage.content;
-      }
-      
-      attempts++;
-    }
-
-    // Fallback if agent doesn't respond in time
-    console.log('Agent response timeout, using fallback');
-    return "I'm here to help with your health tracking. What would you like to log today?";
-    
-  } catch (error) {
-    console.error('Agent routing error:', error.message, error.stack);
-    
-    // Fallback: try direct LLM if agent fails
+    // Get recent health logs for context
+    let recentLogs = [];
     try {
-      const response = await base44.asServiceRole.integrations.Core.InvokeLLM({
-        prompt: `You are GlucoVital, a friendly diabetes health companion on WhatsApp. 
-User email: ${userEmail}
+      recentLogs = await base44.asServiceRole.entities.HealthLog.filter({ user_email: userEmail });
+      recentLogs = recentLogs.slice(0, 5);
+    } catch (e) {
+      console.log('Could not fetch recent logs:', e.message);
+    }
+    
+    const contextSummary = recentLogs.length > 0 
+      ? recentLogs.map(l => `${l.log_type}: ${l.value} (${l.time_of_day || 'unknown time'})`).join('\n')
+      : 'No recent logs';
+    
+    const language = profile.language_preference || 'english';
+    const userName = profile.name || 'User';
+    
+    // Use direct LLM call
+    const response = await base44.asServiceRole.integrations.Core.InvokeLLM({
+      prompt: `You are Asha from GlucoVital, a warm and friendly diabetes health companion on WhatsApp.
+
+USER INFO:
+- Name: ${userName}
+- Email: ${userEmail}
+- Language: ${language} (respond in this language, use Hinglish if hinglish)
+
+RECENT HEALTH DATA:
+${contextSummary}
+
+YOUR CAPABILITIES:
+1. LOG HEALTH DATA - If user mentions sugar/glucose numbers, BP readings, or medication taken, acknowledge and confirm
+2. ANSWER QUESTIONS - About diabetes management, their data patterns, general health info
+3. PROVIDE SUPPORT - Be warm, encouraging, non-judgmental like a caring friend
+
+RESPONSE FORMAT:
+- Keep responses SHORT (2-4 sentences max for WhatsApp)
+- Use simple language
+- No markdown formatting (no *, #, **, etc.)
+- Add relevant emoji sparingly
+- Be conversational and warm
+
+IF USER SHARES A READING:
+- Acknowledge it warmly
+- Note if it's high (>180 mg/dL) or low (<70 mg/dL) with gentle guidance
+- Celebrate if it's in range (70-140 fasting, 70-180 post-meal)
+
 User message: "${message}"
 
-Respond naturally in 2-3 sentences. Keep it short for WhatsApp. No markdown formatting.`
+Respond naturally as Asha:`
+    });
+    
+    // Also try to extract and log any health data
+    await tryExtractAndLogHealthData(base44, userEmail, message);
+    
+    return response || "Hi! I'm Asha, your health buddy. How can I help you today? 💚";
+    
+  } catch (error) {
+    console.error('AI routing error:', error.message, error.stack);
+    return "Hi! I'm here to help with your health tracking. You can tell me your sugar reading, BP, or just say hi! 💚";
+  }
+}
+
+// Try to extract health data from message and log it
+async function tryExtractAndLogHealthData(base44, userEmail, message) {
+  try {
+    const lowerMsg = message.toLowerCase();
+    
+    // Sugar/glucose patterns
+    const sugarMatch = message.match(/(\d{2,3})\s*(mg|sugar|glucose|fasting|pp|post|random)?/i);
+    if (sugarMatch && parseInt(sugarMatch[1]) >= 50 && parseInt(sugarMatch[1]) <= 500) {
+      const value = parseInt(sugarMatch[1]);
+      const isFasting = lowerMsg.includes('fasting') || lowerMsg.includes('morning') || lowerMsg.includes('empty');
+      const isPostMeal = lowerMsg.includes('pp') || lowerMsg.includes('post') || lowerMsg.includes('after');
+      
+      await base44.asServiceRole.entities.HealthLog.create({
+        user_email: userEmail,
+        log_type: 'sugar',
+        value: `${value} mg/dL`,
+        numeric_value: value,
+        time_of_day: isFasting ? 'morning_fasting' : (isPostMeal ? 'after_breakfast' : 'other'),
+        source: 'whatsapp',
+        status: 'active',
+        measured_at: new Date().toISOString()
       });
-      return response || "I'm here to help with your health tracking. What would you like to log today?";
-    } catch (llmError) {
-      console.error('LLM fallback error:', llmError.message);
-      throw error;
+      console.log('Logged sugar reading:', value);
     }
+    
+    // BP patterns (e.g., 130/85, 120/80)
+    const bpMatch = message.match(/(\d{2,3})\s*[\/\\]\s*(\d{2,3})/);
+    if (bpMatch) {
+      const systolic = parseInt(bpMatch[1]);
+      const diastolic = parseInt(bpMatch[2]);
+      if (systolic >= 80 && systolic <= 200 && diastolic >= 40 && diastolic <= 130) {
+        await base44.asServiceRole.entities.HealthLog.create({
+          user_email: userEmail,
+          log_type: 'blood_pressure',
+          value: `${systolic}/${diastolic} mmHg`,
+          numeric_value: systolic,
+          source: 'whatsapp',
+          status: 'active',
+          measured_at: new Date().toISOString()
+        });
+        console.log('Logged BP reading:', systolic, diastolic);
+      }
+    }
+    
+    // Medication taken patterns
+    if (lowerMsg.includes('taken') || lowerMsg.includes('done') || lowerMsg.includes('had') || lowerMsg.includes('le liya') || lowerMsg.includes('kha liya')) {
+      await base44.asServiceRole.entities.HealthLog.create({
+        user_email: userEmail,
+        log_type: 'medication',
+        value: 'Medication taken',
+        source: 'whatsapp',
+        status: 'active',
+        measured_at: new Date().toISOString()
+      });
+      console.log('Logged medication taken');
+    }
+    
+  } catch (error) {
+    console.error('Error extracting health data:', error.message);
   }
 }
 
