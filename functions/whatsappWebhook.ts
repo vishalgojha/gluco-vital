@@ -251,7 +251,7 @@ async function tryExtractAndLogHealthData(base44, userEmail, message) {
     
     // Medication taken patterns
     if (lowerMsg.includes('taken') || lowerMsg.includes('done') || lowerMsg.includes('had') || lowerMsg.includes('le liya') || lowerMsg.includes('kha liya')) {
-      await base44.asServiceRole.entities.HealthLog.create({
+      await base44.entities.HealthLog.create({
         user_email: userEmail,
         log_type: 'medication',
         value: 'Medication taken',
