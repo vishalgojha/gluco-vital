@@ -100,9 +100,9 @@ export default function Landing() {
           </nav>
 
           {/* Hero Content - Two Column */}
-          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center py-6 md:py-12">
+          <div className="grid md:grid-cols-2 gap-6 md:gap-10 lg:gap-12 items-center py-6 md:py-12">
             {/* Left - Text */}
-            <div className="text-center lg:text-left">
+            <div className="text-center md:text-left">
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur rounded-full border border-[#5b9a8b]/20 shadow-sm mb-5">
                 <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
                 <span className="text-sm font-medium text-[#5b9a8b]">AI-Powered Diabetes Management</span>
