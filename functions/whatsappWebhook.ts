@@ -97,7 +97,7 @@ async function processIncomingMessage(base44, phoneNumber, messageBody, messageT
     // WhatsApp-first: Auto-create profile for new users
     if (!profile) {
       const userEmail = `wa_${cleanPhone}@whatsapp.glucovital.fit`;
-      profile = await base44.asServiceRole.entities.PatientProfile.create({
+      profile = await base44.entities.PatientProfile.create({
         user_email: userEmail,
         name: `WhatsApp User`,
         whatsapp_number: cleanPhone,
