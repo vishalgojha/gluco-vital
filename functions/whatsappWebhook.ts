@@ -84,7 +84,7 @@ Deno.serve(async (req) => {
 async function processIncomingMessage(base44, phoneNumber, messageBody, messageType, imageId = null, imageCaption = '') {
   try {
     // Find or create user by WhatsApp number (WhatsApp-first approach)
-    let profiles = await base44.asServiceRole.entities.PatientProfile.filter({});
+    let profiles = await base44.entities.PatientProfile.filter({});
     const cleanPhone = phoneNumber.replace(/\D/g, '');
     
     let profile = profiles.find(p => {
