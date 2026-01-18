@@ -514,18 +514,22 @@ export default function Landing() {
       </section>
 
       {/* Final CTA */}
-      <section className="py-16 md:py-24 px-4 bg-gradient-to-br from-[#e8f5f1] via-[#f0f9f6] to-[#faf8f5] relative overflow-hidden">
-        <div className="absolute top-0 left-1/4 w-64 h-64 bg-[#5b9a8b]/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-48 h-48 bg-[#7eb8a8]/10 rounded-full blur-3xl" />
+      <section className="py-16 md:py-24 px-4 bg-gradient-to-br from-[#25D366]/10 via-[#128C7E]/5 to-white relative overflow-hidden mb-16 md:mb-0">
+        <div className="absolute top-0 left-1/4 w-64 h-64 bg-[#25D366]/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-48 h-48 bg-[#128C7E]/10 rounded-full blur-3xl" />
         <div className="max-w-lg mx-auto text-center relative">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#25D366] to-[#128C7E] flex items-center justify-center mx-auto mb-6 shadow-xl shadow-green-500/30">
+            <MessageCircle className="w-8 h-8 text-white" />
+          </div>
           <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-3">Ready to take control?</h2>
-          <p className="text-lg text-slate-600 mb-8">Free. No credit card. Setup in 30 seconds.</p>
+          <p className="text-lg text-slate-600 mb-2">Free. No credit card. Setup in 30 seconds.</p>
+          <p className="text-sm text-slate-500 mb-8">Join thousands managing diabetes smarter with Asha</p>
           <Button 
             size="lg"
             onClick={handleGetStarted}
-            className="bg-gradient-to-r from-[#5b9a8b] to-[#4a8a7b] hover:from-[#4a8a7b] hover:to-[#3d7a6b] h-14 px-10 text-lg rounded-2xl shadow-xl shadow-[#5b9a8b]/25"
+            className="bg-gradient-to-r from-[#25D366] to-[#128C7E] hover:from-[#128C7E] hover:to-[#075E54] h-14 px-10 text-lg rounded-2xl shadow-xl shadow-green-500/25"
           >
-            Get Started Free <ArrowRight className="w-5 h-5 ml-2" />
+            <MessageCircle className="w-5 h-5 mr-2" /> Call or text on WhatsApp
           </Button>
         </div>
       </section>
