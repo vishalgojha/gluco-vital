@@ -306,7 +306,7 @@ async function processImageMessage(phoneNumber, userEmail, imageId, caption, lan
     );
     
     // Step 4: Extract data using AI Vision
-    const extractionResult = await base44.asServiceRole.integrations.Core.InvokeLLM({
+    const extractionResult = await base44.integrations.Core.InvokeLLM({
       prompt: `Analyze this medical prescription/document image carefully. Extract ALL information you can find.
 
 If it's a PRESCRIPTION, extract:
