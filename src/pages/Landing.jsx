@@ -233,61 +233,60 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* How it Works */}
-      <section className="py-16 md:py-20 px-4 bg-white">
-        <div className="max-w-4xl mx-auto">
+      {/* How it Works - 3 Step Cards */}
+      <section className="py-14 md:py-20 px-4 bg-gradient-to-b from-white to-slate-50">
+        <div className="max-w-5xl mx-auto">
           <div className="text-center mb-10">
             <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-3">How it works</h2>
             <p className="text-slate-600">Simple as texting a friend</p>
           </div>
           
-          <div className="grid md:grid-cols-2 gap-8 items-center">
-            {/* WhatsApp Preview - Larger */}
-            <div className="bg-[#e5ddd5] rounded-2xl overflow-hidden shadow-2xl max-w-[320px] mx-auto">
-              <div className="bg-[#075e54] text-white px-4 py-3 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#5b9a8b] to-[#4a8a7b] flex items-center justify-center">
-                  <Heart className="w-5 h-5 text-white" />
+          <div className="grid md:grid-cols-3 gap-5">
+            {[
+              { 
+                icon: MessageCircle, 
+                num: "1", 
+                title: "Call or text", 
+                desc: 'Say "Sugar 120" or type it — voice or text, your choice',
+                example: '"Sugar 120 fasting"',
+                color: "from-green-500 to-emerald-600"
+              },
+              { 
+                icon: TrendingUp, 
+                num: "2", 
+                title: "See patterns", 
+                desc: "AI analyzes your readings and spots trends you might miss",
+                example: "7-day avg: 118 ↓3%",
+                color: "from-[#5b9a8b] to-[#4a8a7b]"
+              },
+              { 
+                icon: FileText, 
+                num: "3", 
+                title: "Share with doctor", 
+                desc: "Generate clean PDF reports for better consultations",
+                example: "Weekly report ready",
+                color: "from-violet-500 to-purple-600"
+              },
+            ].map((step, i) => (
+              <div key={i} className="relative bg-white rounded-2xl p-6 border border-slate-100 shadow-sm hover:shadow-xl hover:border-[#5b9a8b]/20 transition-all duration-300 group">
+                {/* Step number */}
+                <div className={`absolute -top-3 -left-2 w-8 h-8 rounded-full bg-gradient-to-br ${step.color} flex items-center justify-center text-white text-sm font-bold shadow-lg`}>
+                  {step.num}
                 </div>
-                <div>
-                  <p className="font-semibold text-sm">Gluco Vital</p>
-                  <p className="text-xs text-green-200">online</p>
+                
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-50 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform border border-slate-200">
+                  <step.icon className="w-7 h-7 text-[#5b9a8b]" />
+                </div>
+                
+                <h3 className="font-bold text-lg text-slate-800 mb-2">{step.title}</h3>
+                <p className="text-slate-600 text-sm mb-4">{step.desc}</p>
+                
+                {/* Example chip */}
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-50 rounded-lg border border-slate-200">
+                  <span className="text-xs font-mono text-slate-600">{step.example}</span>
                 </div>
               </div>
-              <div className="p-4 space-y-3">
-                <div className="flex justify-end">
-                  <div className="bg-[#dcf8c6] rounded-xl px-4 py-2.5 max-w-[85%] shadow-sm">
-                    <p className="text-sm text-slate-800">Fasting sugar 118</p>
-                    <p className="text-[10px] text-slate-500 text-right mt-1">9:15 AM ✓✓</p>
-                  </div>
-                </div>
-                <div className="flex justify-start">
-                  <div className="bg-white rounded-xl px-4 py-2.5 max-w-[90%] shadow-sm">
-                    <p className="text-sm text-slate-800">✅ 118 mg/dL — in range! 🌅</p>
-                    <p className="text-[10px] text-slate-500 mt-1.5">Your 7-day average: 124 mg/dL (improving!)</p>
-                    <p className="text-[10px] text-slate-500 text-right mt-1">9:15 AM</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Steps */}
-            <div className="space-y-6">
-              {[
-                { icon: MessageCircle, num: "1", title: "Call or text", desc: 'Say "Sugar 120" or type it — voice or text, your choice' },
-                { icon: TrendingUp, num: "2", title: "See patterns", desc: "AI analyzes your readings and spots trends you might miss" },
-                { icon: Shield, num: "3", title: "Share with doctor", desc: "Generate clean PDF reports for better consultations" },
-              ].map((step, i) => (
-                <div key={i} className="flex gap-4 items-start">
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#5b9a8b]/20 to-[#5b9a8b]/5 flex items-center justify-center flex-shrink-0 border border-[#5b9a8b]/10">
-                    <step.icon className="w-6 h-6 text-[#5b9a8b]" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-lg text-slate-800">{step.title}</h3>
-                    <p className="text-slate-600 text-sm mt-1">{step.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+            ))}
           </div>
         </div>
       </section>
