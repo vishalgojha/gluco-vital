@@ -449,7 +449,7 @@ Respond in a structured way.`,
       // Save lab results
       if (extractionResult.lab_results?.length > 0) {
         for (const result of extractionResult.lab_results) {
-          await base44.asServiceRole.entities.LabResult.create({
+          await base44.entities.LabResult.create({
             user_email: userEmail,
             test_type: mapTestType(result.test_name),
             test_name: result.test_name,
