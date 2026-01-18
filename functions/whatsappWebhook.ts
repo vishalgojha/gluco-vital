@@ -1,4 +1,4 @@
-import { createClient } from 'npm:@base44/sdk@0.8.6';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 
 // Meta WhatsApp Webhook Handler
 // Routes text messages through Base44 AI Agent (health_buddy)
@@ -50,8 +50,11 @@ Deno.serve(async (req) => {
         
         console.log(`Message from ${from}: ${messageBody} (type: ${messageType})`);
         
+        // Create base44 client here once per request
+        const base44 = createClientFromRequest(req);
+
         // Process the message (with image support)
-        await processIncomingMessage(from, messageBody, messageType, imageId, imageCaption);
+        await processIncomingMessage(base44, from, messageBody, messageType, imageId, imageCaption);
       }
       
       // Handle status updates (delivered, read, etc.)
@@ -71,12 +74,10 @@ Deno.serve(async (req) => {
   return new Response('Method not allowed', { status: 405 });
 });
 
-async function processIncomingMessage(phoneNumber, messageBody, messageType, imageId = null, imageCaption = '') {
-  const base44 = createServiceClient();
-  
+async function processIncomingMessage(base44, phoneNumber, messageBody, messageType, imageId = null, imageCaption = '') {
   try {
     // Find or create user by WhatsApp number (WhatsApp-first approach)
-    let profiles = await base44.entities.PatientProfile.filter({});
+    let profiles = await base44.asServiceRole.entities.PatientProfile.filter({});
     const cleanPhone = phoneNumber.replace(/\D/g, '');
     
     let profile = profiles.find(p => {
@@ -89,7 +90,7 @@ async function processIncomingMessage(phoneNumber, messageBody, messageType, ima
     // WhatsApp-first: Auto-create profile for new users
     if (!profile) {
       const userEmail = `wa_${cleanPhone}@whatsapp.glucovital.fit`;
-      profile = await base44.entities.PatientProfile.create({
+      profile = await base44.asServiceRole.entities.PatientProfile.create({
         user_email: userEmail,
         name: `WhatsApp User`,
         whatsapp_number: cleanPhone,
@@ -116,9 +117,9 @@ async function processIncomingMessage(phoneNumber, messageBody, messageType, ima
       return;
     }
     
-    // Route ALL text messages through AI
-    console.log('Processing message with AI:', messageBody);
-    const aiResponse = await processWithAI(base44, userEmail, messageBody, profile);
+    // Route ALL text messages through AI agent
+    console.log('Processing message with AI agent:', messageBody);
+    const aiResponse = await routeToAgent(base44, userEmail, messageBody);
     await sendWhatsAppMessage(phoneNumber, aiResponse);
     
   } catch (error) {
@@ -130,130 +131,64 @@ async function processIncomingMessage(phoneNumber, messageBody, messageType, ima
   }
 }
 
-// Process message with AI (InvokeLLM)
-async function processWithAI(base44, userEmail, message, profile) {
+async function routeToAgent(base44, userEmail, message) {
   try {
-    // Get recent health logs for context
-    const recentLogs = await base44.entities.HealthLog.filter({ user_email: userEmail });
-    const last5Logs = recentLogs.slice(0, 5);
-    
-    const contextSummary = last5Logs.length > 0 
-      ? last5Logs.map(l => `${l.log_type}: ${l.value} (${l.time_of_day || 'unknown time'})`).join('\n')
-      : 'No recent logs';
-    
-    const systemPrompt = `You are GlucoVital, a friendly diabetes health companion on WhatsApp.
-
-USER INFO:
-- Name: ${profile.name || 'User'}
-- Email: ${userEmail}
-- Language: ${profile.language_preference || 'english'} (respond in this language)
-
-RECENT HEALTH DATA:
-${contextSummary}
-
-YOUR CAPABILITIES:
-1. LOG HEALTH DATA - If user mentions sugar/glucose numbers, BP readings, or medication taken, extract and confirm
-2. ANSWER QUESTIONS - About diabetes management, their data patterns, general health info
-3. PROVIDE SUPPORT - Be warm, encouraging, non-judgmental
-
-RESPONSE FORMAT:
-- Keep responses SHORT (2-4 sentences max for WhatsApp)
-- Use simple language
-- No markdown formatting (no *, #, etc.)
-- Add relevant emoji sparingly
-
-IF USER SHARES A READING:
-- Acknowledge it warmly
-- Note if it's high (>180) or low (<70) with gentle guidance
-- Ask what time/context if not clear
-
-IMPORTANT: You cannot actually save data - just acknowledge and guide. The system will parse your response.`;
-
-    const response = await base44.integrations.Core.InvokeLLM({
-      prompt: `${systemPrompt}\n\nUser message: "${message}"\n\nRespond naturally:`,
+    // Create a new conversation with the health_buddy agent
+    const conversation = await base44.asServiceRole.agents.createConversation({
+      agent_name: "health_buddy",
+      metadata: {
+        user_email: userEmail,
+        source: "whatsapp"
+      }
     });
+
+    // Add the user's message
+    await base44.asServiceRole.agents.addMessage(conversation, {
+      role: "user",
+      content: message
+    });
+
+    // Poll for agent response (agents process asynchronously)
+    let attempts = 0;
+    const maxAttempts = 30; // 30 seconds max wait
     
-    // Also try to extract and log any health data from the message
-    await tryExtractAndLogHealthData(base44, userEmail, message);
-    
-    return response || "I'm here to help with your health tracking. What would you like to log today?";
+    while (attempts < maxAttempts) {
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second
+      
+      const updatedConversation = await base44.asServiceRole.agents.getConversation(conversation.id);
+      const lastMessage = updatedConversation.messages?.[updatedConversation.messages.length - 1];
+      
+      // Check if agent has responded
+      if (lastMessage && lastMessage.role === 'assistant' && lastMessage.content) {
+        console.log('Agent response received:', lastMessage.content.substring(0, 100));
+        return lastMessage.content;
+      }
+      
+      attempts++;
+    }
+
+    // Fallback if agent doesn't respond in time
+    console.log('Agent response timeout, using fallback');
+    return "I'm here to help with your health tracking. What would you like to log today?";
     
   } catch (error) {
-    console.error('AI processing error:', error.message);
-    throw error;
-  }
-}
+    console.error('Agent routing error:', error.message, error.stack);
+    
+    // Fallback: try direct LLM if agent fails
+    try {
+      const response = await base44.asServiceRole.integrations.Core.InvokeLLM({
+        prompt: `You are GlucoVital, a friendly diabetes health companion on WhatsApp. 
+User email: ${userEmail}
+User message: "${message}"
 
-// Try to extract health data from message and log it
-async function tryExtractAndLogHealthData(base44, userEmail, message) {
-  const lowerMessage = message.toLowerCase();
-  
-  // Extract sugar readings
-  const sugarMatch = lowerMessage.match(/(\d{2,3})\s*(?:mg|sugar|glucose|fasting|after|before|random)?/i);
-  if (sugarMatch) {
-    const value = parseInt(sugarMatch[1]);
-    if (value >= 50 && value <= 500) {
-      let timeOfDay = 'other';
-      if (lowerMessage.includes('fasting') || lowerMessage.includes('morning')) timeOfDay = 'morning_fasting';
-      else if (lowerMessage.includes('after')) timeOfDay = 'after_breakfast';
-      else if (lowerMessage.includes('before')) timeOfDay = 'before_breakfast';
-      
-      await base44.entities.HealthLog.create({
-        user_email: userEmail,
-        log_type: 'sugar',
-        value: `${value} mg/dL`,
-        numeric_value: value,
-        time_of_day: timeOfDay,
-        source: 'whatsapp',
-        status: 'active',
-        measured_at: new Date().toISOString(),
-        notes: `Via WhatsApp: "${message}"`
+Respond naturally in 2-3 sentences. Keep it short for WhatsApp. No markdown formatting.`
       });
-      console.log('Logged sugar reading:', value);
+      return response || "I'm here to help with your health tracking. What would you like to log today?";
+    } catch (llmError) {
+      console.error('LLM fallback error:', llmError.message);
+      throw error;
     }
   }
-  
-  // Extract BP readings
-  const bpMatch = lowerMessage.match(/(\d{2,3})\s*[\/\\]\s*(\d{2,3})/);
-  if (bpMatch) {
-    const systolic = parseInt(bpMatch[1]);
-    const diastolic = parseInt(bpMatch[2]);
-    if (systolic >= 70 && systolic <= 250 && diastolic >= 40 && diastolic <= 150) {
-      await base44.entities.HealthLog.create({
-        user_email: userEmail,
-        log_type: 'blood_pressure',
-        value: `${systolic}/${diastolic} mmHg`,
-        numeric_value: systolic,
-        source: 'whatsapp',
-        status: 'active',
-        measured_at: new Date().toISOString(),
-        notes: `Via WhatsApp: "${message}"`
-      });
-      console.log('Logged BP:', systolic, diastolic);
-    }
-  }
-  
-  // Extract medication confirmation
-  if (lowerMessage.includes('taken') || lowerMessage.includes('done') || 
-      lowerMessage.includes('ले ली') || lowerMessage.includes('medicine')) {
-    await base44.entities.MedicationAdherence.create({
-      user_email: userEmail,
-      medication_name: 'Via WhatsApp',
-      scheduled_time: new Date().toISOString(),
-      status: 'taken',
-      taken_at: new Date().toISOString(),
-      confirmed_via: 'whatsapp'
-    });
-    console.log('Logged medication adherence');
-  }
-}
-
-function createServiceClient() {
-  // Create service role client using app ID only
-  // The SDK auto-handles service role when running in backend functions
-  return createClient({
-    appId: Deno.env.get('BASE44_APP_ID')
-  }).asServiceRole;
 }
 
 // Process image messages (prescriptions, lab reports)
@@ -279,14 +214,12 @@ async function processImageMessage(phoneNumber, userEmail, imageId, caption, lan
       headers: { 'Authorization': `Bearer ${ACCESS_TOKEN}` }
     });
     const imageBuffer = await imageRes.arrayBuffer();
-    const base64Image = btoa(String.fromCharCode(...new Uint8Array(imageBuffer)));
     const mimeType = mediaData.mime_type || 'image/jpeg';
-    const dataUrl = `data:${mimeType};base64,${base64Image}`;
     
     // Step 3: Upload to Base44 storage
     const blob = new Blob([imageBuffer], { type: mimeType });
     const file = new File([blob], `prescription_${Date.now()}.jpg`, { type: mimeType });
-    const { file_url } = await base44.integrations.Core.UploadFile({ file });
+    const { file_url } = await base44.asServiceRole.integrations.Core.UploadFile({ file });
     console.log('Uploaded to:', file_url);
     
     // Notify user processing started
@@ -297,7 +230,7 @@ async function processImageMessage(phoneNumber, userEmail, imageId, caption, lan
     );
     
     // Step 4: Extract data using AI Vision
-    const extractionResult = await base44.integrations.Core.InvokeLLM({
+    const extractionResult = await base44.asServiceRole.integrations.Core.InvokeLLM({
       prompt: `Analyze this medical prescription/document image carefully. Extract ALL information you can find.
 
 If it's a PRESCRIPTION, extract:
@@ -383,15 +316,15 @@ Respond in a structured way.`,
       if (extractionResult.special_instructions) updateData.prescription_notes = extractionResult.special_instructions;
       
       // Find and update profile
-      const profiles = await base44.entities.PatientProfile.filter({ user_email: userEmail });
+      const profiles = await base44.asServiceRole.entities.PatientProfile.filter({ user_email: userEmail });
       if (profiles.length > 0) {
-        await base44.entities.PatientProfile.update(profiles[0].id, updateData);
+        await base44.asServiceRole.entities.PatientProfile.update(profiles[0].id, updateData);
       }
       
       // Create medication reminders
       if (extractionResult.medications?.length > 0) {
         for (const med of extractionResult.medications) {
-          await base44.entities.MedicationReminder.create({
+          await base44.asServiceRole.entities.MedicationReminder.create({
             user_email: userEmail,
             medication_name: med.name,
             dosage: med.dosage || '',
@@ -440,7 +373,7 @@ Respond in a structured way.`,
       // Save lab results
       if (extractionResult.lab_results?.length > 0) {
         for (const result of extractionResult.lab_results) {
-          await base44.entities.LabResult.create({
+          await base44.asServiceRole.entities.LabResult.create({
             user_email: userEmail,
             test_type: mapTestType(result.test_name),
             test_name: result.test_name,
