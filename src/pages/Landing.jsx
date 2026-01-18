@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
@@ -11,10 +11,19 @@ import {
   Bell,
   ArrowRight,
   Check,
-  ChevronDown
+  ChevronDown,
+  ChevronUp,
+  Lock,
+  FileText,
+  Award,
+  Mic,
+  Smartphone,
+  Play
 } from "lucide-react";
 
 export default function Landing() {
+  const [showAllLanguages, setShowAllLanguages] = useState(false);
+  
   useEffect(() => {
     document.title = "Gluco Vital - AI Diabetes Management on WhatsApp";
     
@@ -55,70 +64,171 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen bg-[#f8faf9]">
-      {/* Hero - Bold, impactful */}
-      <section className="relative overflow-hidden">
-        {/* Background gradient */}
+      {/* Sticky Mobile CTA */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-white/95 backdrop-blur border-t border-slate-200 p-3 shadow-lg">
+        <Button 
+          onClick={handleGetStarted}
+          className="w-full bg-gradient-to-r from-[#25D366] to-[#128C7E] hover:from-[#128C7E] hover:to-[#075E54] h-12 rounded-xl text-base font-semibold shadow-lg"
+        >
+          <MessageCircle className="w-5 h-5 mr-2" /> Call or text on WhatsApp
+        </Button>
+      </div>
+
+      {/* Hero */}
+      <section className="relative overflow-hidden pb-20 md:pb-0">
         <div className="absolute inset-0 bg-gradient-to-br from-[#e8f5f1] via-[#f0f9f6] to-[#faf8f5]" />
         <div className="absolute top-0 right-0 w-96 h-96 bg-[#5b9a8b]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
         <div className="absolute bottom-0 left-0 w-72 h-72 bg-[#7eb8a8]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
         
-        <div className="relative px-4 py-4">
+        <div className="relative px-4 py-4 max-w-6xl mx-auto">
           {/* Nav */}
-          <nav className="flex items-center justify-between mb-8 md:mb-12">
+          <nav className="flex items-center justify-between mb-6 md:mb-10">
             <div className="flex items-center gap-2.5">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#5b9a8b] to-[#4a8a7b] flex items-center justify-center shadow-lg shadow-[#5b9a8b]/25">
                 <Heart className="w-5 h-5 text-white" />
               </div>
               <span className="font-bold text-lg text-[#3d6b5f]">Gluco Vital</span>
             </div>
-            <Button onClick={handleGetStarted} className="bg-[#5b9a8b] hover:bg-[#4a8a7b] text-white rounded-xl px-5 h-10 text-sm shadow-md">
-              Sign In
-            </Button>
+            <div className="flex items-center gap-3">
+              <button onClick={handleDemo} className="hidden sm:block text-sm font-medium text-slate-600 hover:text-[#5b9a8b]">
+                Try Demo
+              </button>
+              <Button onClick={handleGetStarted} className="bg-[#5b9a8b] hover:bg-[#4a8a7b] text-white rounded-xl px-5 h-10 text-sm shadow-md">
+                Sign In
+              </Button>
+            </div>
           </nav>
 
-          {/* Hero Content */}
-          <div className="max-w-2xl mx-auto text-center py-8 md:py-16">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur rounded-full border border-[#5b9a8b]/20 shadow-sm mb-6">
-              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-              <span className="text-sm font-medium text-[#5b9a8b]">AI-Powered Diabetes Management</span>
-            </div>
-            
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-slate-800 leading-[1.1] mb-4 tracking-tight">
-              Gluco<span className="text-[#5b9a8b]">Vital</span>
-            </h1>
-            
-            <h2 className="text-xl md:text-2xl font-semibold text-slate-700 mb-4">
-              <span className="text-[#5b9a8b] underline decoration-[#5b9a8b]/30 decoration-4 underline-offset-4">Call or text</span> on WhatsApp
-            </h2>
-
-            <p className="text-slate-600 text-base md:text-lg mb-8 max-w-md mx-auto leading-relaxed">
-              Speak or type your sugar, BP, or meals. Get instant AI insights and doctor-ready reports — in <strong>21 languages</strong>.
-            </p>
-
-            {/* CTAs */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6">
-              <Button 
-                size="lg"
-                onClick={handleGetStarted}
-                className="bg-gradient-to-r from-[#5b9a8b] to-[#4a8a7b] hover:from-[#4a8a7b] hover:to-[#3d7a6b] h-14 px-8 text-base rounded-2xl shadow-xl shadow-[#5b9a8b]/25 w-full sm:w-auto"
-              >
-                Get Started Free <ArrowRight className="w-5 h-5 ml-2" />
-              </Button>
+          {/* Hero Content - Two Column */}
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center py-6 md:py-12">
+            {/* Left - Text */}
+            <div className="text-center lg:text-left">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur rounded-full border border-[#5b9a8b]/20 shadow-sm mb-5">
+                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                <span className="text-sm font-medium text-[#5b9a8b]">AI-Powered Diabetes Management</span>
+              </div>
               
-              <button 
-                onClick={handleDemo}
-                className="text-sm font-medium text-slate-600 hover:text-[#5b9a8b] transition-colors flex items-center gap-1"
-              >
-                Try the demo <ArrowRight className="w-4 h-4" />
-              </button>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-slate-800 leading-[1.1] mb-3 tracking-tight">
+                Gluco<span className="text-[#5b9a8b]">Vital</span>
+              </h1>
+              
+              <h2 className="text-xl md:text-2xl font-semibold text-slate-700 mb-4">
+                <span className="text-[#5b9a8b] underline decoration-[#5b9a8b]/30 decoration-4 underline-offset-4">Call or text</span> on WhatsApp
+              </h2>
+
+              <p className="text-slate-600 text-base md:text-lg mb-6 max-w-md mx-auto lg:mx-0 leading-relaxed">
+                Speak or type your sugar, BP, or meals. Get instant AI insights and doctor-ready reports — in <strong>21 languages</strong>.
+              </p>
+
+              {/* CTAs */}
+              <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-3 mb-6">
+                <Button 
+                  size="lg"
+                  onClick={handleGetStarted}
+                  className="bg-gradient-to-r from-[#25D366] to-[#128C7E] hover:from-[#128C7E] hover:to-[#075E54] h-14 px-8 text-base rounded-2xl shadow-xl shadow-green-500/25 w-full sm:w-auto"
+                >
+                  <MessageCircle className="w-5 h-5 mr-2" /> Get Started Free
+                </Button>
+                
+                <button 
+                  onClick={handleDemo}
+                  className="text-sm font-medium text-slate-600 hover:text-[#5b9a8b] transition-colors flex items-center gap-1 py-2"
+                >
+                  <Play className="w-4 h-4" /> Try the demo
+                </button>
+              </div>
+
+              {/* Trust line */}
+              <p className="text-sm text-slate-500 mb-4">Free. No credit card. Setup in 30 seconds.</p>
             </div>
 
-            {/* Trust signals */}
-            <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-slate-600">
-              <span className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-500" /> Free forever</span>
-              <span className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-500" /> Voice & text</span>
-              <span className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-500" /> 21 languages</span>
+            {/* Right - Product Mock */}
+            <div className="relative max-w-[340px] mx-auto lg:mx-0 lg:ml-auto">
+              {/* Phone Frame */}
+              <div className="bg-slate-900 rounded-[2.5rem] p-2 shadow-2xl shadow-slate-900/30">
+                <div className="bg-[#e5ddd5] rounded-[2rem] overflow-hidden">
+                  {/* WhatsApp Header */}
+                  <div className="bg-[#075e54] text-white px-4 py-3 flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#5b9a8b] to-[#4a8a7b] flex items-center justify-center">
+                      <Heart className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-semibold text-sm">Asha • GlucoVital</p>
+                      <p className="text-xs text-green-200">online</p>
+                    </div>
+                    <Mic className="w-5 h-5 text-white/70" />
+                  </div>
+                  
+                  {/* Chat Messages */}
+                  <div className="p-3 space-y-2.5 min-h-[280px]">
+                    {/* User message */}
+                    <div className="flex justify-end">
+                      <div className="bg-[#dcf8c6] rounded-xl rounded-tr-sm px-3 py-2 max-w-[80%] shadow-sm">
+                        <p className="text-sm text-slate-800">Sugar 120 fasting</p>
+                        <p className="text-[10px] text-slate-500 text-right mt-0.5">9:15 AM ✓✓</p>
+                      </div>
+                    </div>
+                    
+                    {/* Bot response */}
+                    <div className="flex justify-start">
+                      <div className="bg-white rounded-xl rounded-tl-sm px-3 py-2 max-w-[85%] shadow-sm">
+                        <p className="text-sm text-slate-800 font-medium">✅ Logged: 120 mg/dL (Fasting)</p>
+                        <div className="mt-2 p-2 bg-green-50 rounded-lg border border-green-100">
+                          <p className="text-xs text-green-700 font-medium">🎯 In target range!</p>
+                          <p className="text-[11px] text-green-600 mt-1">Your 7-day avg: 118 mg/dL ↓3%</p>
+                        </div>
+                        <p className="text-[10px] text-slate-500 text-right mt-1.5">9:15 AM</p>
+                      </div>
+                    </div>
+
+                    {/* Report preview hint */}
+                    <div className="flex justify-start">
+                      <div className="bg-white rounded-xl rounded-tl-sm px-3 py-2 max-w-[85%] shadow-sm">
+                        <div className="flex items-center gap-2 text-xs text-[#5b9a8b]">
+                          <FileText className="w-4 h-4" />
+                          <span className="font-medium">Weekly report ready</span>
+                        </div>
+                        <p className="text-[11px] text-slate-500 mt-1">Tap to view doctor-ready PDF</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Floating badges */}
+              <div className="absolute -left-4 top-1/4 bg-white rounded-xl px-3 py-2 shadow-lg border border-slate-100 animate-pulse">
+                <div className="flex items-center gap-2">
+                  <Mic className="w-4 h-4 text-[#5b9a8b]" />
+                  <span className="text-xs font-medium text-slate-700">Voice enabled</span>
+                </div>
+              </div>
+              <div className="absolute -right-2 bottom-1/3 bg-white rounded-xl px-3 py-2 shadow-lg border border-slate-100">
+                <div className="flex items-center gap-2">
+                  <Globe className="w-4 h-4 text-blue-500" />
+                  <span className="text-xs font-medium text-slate-700">21 languages</span>
+                </div>
+              </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Trust Strip */}
+      <section className="bg-white border-y border-slate-100 py-4 md:py-5">
+        <div className="max-w-5xl mx-auto px-4">
+          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
+            {[
+              { icon: Check, text: "Free forever", color: "text-green-500" },
+              { icon: Mic, text: "Voice & text", color: "text-[#5b9a8b]" },
+              { icon: Globe, text: "21 languages", color: "text-blue-500" },
+              { icon: FileText, text: "Doctor reports", color: "text-violet-500" },
+              { icon: Lock, text: "Encrypted", color: "text-amber-500" },
+            ].map((item, i) => (
+              <div key={i} className="flex items-center gap-2 text-sm text-slate-700">
+                <item.icon className={`w-4 h-4 ${item.color}`} />
+                <span className="font-medium">{item.text}</span>
+              </div>
+            ))}
           </div>
         </div>
       </section>
