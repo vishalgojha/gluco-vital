@@ -68,13 +68,13 @@ export default function WhatsAppConnect({ isConnected = false }) {
           </a>
           
           <a 
-            href="https://glucovital.base44.app/agents/health_buddy/whatsapp" 
+            href={base44.agents.getWhatsAppConnectURL('health_buddy')} 
             target="_blank" 
             rel="noopener noreferrer"
           >
             <Button variant="outline" className="w-full bg-white/10 border-white/30 text-white hover:bg-white/20 font-medium h-10 rounded-xl mt-2">
               <MessageCircle className="w-4 h-4 mr-2" />
-              Try Base44 Agent (Beta)
+              Try Gluco Vital Agent (Beta)
             </Button>
           </a>
         </div>
