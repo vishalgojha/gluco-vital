@@ -1,5 +1,6 @@
 import { MessageCircle, CheckCircle, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { base44 } from "@/api/base44Client";
 
 // Single WhatsApp Number for all interactions (voice + text logging)
 const WHATSAPP_NUMBER = "919819471310";
