@@ -1,8 +1,15 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
+import { createClient } from 'npm:@base44/sdk@0.8.6';
 
 // Meta WhatsApp Webhook Handler
-// Routes text messages through Base44 AI Agent (health_buddy)
+// Routes text messages through Base44 AI
 // Handles verification and incoming messages
+
+// Create service role client for webhook (no user auth needed)
+function getBase44Client() {
+  return createClient({
+    appId: Deno.env.get('BASE44_APP_ID')
+  }).asServiceRole;
+}
 
 Deno.serve(async (req) => {
   const url = new URL(req.url);
@@ -50,8 +57,8 @@ Deno.serve(async (req) => {
         
         console.log(`Message from ${from}: ${messageBody} (type: ${messageType})`);
         
-        // Create base44 client here once per request
-        const base44 = createClientFromRequest(req);
+        // Create base44 service client (webhook doesn't have user auth)
+        const base44 = getBase44Client();
 
         // Process the message (with image support)
         await processIncomingMessage(base44, from, messageBody, messageType, imageId, imageCaption);
@@ -66,7 +73,7 @@ Deno.serve(async (req) => {
       return Response.json({ status: 'received' });
       
     } catch (error) {
-      console.error('Webhook error:', error.message);
+      console.error('Webhook error:', error.message, error.stack);
       return Response.json({ error: error.message }, { status: 500 });
     }
   }
