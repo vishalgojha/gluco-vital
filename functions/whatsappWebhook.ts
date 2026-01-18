@@ -141,13 +141,13 @@ async function processIncomingMessage(base44, phoneNumber, messageBody, messageT
 async function routeToAgent(base44, userEmail, message) {
   try {
     // Get user profile for context
-    const profiles = await base44.asServiceRole.entities.PatientProfile.filter({ user_email: userEmail });
+    const profiles = await base44.entities.PatientProfile.filter({ user_email: userEmail });
     const profile = profiles[0] || {};
     
     // Get recent health logs for context
     let recentLogs = [];
     try {
-      recentLogs = await base44.asServiceRole.entities.HealthLog.filter({ user_email: userEmail });
+      recentLogs = await base44.entities.HealthLog.filter({ user_email: userEmail });
       recentLogs = recentLogs.slice(0, 5);
     } catch (e) {
       console.log('Could not fetch recent logs:', e.message);
