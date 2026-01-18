@@ -295,7 +295,7 @@ async function processImageMessage(phoneNumber, userEmail, imageId, caption, lan
     // Step 3: Upload to Base44 storage
     const blob = new Blob([imageBuffer], { type: mimeType });
     const file = new File([blob], `prescription_${Date.now()}.jpg`, { type: mimeType });
-    const { file_url } = await base44.asServiceRole.integrations.Core.UploadFile({ file });
+    const { file_url } = await base44.integrations.Core.UploadFile({ file });
     console.log('Uploaded to:', file_url);
     
     // Notify user processing started
