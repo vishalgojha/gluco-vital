@@ -79,7 +79,9 @@ Deno.serve(async (req) => {
   return new Response('Method not allowed', { status: 405 });
 });
 
-async function processIncomingMessage(base44, phoneNumber, messageBody, messageType, imageId = null, imageCaption = '') {
+async function processIncomingMessage(phoneNumber, messageBody, messageType, imageId = null, imageCaption = '') {
+  const base44 = getBase44();
+  
   try {
     // Find or create user by WhatsApp number (WhatsApp-first approach)
     let profiles = await base44.entities.PatientProfile.filter({});
@@ -107,7 +109,7 @@ async function processIncomingMessage(base44, phoneNumber, messageBody, messageT
       console.log('Created new WhatsApp profile:', profile.id);
       
       // Send welcome via agent
-      const welcomeResponse = await routeToAgent(base44, profile.user_email, "hi");
+      const welcomeResponse = await routeToAgent(profile.user_email, "hi");
       await sendWhatsAppMessage(phoneNumber, welcomeResponse);
       return;
     }
@@ -118,13 +120,13 @@ async function processIncomingMessage(base44, phoneNumber, messageBody, messageT
     // Handle IMAGE messages (prescription, lab reports)
     if (messageType === 'image' && imageId) {
       console.log('Processing image message:', imageId);
-      await processImageMessage(phoneNumber, userEmail, imageId, imageCaption, language, base44);
+      await processImageMessage(phoneNumber, userEmail, imageId, imageCaption, language);
       return;
     }
     
     // Route ALL text messages through AI agent
     console.log('Processing message with AI agent:', messageBody);
-    const aiResponse = await routeToAgent(base44, userEmail, messageBody);
+    const aiResponse = await routeToAgent(userEmail, messageBody);
     await sendWhatsAppMessage(phoneNumber, aiResponse);
     
   } catch (error) {
