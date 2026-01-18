@@ -271,7 +271,8 @@ async function tryExtractAndLogHealthData(userEmail, message) {
 }
 
 // Process image messages (prescriptions, lab reports)
-async function processImageMessage(phoneNumber, userEmail, imageId, caption, language, base44) {
+async function processImageMessage(phoneNumber, userEmail, imageId, caption, language) {
+  const base44 = getBase44();
   const ACCESS_TOKEN = Deno.env.get('WHATSAPP_ACCESS_TOKEN');
   
   try {
