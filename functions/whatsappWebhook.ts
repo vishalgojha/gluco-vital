@@ -208,7 +208,8 @@ Respond naturally as Asha:`
 }
 
 // Try to extract health data from message and log it
-async function tryExtractAndLogHealthData(base44, userEmail, message) {
+async function tryExtractAndLogHealthData(userEmail, message) {
+  const base44 = getBase44();
   try {
     const lowerMsg = message.toLowerCase();
     
