@@ -209,64 +209,97 @@ export default function DoctorDashboard() {
         </div>
 
         {/* Invite Patient Dialog */}
-        <Dialog open={showInviteDialog} onOpenChange={setShowInviteDialog}>
+        <Dialog open={showInviteDialog} onOpenChange={(open) => {
+          setShowInviteDialog(open);
+          if (!open) {
+            setInviteSuccess(false);
+            setInviteForm({ patient_email: "", patient_name: "", message: "" });
+          }
+        }}>
           <DialogContent className="max-w-md">
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <Mail className="w-5 h-5 text-[#5b9a8b]" />
-                Invite Patient
-              </DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <Label>Patient Email *</Label>
-                <Input
-                  type="email"
-                  value={inviteForm.patient_email}
-                  onChange={(e) => setInviteForm(prev => ({ ...prev, patient_email: e.target.value }))}
-                  placeholder="patient@example.com"
-                  className="mt-1"
-                />
+            {inviteSuccess ? (
+              <div className="py-8 text-center">
+                <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
+                  <CheckCircle className="w-8 h-8 text-green-600" />
+                </div>
+                <h3 className="text-xl font-semibold text-slate-800 mb-2">Invitation Sent!</h3>
+                <p className="text-slate-600 mb-1">
+                  An email has been sent to <strong>{inviteForm.patient_email}</strong>
+                </p>
+                <p className="text-sm text-slate-500 mb-6">
+                  They'll appear in your pending list once they accept.
+                </p>
+                <Button 
+                  onClick={() => {
+                    setShowInviteDialog(false);
+                    setInviteSuccess(false);
+                    setInviteForm({ patient_email: "", patient_name: "", message: "" });
+                  }}
+                  className="bg-[#5b9a8b] hover:bg-[#4a8a7b]"
+                >
+                  Done
+                </Button>
               </div>
-              <div>
-                <Label>Patient Name (optional)</Label>
-                <Input
-                  value={inviteForm.patient_name}
-                  onChange={(e) => setInviteForm(prev => ({ ...prev, patient_name: e.target.value }))}
-                  placeholder="John Doe"
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <Label>Personal Message (optional)</Label>
-                <Textarea
-                  value={inviteForm.message}
-                  onChange={(e) => setInviteForm(prev => ({ ...prev, message: e.target.value }))}
-                  placeholder="Hi, I'd like to monitor your health data through Gluco Vital..."
-                  className="mt-1 h-20"
-                />
-              </div>
-              <div className="bg-blue-50 p-3 rounded-lg text-sm text-blue-700">
-                <p className="font-medium">What happens next:</p>
-                <ul className="mt-1 text-xs space-y-1">
-                  <li>• Patient receives an email invitation</li>
-                  <li>• They sign up (if new) and accept the connection</li>
-                  <li>• Once accepted, you can view their health data</li>
-                </ul>
-              </div>
-              <Button 
-                onClick={() => inviteMutation.mutate(inviteForm)}
-                disabled={!inviteForm.patient_email || inviteMutation.isPending}
-                className="w-full bg-[#5b9a8b] hover:bg-[#4a8a7b]"
-              >
-                {inviteMutation.isPending ? (
-                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                ) : (
-                  <Mail className="w-4 h-4 mr-2" />
-                )}
-                Send Invitation
-              </Button>
-            </div>
+            ) : (
+              <>
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2">
+                    <Mail className="w-5 h-5 text-[#5b9a8b]" />
+                    Invite Patient
+                  </DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div>
+                    <Label>Patient Email *</Label>
+                    <Input
+                      type="email"
+                      value={inviteForm.patient_email}
+                      onChange={(e) => setInviteForm(prev => ({ ...prev, patient_email: e.target.value }))}
+                      placeholder="patient@example.com"
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label>Patient Name (optional)</Label>
+                    <Input
+                      value={inviteForm.patient_name}
+                      onChange={(e) => setInviteForm(prev => ({ ...prev, patient_name: e.target.value }))}
+                      placeholder="John Doe"
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label>Personal Message (optional)</Label>
+                    <Textarea
+                      value={inviteForm.message}
+                      onChange={(e) => setInviteForm(prev => ({ ...prev, message: e.target.value }))}
+                      placeholder="Hi, I'd like to monitor your health data through Gluco Vital..."
+                      className="mt-1 h-20"
+                    />
+                  </div>
+                  <div className="bg-blue-50 p-3 rounded-lg text-sm text-blue-700">
+                    <p className="font-medium">What happens next:</p>
+                    <ul className="mt-1 text-xs space-y-1">
+                      <li>• Patient receives an email invitation</li>
+                      <li>• They sign up (if new) and accept the connection</li>
+                      <li>• Once accepted, you can view their health data</li>
+                    </ul>
+                  </div>
+                  <Button 
+                    onClick={() => inviteMutation.mutate(inviteForm)}
+                    disabled={!inviteForm.patient_email || inviteMutation.isPending}
+                    className="w-full bg-[#5b9a8b] hover:bg-[#4a8a7b]"
+                  >
+                    {inviteMutation.isPending ? (
+                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                    ) : (
+                      <Mail className="w-4 h-4 mr-2" />
+                    )}
+                    Send Invitation
+                  </Button>
+                </div>
+              </>
+            )}
           </DialogContent>
         </Dialog>
       </div>
