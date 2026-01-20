@@ -68,9 +68,9 @@ export default function Landing() {
       <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-white/95 backdrop-blur border-t border-slate-200 p-3 shadow-lg">
         <Button 
           onClick={handleGetStarted}
-          className="w-full bg-gradient-to-r from-[#25D366] to-[#128C7E] hover:from-[#128C7E] hover:to-[#075E54] h-12 rounded-xl text-base font-semibold shadow-lg"
+          className="w-full bg-gradient-to-r from-[#5b9a8b] to-[#4a8a7b] hover:from-[#4a8a7b] hover:to-[#3d6b5f] h-12 rounded-xl text-base font-semibold shadow-lg"
         >
-          <MessageCircle className="w-5 h-5 mr-2" /> Call or text on WhatsApp
+          Get Started Free
         </Button>
       </div>
 
@@ -113,7 +113,7 @@ export default function Landing() {
               </h1>
               
               <h2 className="text-xl md:text-2xl font-semibold text-slate-700 mb-4">
-                <span className="text-[#5b9a8b] underline decoration-[#5b9a8b]/30 decoration-4 underline-offset-4">Call or text</span> on WhatsApp
+                Your AI Health Companion
               </h2>
 
               <p className="text-slate-600 text-base md:text-lg mb-6 max-w-md mx-auto md:mx-0 leading-relaxed">
@@ -125,9 +125,9 @@ export default function Landing() {
                 <Button 
                   size="lg"
                   onClick={handleGetStarted}
-                  className="bg-gradient-to-r from-[#25D366] to-[#128C7E] hover:from-[#128C7E] hover:to-[#075E54] h-12 md:h-14 px-6 md:px-8 text-sm md:text-base rounded-2xl shadow-xl shadow-green-500/25 w-full sm:w-auto"
+                  className="bg-gradient-to-r from-[#5b9a8b] to-[#4a8a7b] hover:from-[#4a8a7b] hover:to-[#3d6b5f] h-12 md:h-14 px-6 md:px-8 text-sm md:text-base rounded-2xl shadow-xl shadow-[#5b9a8b]/25 w-full sm:w-auto"
                 >
-                  <MessageCircle className="w-5 h-5 mr-2" /> Get Started Free
+                  Get Started Free
                 </Button>
                 
                 <button 
@@ -527,9 +527,9 @@ export default function Landing() {
           <Button 
             size="lg"
             onClick={handleGetStarted}
-            className="bg-gradient-to-r from-[#25D366] to-[#128C7E] hover:from-[#128C7E] hover:to-[#075E54] h-14 px-10 text-lg rounded-2xl shadow-xl shadow-green-500/25"
+            className="bg-gradient-to-r from-[#5b9a8b] to-[#4a8a7b] hover:from-[#4a8a7b] hover:to-[#3d6b5f] h-14 px-10 text-lg rounded-2xl shadow-xl shadow-[#5b9a8b]/25"
           >
-            <MessageCircle className="w-5 h-5 mr-2" /> Call or text on WhatsApp
+            Get Started Free
           </Button>
         </div>
       </section>
