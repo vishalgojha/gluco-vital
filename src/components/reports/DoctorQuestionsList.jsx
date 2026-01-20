@@ -156,7 +156,7 @@ export default function DoctorQuestionsList({ userEmail }) {
           </div>
         </div>
         <p className="text-sm text-slate-500 mt-1">
-          Save questions you want to ask your doctor. Never forget what's important.
+          Questions collected by Asha during your conversations. Review before your next visit.
         </p>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -167,19 +167,10 @@ export default function DoctorQuestionsList({ userEmail }) {
         ) : questions.length === 0 ? (
           <div className="text-center py-8 bg-slate-50 rounded-xl">
             <HelpCircle className="w-10 h-10 text-slate-300 mx-auto mb-2" />
-            <p className="text-slate-500">No questions saved yet</p>
-            <p className="text-xs text-slate-400 mt-1">
-              Add questions you want to discuss with your doctor
+            <p className="text-slate-500">No questions collected yet</p>
+            <p className="text-xs text-slate-400 mt-1 max-w-xs mx-auto">
+              Chat with Asha on WhatsApp — she'll ask if you have any questions for your doctor before your next visit
             </p>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="mt-3"
-              onClick={() => setShowAddDialog(true)}
-            >
-              <Plus className="w-4 h-4 mr-1" />
-              Add Your First Question
-            </Button>
           </div>
         ) : (
           <>
