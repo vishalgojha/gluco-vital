@@ -64,15 +64,7 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen bg-[#f8faf9]">
-      {/* Sticky Mobile CTA */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-white/95 backdrop-blur border-t border-slate-200 p-3 shadow-lg">
-        <Button 
-          onClick={handleGetStarted}
-          className="w-full bg-gradient-to-r from-[#5b9a8b] to-[#4a8a7b] hover:from-[#4a8a7b] hover:to-[#3d6b5f] h-12 rounded-xl text-base font-semibold shadow-lg"
-        >
-          Get Started Free
-        </Button>
-      </div>
+
 
       {/* Hero */}
       <section className="relative overflow-hidden pb-20 md:pb-0">
