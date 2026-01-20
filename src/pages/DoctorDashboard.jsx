@@ -40,7 +40,8 @@ export default function DoctorDashboard() {
       }
     },
     onError: (error) => {
-      toast.error(error?.response?.data?.error || "Failed to send invitation");
+      console.error('Invite error:', error);
+      toast.error(error?.response?.data?.error || error?.message || "Failed to send invitation");
     }
   });
 
