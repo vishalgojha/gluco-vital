@@ -29,10 +29,16 @@ export default function DoctorDashboard() {
 
   const inviteMutation = useMutation({
     mutationFn: async (data) => {
+      console.log('Sending invite with data:', data);
       const response = await base44.functions.invoke('invitePatient', data);
+      console.log('Invite response:', response);
+      if (response.data?.error) {
+        throw new Error(response.data.error);
+      }
       return response.data;
     },
     onSuccess: (data) => {
+      console.log('Invite success:', data);
       queryClient.invalidateQueries({ queryKey: ['doctor-patients'] });
       setInviteSuccess(true);
       if (!data.emailSent) {
