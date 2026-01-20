@@ -20,6 +20,7 @@ export default function DoctorDashboard() {
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [showInviteDialog, setShowInviteDialog] = useState(false);
   const [inviteForm, setInviteForm] = useState({ patient_email: "", patient_name: "", message: "" });
+  const [inviteSuccess, setInviteSuccess] = useState(false);
   const queryClient = useQueryClient();
 
   useEffect(() => {
