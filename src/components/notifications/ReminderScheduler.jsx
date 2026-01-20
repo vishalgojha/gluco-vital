@@ -92,13 +92,16 @@ export function useReminderScheduler(reminders = [], profile, isDemo = false) {
   }, [reminders, profile, isDemo]);
 
   useEffect(() => {
-    // Check immediately
-    checkReminders();
+    // Delay first check to avoid sounds playing immediately on page load
+    const initialTimeout = setTimeout(() => {
+      checkReminders();
+    }, 5000);
     
     // Check every minute
     intervalRef.current = setInterval(checkReminders, 60000);
     
     return () => {
+      clearTimeout(initialTimeout);
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
       }
