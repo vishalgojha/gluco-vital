@@ -20,14 +20,30 @@ Deno.serve(async (req) => {
       doctor_email: user.email,
       patient_email: patient_email
     });
+    console.log('Existing connections:', existingConnections);
 
     if (existingConnections && existingConnections.length > 0) {
       const existing = existingConnections[0];
+      console.log('Found existing connection with status:', existing.status);
       if (existing.status === 'active') {
-        return Response.json({ error: 'Already connected to this patient' }, { status: 400 });
+        return Response.json({ error: 'You are already connected to this patient' }, { status: 400 });
       }
       if (existing.status === 'pending') {
-        return Response.json({ error: 'Invitation already pending' }, { status: 400 });
+        return Response.json({ error: 'An invitation is already pending for this patient' }, { status: 400 });
+      }
+      // If status is revoked or expired, allow re-invite by updating the existing connection
+      if (existing.status === 'revoked' || existing.status === 'expired') {
+        const updated = await base44.asServiceRole.entities.DoctorConnection.update(existing.id, {
+          status: 'pending',
+          patient_name: patient_name || existing.patient_name,
+          invited_at: new Date().toISOString()
+        });
+        return Response.json({ 
+          success: true, 
+          connection: updated,
+          message: 'Re-invitation sent',
+          emailSent: true
+        });
       }
     }
 
