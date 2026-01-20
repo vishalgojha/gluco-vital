@@ -155,6 +155,17 @@ async function routeToAgent(userEmail, message) {
       console.log('Could not fetch recent logs:', e.message);
     }
     
+    // Get upcoming doctor visits
+    let upcomingVisit = null;
+    try {
+      const visits = await base44.entities.DoctorVisit.filter({ user_email: userEmail, status: 'scheduled' });
+      if (visits.length > 0) {
+        upcomingVisit = visits[0];
+      }
+    } catch (e) {
+      console.log('Could not fetch visits:', e.message);
+    }
+    
     const contextSummary = recentLogs.length > 0 
       ? recentLogs.map(l => `${l.log_type}: ${l.value} (${l.time_of_day || 'unknown time'})`).join('\n')
       : 'No recent logs';
@@ -170,6 +181,7 @@ USER INFO:
 - Name: ${userName}
 - Email: ${userEmail}
 - Language: ${language} (respond in this language, use Hinglish if hinglish)
+${upcomingVisit ? `- Upcoming doctor visit: ${upcomingVisit.visit_date}` : ''}
 
 RECENT HEALTH DATA:
 ${contextSummary}
@@ -178,6 +190,13 @@ YOUR CAPABILITIES:
 1. LOG HEALTH DATA - If user mentions sugar/glucose numbers, BP readings, or medication taken, acknowledge and confirm
 2. ANSWER QUESTIONS - About diabetes management, their data patterns, general health info
 3. PROVIDE SUPPORT - Be warm, encouraging, non-judgmental like a caring friend
+4. COLLECT DOCTOR QUESTIONS - Proactively ask if user has questions for their doctor
+
+DOCTOR QUESTIONS COLLECTION (IMPORTANT):
+- After logging a few readings, ask: "Any questions you want me to save for your doctor?"
+- If user asks "why is this happening?" or expresses confusion, offer to save the question for their doctor
+- When user shares a question, respond: "Good question - I'll save that for your doctor visit."
+- DO NOT try to answer medical questions yourself - save them for the doctor
 
 RESPONSE FORMAT:
 - Keep responses SHORT (2-4 sentences max for WhatsApp)
@@ -198,6 +217,9 @@ Respond naturally as Asha:`
     
     // Also try to extract and log any health data
     await tryExtractAndLogHealthData(userEmail, message);
+    
+    // Try to extract and save doctor questions
+    await tryExtractDoctorQuestion(userEmail, message);
     
     return response || "Hi! I'm Asha, your health buddy. How can I help you today? 💚";
     
