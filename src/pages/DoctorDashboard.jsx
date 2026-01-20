@@ -34,13 +34,10 @@ export default function DoctorDashboard() {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['doctor-patients'] });
-      if (data.emailSent) {
-        toast.success("Invitation email sent to patient!");
-      } else {
+      setInviteSuccess(true);
+      if (!data.emailSent) {
         toast.warning(`Connection created but email failed: ${data.emailError || 'Unknown error'}`);
       }
-      setShowInviteDialog(false);
-      setInviteForm({ patient_email: "", patient_name: "", message: "" });
     },
     onError: (error) => {
       toast.error(error?.response?.data?.error || "Failed to send invitation");
