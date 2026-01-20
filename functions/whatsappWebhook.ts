@@ -229,6 +229,45 @@ Respond naturally as Asha:`
   }
 }
 
+// Try to extract doctor questions from message
+async function tryExtractDoctorQuestion(userEmail, message) {
+  const base44 = getBase44();
+  try {
+    const lowerMsg = message.toLowerCase();
+    
+    // Patterns that indicate a question for doctor
+    const questionPatterns = [
+      /why (is|are|do|does|am|was)/i,
+      /should i/i,
+      /can i/i,
+      /is it (normal|okay|ok|safe)/i,
+      /what (should|can|is)/i,
+      /doctor.*question/i,
+      /ask.*doctor/i,
+      /save.*question/i,
+      /\?$/  // Ends with question mark
+    ];
+    
+    const isQuestion = questionPatterns.some(pattern => pattern.test(message));
+    
+    // Check if it's a health-related question (not just casual chat)
+    const healthTerms = ['sugar', 'glucose', 'insulin', 'medication', 'medicine', 'tablet', 'dose', 'bp', 'pressure', 'tired', 'fatigue', 'eat', 'food', 'diet', 'exercise', 'walk', 'morning', 'fasting', 'meal', 'diabetes', 'reading'];
+    const hasHealthTerm = healthTerms.some(term => lowerMsg.includes(term));
+    
+    if (isQuestion && hasHealthTerm && message.length > 15) {
+      await base44.entities.DoctorQuestion.create({
+        user_email: userEmail,
+        question: message,
+        source: 'whatsapp',
+        status: 'unanswered'
+      });
+      console.log('Saved doctor question:', message);
+    }
+  } catch (error) {
+    console.error('Error saving doctor question:', error.message);
+  }
+}
+
 // Try to extract health data from message and log it
 async function tryExtractAndLogHealthData(userEmail, message) {
   const base44 = getBase44();
