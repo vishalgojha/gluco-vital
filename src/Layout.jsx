@@ -41,6 +41,7 @@ export default function Layout({ children, currentPageName }) {
     { name: "Clinical Summaries", icon: ClipboardList, page: "DoctorSummary" },
     { name: "Achievements", icon: Trophy, page: "Achievements" },
     { name: "History", icon: History, page: "History" },
+      { name: "Documents", icon: FileText, page: "Documents" },
         { name: "Caregiver View", icon: Users, page: "CaregiverDashboard" },
         { name: "Profile", icon: User, page: "Profile" },
     ...(isAdmin ? [
