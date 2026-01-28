@@ -74,6 +74,7 @@ import Subscription from './pages/Subscription';
 import Terms from './pages/Terms';
 import WhatsAppTest from './pages/WhatsAppTest';
 import CoachDashboard from './pages/CoachDashboard';
+import Dashboard from './pages/Dashboard';
 import __Layout from './Layout.jsx';
 
 
@@ -105,10 +106,11 @@ export const PAGES = {
     "Terms": Terms,
     "WhatsAppTest": WhatsAppTest,
     "CoachDashboard": CoachDashboard,
+    "Dashboard": Dashboard,
 }
 
 export const pagesConfig = {
-    mainPage: "Landing",
+    mainPage: "About",
     Pages: PAGES,
     Layout: __Layout,
 };
