@@ -37,6 +37,7 @@ export default function Layout({ children, currentPageName }) {
     { name: "Share with Doctor", icon: Share2, page: "DoctorShare" },
           { name: "Doctor's Feedback", icon: MessageCircle, page: "PatientFeedback" },
     { name: "Doctor Portal", icon: Stethoscope, page: "DoctorDashboard" },
+    { name: "Coach Portal", icon: Heart, page: "CoachDashboard" },
     { name: "Clinical Summaries", icon: ClipboardList, page: "DoctorSummary" },
     { name: "Achievements", icon: Trophy, page: "Achievements" },
     { name: "History", icon: History, page: "History" },
