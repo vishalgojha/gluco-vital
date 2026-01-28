@@ -53,6 +53,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import CancellationRefund from './pages/CancellationRefund';
 import CareHub from './pages/CareHub';
 import CaregiverDashboard from './pages/CaregiverDashboard';
+import ClientPortal from './pages/ClientPortal';
 import CoachDashboard from './pages/CoachDashboard';
 import ContactUs from './pages/ContactUs';
 import Dashboard from './pages/Dashboard';
@@ -62,12 +63,14 @@ import DoctorMessages from './pages/DoctorMessages';
 import DoctorShare from './pages/DoctorShare';
 import DoctorSummary from './pages/DoctorSummary';
 import Documentation from './pages/Documentation';
+import Documents from './pages/Documents';
 import History from './pages/History';
 import Home from './pages/Home';
 import Landing from './pages/Landing';
 import MarketingContent from './pages/MarketingContent';
 import PatientDetail from './pages/PatientDetail';
 import PatientFeedback from './pages/PatientFeedback';
+import PatientPortal from './pages/PatientPortal';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import Profile from './pages/Profile';
 import Progress from './pages/Progress';
@@ -75,9 +78,6 @@ import Reports from './pages/Reports';
 import Subscription from './pages/Subscription';
 import Terms from './pages/Terms';
 import WhatsAppTest from './pages/WhatsAppTest';
-import Documents from './pages/Documents';
-import PatientPortal from './pages/PatientPortal';
-import ClientPortal from './pages/ClientPortal';
 import __Layout from './Layout.jsx';
 
 
@@ -88,6 +88,7 @@ export const PAGES = {
     "CancellationRefund": CancellationRefund,
     "CareHub": CareHub,
     "CaregiverDashboard": CaregiverDashboard,
+    "ClientPortal": ClientPortal,
     "CoachDashboard": CoachDashboard,
     "ContactUs": ContactUs,
     "Dashboard": Dashboard,
@@ -97,12 +98,14 @@ export const PAGES = {
     "DoctorShare": DoctorShare,
     "DoctorSummary": DoctorSummary,
     "Documentation": Documentation,
+    "Documents": Documents,
     "History": History,
     "Home": Home,
     "Landing": Landing,
     "MarketingContent": MarketingContent,
     "PatientDetail": PatientDetail,
     "PatientFeedback": PatientFeedback,
+    "PatientPortal": PatientPortal,
     "PrivacyPolicy": PrivacyPolicy,
     "Profile": Profile,
     "Progress": Progress,
@@ -110,9 +113,6 @@ export const PAGES = {
     "Subscription": Subscription,
     "Terms": Terms,
     "WhatsAppTest": WhatsAppTest,
-    "Documents": Documents,
-    "PatientPortal": PatientPortal,
-    "ClientPortal": ClientPortal,
 }
 
 export const pagesConfig = {

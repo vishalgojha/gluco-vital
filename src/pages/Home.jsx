@@ -48,8 +48,9 @@ export default function Home() {
       setIsDemo(false);
       base44.auth.me().then((userData) => {
         setUser(userData);
-        // Show onboarding for new users who haven't completed it
-        if (!userData?.onboarding_completed) {
+        // Show onboarding only for PATIENTS who haven't completed it
+        // Non-patients (doctor, coach, caregiver) have their own shorter onboarding
+        if (!userData?.onboarding_completed && (!userData?.user_type || userData?.user_type === 'patient')) {
           setShowOnboarding(true);
         }
       }).catch(() => {});
