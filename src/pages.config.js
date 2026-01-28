@@ -76,6 +76,8 @@ import Subscription from './pages/Subscription';
 import Terms from './pages/Terms';
 import WhatsAppTest from './pages/WhatsAppTest';
 import Documents from './pages/Documents';
+import PatientPortal from './pages/PatientPortal';
+import ClientPortal from './pages/ClientPortal';
 import __Layout from './Layout.jsx';
 
 
@@ -109,6 +111,8 @@ export const PAGES = {
     "Terms": Terms,
     "WhatsAppTest": WhatsAppTest,
     "Documents": Documents,
+    "PatientPortal": PatientPortal,
+    "ClientPortal": ClientPortal,
 }
 
 export const pagesConfig = {
