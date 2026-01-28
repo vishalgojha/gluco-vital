@@ -12,6 +12,7 @@ import ReportCard from "@/components/reports/ReportCard";
 import EnhancedReportViewer from "@/components/reports/EnhancedReportViewer";
 import DoctorClinicalReport from "@/components/reports/DoctorClinicalReport";
 import DoctorQuestionsList from "@/components/reports/DoctorQuestionsList";
+import ReportScheduler from "@/components/reports/ReportScheduler";
 import { generateDemoData } from "@/components/demo/DemoDataGenerator";
 import DemoBanner from "@/components/demo/DemoBanner";
 
@@ -244,8 +245,9 @@ export default function Reports() {
         />
       )}
 
-      {/* Doctor Questions Section */}
-      <div className="max-w-4xl mx-auto px-4 pb-8">
+      {/* Scheduled Reports & Doctor Questions */}
+      <div className="max-w-4xl mx-auto px-4 pb-8 space-y-6">
+        {!isDemo && <ReportScheduler user={user} />}
         <DoctorQuestionsList userEmail={user?.email} />
       </div>
     </div>
