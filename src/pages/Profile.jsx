@@ -25,10 +25,12 @@ import CalendarExport from "@/components/medications/CalendarExport";
 import SubscriptionManager from "@/components/subscription/SubscriptionManager";
 import VoiceReminderSettings from "@/components/voice/VoiceReminderSettings";
 import WhatsAppOptIn from "@/components/whatsapp/WhatsAppOptIn";
+import RoleSelection from "@/components/onboarding/RoleSelection";
 
 export default function Profile() {
   const queryClient = useQueryClient();
   const [user, setUser] = useState(null);
+  const [showRoleSelection, setShowRoleSelection] = useState(false);
   const [newCondition, setNewCondition] = useState("");
   const [newMedication, setNewMedication] = useState("");
   const [formData, setFormData] = useState({
@@ -54,10 +56,21 @@ export default function Profile() {
 
   useEffect(() => {
     base44.auth.me()
-      .then(setUser)
+      .then((userData) => {
+        setUser(userData);
+        // Show role selection if user hasn't selected a role yet
+        if (!userData?.user_type) {
+          setShowRoleSelection(true);
+        }
+      })
       .catch(() => setUser(null))
       .finally(() => setAuthLoading(false));
   }, []);
+
+  const handleRoleSelected = (role) => {
+    setUser(prev => ({ ...prev, user_type: role }));
+    setShowRoleSelection(false);
+  };
 
   const { data: profile, isLoading } = useQuery({
     queryKey: ['patient-profile'],
@@ -188,6 +201,11 @@ export default function Profile() {
         </div>
       </div>
     );
+  }
+
+  // Show role selection for new users
+  if (showRoleSelection) {
+    return <RoleSelection onComplete={handleRoleSelected} />;
   }
 
   return (
