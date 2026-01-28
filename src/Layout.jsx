@@ -6,6 +6,7 @@ import { Home, History, User, Menu, X, MessageCircle, LogOut, Trophy, FileText, 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import AddToHomeScreen from "@/components/AddToHomeScreen";
+import { Toaster } from "@/components/ui/sonner";
 
 export default function Layout({ children, currentPageName }) {
   const [user, setUser] = useState(null);
@@ -255,8 +256,11 @@ export default function Layout({ children, currentPageName }) {
                   </footer>
 
                   {/* Add to Home Screen Prompt */}
-                  <AddToHomeScreen />
-                </div>
-              </>
-            );
-          }
+                                          <AddToHomeScreen />
+
+                                          {/* Toast Notifications */}
+                                          <Toaster />
+                                        </div>
+                                      </>
+                                    );
+                                  }
