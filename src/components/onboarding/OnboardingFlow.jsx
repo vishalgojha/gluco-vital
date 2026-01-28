@@ -44,6 +44,10 @@ export default function OnboardingFlow({ user, onComplete, onStepAction }) {
   const [isVisible, setIsVisible] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   
+  // Get user type for role-aware onboarding
+  const userType = user?.user_type || 'patient';
+  const isPatient = userType === 'patient';
+  
   // Profile data
   const [profileData, setProfileData] = useState({
     age: "",
@@ -56,8 +60,8 @@ export default function OnboardingFlow({ user, onComplete, onStepAction }) {
     target_bp_diastolic: 80
   });
 
-  // Doctor connection
-  const [doctorEmail, setDoctorEmail] = useState("");
+  // Connection email (doctor for patients, or skip for non-patients)
+  const [connectionEmail, setConnectionEmail] = useState("");
 
   useEffect(() => {
     if (user?.onboarding_completed) {
@@ -65,7 +69,8 @@ export default function OnboardingFlow({ user, onComplete, onStepAction }) {
     }
   }, [user]);
 
-  const totalSteps = 5;
+  // Different steps for different user types
+  const totalSteps = isPatient ? 5 : 3;
   const progress = ((currentStep) / (totalSteps - 1)) * 100;
 
   const handleNext = () => {
@@ -120,8 +125,8 @@ export default function OnboardingFlow({ user, onComplete, onStepAction }) {
   };
 
   const handleConnectDoctor = async () => {
-    if (!doctorEmail) {
-      handleNext();
+    if (!connectionEmail) {
+      handleComplete();
       return;
     }
     
@@ -130,7 +135,7 @@ export default function OnboardingFlow({ user, onComplete, onStepAction }) {
       await base44.entities.DoctorConnection.create({
         patient_email: user.email,
         patient_name: user.full_name,
-        doctor_email: doctorEmail,
+        doctor_email: connectionEmail,
         status: "pending",
         permissions: ["view_logs", "view_reports", "view_insights"],
         invited_at: new Date().toISOString()
@@ -138,7 +143,7 @@ export default function OnboardingFlow({ user, onComplete, onStepAction }) {
     } catch (e) {
       console.error("Failed to create doctor connection:", e);
     }
-    handleNext();
+    handleComplete();
   };
 
   const handleComplete = async () => {
@@ -166,6 +171,121 @@ export default function OnboardingFlow({ user, onComplete, onStepAction }) {
   if (!isVisible) return null;
 
   const renderStep = () => {
+    // Non-patient flow (Doctor, Coach, Caregiver)
+    if (!isPatient) {
+      switch (currentStep) {
+        case 0: // Welcome for professionals
+          return (
+            <motion.div
+              key="welcome"
+              initial={{ x: 20, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              className="text-center"
+            >
+              <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-[#5b9a8b] to-[#7eb8a8] flex items-center justify-center shadow-lg">
+                {userType === 'doctor' && <Stethoscope className="w-10 h-10 text-white" />}
+                {userType === 'coach' && <Heart className="w-10 h-10 text-white" />}
+                {userType === 'caregiver' && <User className="w-10 h-10 text-white" />}
+              </div>
+              <h2 className="text-2xl font-bold text-slate-800 mb-3">
+                Welcome, {userType === 'doctor' ? 'Doctor' : userType === 'coach' ? 'Coach' : 'Caregiver'}! 🎉
+              </h2>
+              <p className="text-slate-600 mb-6">
+                {userType === 'doctor' && "Gluco Vital helps you monitor your patients' diabetes management remotely."}
+                {userType === 'coach' && "Gluco Vital helps you guide clients on their health journey with real-time insights."}
+                {userType === 'caregiver' && "Gluco Vital helps you support your loved one's diabetes management."}
+              </p>
+              <div className="bg-[#5b9a8b]/10 rounded-xl p-4 text-left">
+                <p className="text-sm font-medium text-[#3d6b5f] mb-2">What you can do:</p>
+                <ul className="text-sm text-slate-600 space-y-1">
+                  <li className="flex items-center gap-2"><Check className="w-4 h-4 text-[#5b9a8b]" /> View patient/client health logs & trends</li>
+                  <li className="flex items-center gap-2"><Check className="w-4 h-4 text-[#5b9a8b]" /> Send feedback and recommendations</li>
+                  <li className="flex items-center gap-2"><Check className="w-4 h-4 text-[#5b9a8b]" /> Access reports and insights</li>
+                </ul>
+              </div>
+            </motion.div>
+          );
+
+        case 1: // Features for professionals
+          return (
+            <motion.div
+              key="features"
+              initial={{ x: 20, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+            >
+              <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center shadow-lg">
+                <Sparkles className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-xl font-bold text-slate-800 mb-1 text-center">Your Dashboard</h2>
+              <p className="text-slate-500 text-sm mb-6 text-center">Here's what's available to you</p>
+              
+              <div className="space-y-3">
+                <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
+                  <div className="p-2 rounded-lg bg-blue-100 text-blue-600">
+                    <Activity className="w-5 h-5" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium text-sm text-slate-800">Real-time Monitoring</p>
+                    <p className="text-xs text-slate-500">See patient/client logs as they happen</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
+                  <div className="p-2 rounded-lg bg-green-100 text-green-600">
+                    <MessageCircle className="w-5 h-5" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium text-sm text-slate-800">Send Feedback</p>
+                    <p className="text-xs text-slate-500">Provide recommendations directly in-app</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
+                  <div className="p-2 rounded-lg bg-amber-100 text-amber-600">
+                    <FileText className="w-5 h-5" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium text-sm text-slate-800">Upload Documents</p>
+                    <p className="text-xs text-slate-500">Share care plans, prescriptions, and more</p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          );
+
+        case 2: // Get started
+          return (
+            <motion.div
+              key="getstarted"
+              initial={{ x: 20, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              className="text-center"
+            >
+              <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center shadow-lg">
+                <Check className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-xl font-bold text-slate-800 mb-1">You're All Set!</h2>
+              <p className="text-slate-500 text-sm mb-6">
+                {userType === 'doctor' && "Go to Doctor Portal to invite patients and start monitoring."}
+                {userType === 'coach' && "Go to Coach Portal to invite clients and start coaching."}
+                {userType === 'caregiver' && "Your care recipient will need to grant you access from their app."}
+              </p>
+              
+              <div className="p-4 bg-[#5b9a8b]/10 rounded-xl">
+                <p className="text-sm text-[#3d6b5f]">
+                  <strong>Next step:</strong> {userType === 'caregiver' 
+                    ? "Ask your loved one to add you as a caregiver in their Profile → Caregivers section."
+                    : `Visit the ${userType === 'doctor' ? 'Doctor' : 'Coach'} Portal from the menu to invite ${userType === 'doctor' ? 'patients' : 'clients'}.`
+                  }
+                </p>
+              </div>
+            </motion.div>
+          );
+
+        default:
+          return null;
+      }
+    }
+
+    // Patient flow
     switch (currentStep) {
       case 0: // Welcome
         return (
@@ -391,7 +511,7 @@ export default function OnboardingFlow({ user, onComplete, onStepAction }) {
           </motion.div>
         );
 
-      case 4: // Doctor connection
+      case 4: // Doctor connection (only for patients)
         return (
           <motion.div
             key="doctor"
@@ -410,8 +530,8 @@ export default function OnboardingFlow({ user, onComplete, onStepAction }) {
                 <Input
                   type="email"
                   placeholder="doctor@clinic.com"
-                  value={doctorEmail}
-                  onChange={(e) => setDoctorEmail(e.target.value)}
+                  value={connectionEmail}
+                  onChange={(e) => setConnectionEmail(e.target.value)}
                   className="mt-1"
                 />
                 <p className="text-xs text-slate-400 mt-1">We'll send them an invitation to connect</p>
@@ -486,18 +606,18 @@ export default function OnboardingFlow({ user, onComplete, onStepAction }) {
                 </Button>
               )}
               
-              {currentStep === 4 ? (
+              {(isPatient && currentStep === 4) || (!isPatient && currentStep === 2) ? (
                 <Button
-                  onClick={doctorEmail ? handleConnectDoctor : handleComplete}
+                  onClick={isPatient ? (connectionEmail ? handleConnectDoctor : handleComplete) : handleComplete}
                   disabled={isSaving}
                   className="flex-1 h-11 sm:h-12 bg-gradient-to-r from-[#5b9a8b] to-[#7eb8a8] hover:opacity-90 rounded-xl"
                 >
-                  {isSaving ? "Saving..." : doctorEmail ? "Send Invite & Finish" : "Complete Setup"}
+                  {isSaving ? "Saving..." : isPatient && connectionEmail ? "Send Invite & Finish" : "Complete Setup"}
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
               ) : (
                 <Button
-                  onClick={currentStep === 1 || currentStep === 2 ? async () => { await saveProfile(); handleNext(); } : handleNext}
+                  onClick={isPatient && (currentStep === 1 || currentStep === 2) ? async () => { await saveProfile(); handleNext(); } : handleNext}
                   disabled={isSaving}
                   className="flex-1 h-11 sm:h-12 bg-gradient-to-r from-[#5b9a8b] to-[#7eb8a8] hover:opacity-90 rounded-xl"
                 >
@@ -507,7 +627,7 @@ export default function OnboardingFlow({ user, onComplete, onStepAction }) {
               )}
             </div>
 
-            {currentStep === 4 && !doctorEmail && (
+            {isPatient && currentStep === 4 && !connectionEmail && (
               <Button
                 variant="ghost"
                 onClick={handleComplete}
