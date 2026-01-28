@@ -1,11 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, lazy, Suspense } from "react";
 import { base44 } from "@/api/base44Client";
 import { Loader2 } from "lucide-react";
-import Home from "./Home";
-import DoctorDashboard from "./DoctorDashboard";
-import CoachDashboard from "./CoachDashboard";
-import CaregiverDashboard from "./CaregiverDashboard";
 import RoleSelection from "@/components/onboarding/RoleSelection";
+
+// Lazy load to avoid circular dependencies
+const Home = lazy(() => import("./Home"));
+const DoctorDashboard = lazy(() => import("./DoctorDashboard"));
+const CoachDashboard = lazy(() => import("./CoachDashboard"));
+const CaregiverDashboard = lazy(() => import("./CaregiverDashboard"));
+
+const LoadingSpinner = () => (
+  <div className="min-h-screen flex items-center justify-center">
+    <Loader2 className="w-8 h-8 animate-spin text-[#5b9a8b]" />
+  </div>
+);
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
@@ -25,7 +33,6 @@ export default function Dashboard() {
     base44.auth.me()
       .then((userData) => {
         setUser(userData);
-        // Show role selection if user_type is not set
         if (!userData?.user_type) {
           setShowRoleSelection(true);
         }
@@ -40,29 +47,21 @@ export default function Dashboard() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-[#5b9a8b]" />
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
-  // Show role selection for new users
   if (showRoleSelection) {
     return <RoleSelection onComplete={handleRoleSelected} />;
   }
 
-  // Route based on user type
   const userType = user?.user_type || 'patient';
 
-  switch (userType) {
-    case 'doctor':
-      return <DoctorDashboard />;
-    case 'coach':
-      return <CoachDashboard />;
-    case 'caregiver':
-      return <CaregiverDashboard />;
-    default:
-      return <Home />;
-  }
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      {userType === 'doctor' && <DoctorDashboard />}
+      {userType === 'coach' && <CoachDashboard />}
+      {userType === 'caregiver' && <CaregiverDashboard />}
+      {(userType === 'patient' || !['doctor', 'coach', 'caregiver'].includes(userType)) && <Home />}
+    </Suspense>
+  );
 }
