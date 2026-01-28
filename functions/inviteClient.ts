@@ -90,34 +90,41 @@ Deno.serve(async (req) => {
 });
 
 async function sendInviteEmail(base44, user, client_email, client_name, message) {
+  const displayName = client_name || 'there';
+  const coachName = user.full_name || 'Your Coach';
+  
   const emailBody = `
-Hello${client_name ? ' ' + client_name : ''},
+Dear ${displayName},
 
-${user.full_name} has invited you to connect on Gluco Vital for personalized health coaching.
+${coachName} would like to connect with you on Gluco Vital to support your health journey.
 
-${message ? 'Message from your coach: ' + message + '\n\n' : ''}
+${message ? `Personal message: "${message}"\n` : ''}
+HOW TO ACCEPT:
 
-To accept this invitation:
-1. Sign up or log in at https://glucovital.fit
-2. Go to "Share with Coach" in the menu
-3. You'll see the pending invitation from ${user.full_name}
-4. Click "Accept" to share your health data
+Step 1: Visit https://glucovital.fit
+Step 2: Sign up or log in with this email address
+Step 3: Navigate to Profile > Connections
+Step 4: Accept the pending invitation from ${coachName}
 
-Benefits of connecting:
-• Your coach can view your health logs and trends
-• Get personalized guidance and feedback
-• Track your progress together
+WHAT YOU GET:
 
-If you did not expect this invitation, you can safely ignore this email.
+- Personalized health insights from your coach
+- Progress tracking and feedback
+- Coordinated care for better outcomes
 
-Best regards,
-Gluco Vital Team
+This invitation was sent because ${coachName} added you as a client. If you believe this was sent in error, no action is needed.
+
+Questions? Reply to this email or contact support@glucovital.fit
+
+Warm regards,
+The Gluco Vital Team
+https://glucovital.fit
   `.trim();
 
   await base44.asServiceRole.integrations.Core.SendEmail({
     to: client_email,
-    subject: `${user.full_name} invites you to connect on Gluco Vital`,
+    subject: `${coachName} wants to connect with you on Gluco Vital`,
     body: emailBody,
-    from_name: "Gluco Vital"
+    from_name: "Gluco Vital Health"
   });
 }

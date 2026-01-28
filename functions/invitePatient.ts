@@ -59,28 +59,35 @@ Deno.serve(async (req) => {
     });
 
     // Send invitation email
+    const displayName = patient_name || 'there';
+    const doctorName = user.full_name || 'Your Doctor';
+    
     const emailBody = `
-Hello${patient_name ? ' ' + patient_name : ''},
+Dear ${displayName},
 
-Dr. ${user.full_name} has invited you to connect on Gluco Vital for better diabetes care management.
+Dr. ${doctorName} would like to connect with you on Gluco Vital for better diabetes care management.
 
-${message ? 'Message from your doctor: ' + message + '\n\n' : ''}
+${message ? `Personal message: "${message}"\n` : ''}
+HOW TO ACCEPT:
 
-To accept this invitation:
-1. Sign up or log in at https://glucovital.fit
-2. Go to "Share with Doctor" in the menu
-3. You'll see the pending invitation from Dr. ${user.full_name}
-4. Click "Accept" to share your health data
+Step 1: Visit https://glucovital.fit
+Step 2: Sign up or log in with this email address
+Step 3: Navigate to Profile > Connections
+Step 4: Accept the pending invitation from Dr. ${doctorName}
 
-Benefits of connecting:
-• Your doctor can view your health logs and trends
-• Get personalized feedback directly in the app
-• Better coordinated care
+WHAT YOU GET:
 
-If you did not expect this invitation, you can safely ignore this email.
+- Your doctor can monitor your health trends remotely
+- Receive personalized feedback directly in the app
+- Better coordinated diabetes care
 
-Best regards,
-Gluco Vital Team
+This invitation was sent because Dr. ${doctorName} added you as a patient. If you believe this was sent in error, no action is needed.
+
+Questions? Reply to this email or contact support@glucovital.fit
+
+Warm regards,
+The Gluco Vital Team
+https://glucovital.fit
     `.trim();
 
     let emailSent = false;
@@ -89,9 +96,9 @@ Gluco Vital Team
     try {
       await base44.asServiceRole.integrations.Core.SendEmail({
         to: patient_email,
-        subject: `Dr. ${user.full_name} invites you to connect on Gluco Vital`,
+        subject: `Dr. ${doctorName} wants to connect with you on Gluco Vital`,
         body: emailBody,
-        from_name: "Gluco Vital"
+        from_name: "Gluco Vital Health"
       });
       emailSent = true;
       console.log('Email sent successfully to:', patient_email);
