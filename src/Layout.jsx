@@ -30,7 +30,7 @@ export default function Layout({ children, currentPageName }) {
   const isAdmin = user?.role === 'admin';
   
   const navItems = [
-    { name: "Home", icon: Home, page: "Home" },
+    { name: "Dashboard", icon: Home, page: "Dashboard" },
     { name: "Care Hub", icon: Heart, page: "CareHub" },
     { name: "Progress", icon: Activity, page: "Progress" },
     { name: "Reports", icon: FileText, page: "Reports" },
