@@ -53,7 +53,9 @@ import AdminDashboard from './pages/AdminDashboard';
 import CancellationRefund from './pages/CancellationRefund';
 import CareHub from './pages/CareHub';
 import CaregiverDashboard from './pages/CaregiverDashboard';
+import CoachDashboard from './pages/CoachDashboard';
 import ContactUs from './pages/ContactUs';
+import Dashboard from './pages/Dashboard';
 import DoctorDashboard from './pages/DoctorDashboard';
 import DoctorFeedback from './pages/DoctorFeedback';
 import DoctorMessages from './pages/DoctorMessages';
@@ -73,8 +75,7 @@ import Reports from './pages/Reports';
 import Subscription from './pages/Subscription';
 import Terms from './pages/Terms';
 import WhatsAppTest from './pages/WhatsAppTest';
-import CoachDashboard from './pages/CoachDashboard';
-import Dashboard from './pages/Dashboard';
+import Documents from './pages/Documents';
 import __Layout from './Layout.jsx';
 
 
@@ -85,7 +86,9 @@ export const PAGES = {
     "CancellationRefund": CancellationRefund,
     "CareHub": CareHub,
     "CaregiverDashboard": CaregiverDashboard,
+    "CoachDashboard": CoachDashboard,
     "ContactUs": ContactUs,
+    "Dashboard": Dashboard,
     "DoctorDashboard": DoctorDashboard,
     "DoctorFeedback": DoctorFeedback,
     "DoctorMessages": DoctorMessages,
@@ -105,8 +108,7 @@ export const PAGES = {
     "Subscription": Subscription,
     "Terms": Terms,
     "WhatsAppTest": WhatsAppTest,
-    "CoachDashboard": CoachDashboard,
-    "Dashboard": Dashboard,
+    "Documents": Documents,
 }
 
 export const pagesConfig = {
