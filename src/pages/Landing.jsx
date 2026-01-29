@@ -399,27 +399,15 @@ export default function Landing() {
             <p className="text-slate-600">Start free, upgrade when you're ready</p>
           </div>
           
-          <div className="grid md:grid-cols-4 gap-4">
-            {/* Basic - Free */}
-            <div className="border-2 border-slate-200 rounded-2xl p-5 bg-white hover:border-slate-300 transition-colors">
-              <p className="text-xs text-slate-500 font-bold uppercase tracking-wide">Basic</p>
-              <p className="text-3xl font-black text-slate-800 mt-1">₹0</p>
-              <p className="text-green-600 text-xs font-medium mb-4">Always free</p>
-              <ul className="space-y-2 text-sm text-slate-700">
-                {["Unlimited logging", "WhatsApp text", "7-day history", "Basic trends"].map((f,i) => (
-                  <li key={i} className="flex items-center gap-2"><Check className="w-4 h-4 text-green-500 flex-shrink-0" />{f}</li>
-                ))}
-              </ul>
-            </div>
-            
+          <div className="grid md:grid-cols-3 gap-4 max-w-4xl mx-auto">
             {/* Starter */}
             <div className="border-2 border-blue-300 rounded-2xl p-5 bg-gradient-to-b from-blue-50 to-white relative">
               <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-green-500 text-white text-[10px] font-bold rounded-full shadow">1ST MONTH FREE</span>
               <p className="text-xs text-blue-600 font-bold uppercase tracking-wide mt-1">Starter</p>
               <p className="text-3xl font-black text-slate-800 mt-1">₹99<span className="text-sm font-normal text-slate-500">/mo</span></p>
-              <p className="text-slate-500 text-xs mb-4">After free trial</p>
+              <p className="text-green-600 text-xs font-medium mb-4">First month free on signup</p>
               <ul className="space-y-2 text-sm text-slate-700">
-                {["Everything in Basic", "30-day history", "Weekly AI insights", "PDF reports", "Medication reminders"].map((f,i) => (
+                {["Unlimited logging", "WhatsApp text & voice", "30-day history", "Weekly AI insights", "PDF reports", "Medication reminders"].map((f,i) => (
                   <li key={i} className="flex items-center gap-2"><Check className="w-4 h-4 text-blue-500 flex-shrink-0" />{f}</li>
                 ))}
               </ul>
