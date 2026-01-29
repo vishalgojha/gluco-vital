@@ -401,41 +401,50 @@ export default function Landing() {
           
           <div className="grid md:grid-cols-3 gap-4 max-w-4xl mx-auto">
             {/* Starter */}
-            <div className="border-2 border-blue-300 rounded-2xl p-5 bg-gradient-to-b from-blue-50 to-white relative">
+            <div className="border-2 border-blue-300 rounded-2xl p-5 bg-gradient-to-b from-blue-50 to-white relative flex flex-col">
               <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-green-500 text-white text-[10px] font-bold rounded-full shadow">1ST MONTH FREE</span>
               <p className="text-xs text-blue-600 font-bold uppercase tracking-wide mt-1">Starter</p>
               <p className="text-3xl font-black text-slate-800 mt-1">₹99<span className="text-sm font-normal text-slate-500">/mo</span></p>
               <p className="text-green-600 text-xs font-medium mb-4">First month free on signup</p>
-              <ul className="space-y-2 text-sm text-slate-700">
+              <ul className="space-y-2 text-sm text-slate-700 flex-1">
                 {["Unlimited logging", "WhatsApp text & voice", "30-day history", "Weekly AI insights", "PDF reports", "Medication reminders"].map((f,i) => (
                   <li key={i} className="flex items-center gap-2"><Check className="w-4 h-4 text-blue-500 flex-shrink-0" />{f}</li>
                 ))}
               </ul>
+              <Button onClick={handleGetStarted} className="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white rounded-xl">
+                Get Started
+              </Button>
             </div>
             
             {/* Premium */}
-            <div className="border-2 border-[#5b9a8b] rounded-2xl p-5 bg-gradient-to-b from-[#5b9a8b]/10 to-white relative shadow-xl shadow-[#5b9a8b]/10 md:scale-105">
+            <div className="border-2 border-[#5b9a8b] rounded-2xl p-5 bg-gradient-to-b from-[#5b9a8b]/10 to-white relative shadow-xl shadow-[#5b9a8b]/10 md:scale-105 flex flex-col">
               <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-gradient-to-r from-[#5b9a8b] to-[#4a8a7b] text-white text-[10px] font-bold rounded-full shadow-lg">MOST POPULAR</span>
               <p className="text-xs text-[#5b9a8b] font-bold uppercase tracking-wide mt-1">Premium</p>
               <p className="text-3xl font-black text-slate-800 mt-1">₹499<span className="text-sm font-normal text-slate-500">/mo</span></p>
               <p className="text-slate-500 text-xs mb-4">Best for active users</p>
-              <ul className="space-y-2 text-sm text-slate-700">
+              <ul className="space-y-2 text-sm text-slate-700 flex-1">
                 {["Everything in Starter", "Unlimited history", "Daily AI coaching", "Voice reminders", "Doctor sharing", "Lab analysis"].map((f,i) => (
                   <li key={i} className="flex items-center gap-2"><Check className="w-4 h-4 text-[#5b9a8b] flex-shrink-0" />{f}</li>
                 ))}
               </ul>
+              <Button onClick={handleGetStarted} className="w-full mt-4 bg-gradient-to-r from-[#5b9a8b] to-[#4a8a7b] hover:from-[#4a8a7b] hover:to-[#3d6b5f] text-white rounded-xl">
+                Get Started
+              </Button>
             </div>
             
             {/* Family */}
-            <div className="border-2 border-violet-200 rounded-2xl p-5 bg-white hover:border-violet-300 transition-colors">
+            <div className="border-2 border-violet-200 rounded-2xl p-5 bg-white hover:border-violet-300 transition-colors flex flex-col">
               <p className="text-xs text-violet-600 font-bold uppercase tracking-wide">Family</p>
               <p className="text-3xl font-black text-slate-800 mt-1">₹799<span className="text-sm font-normal text-slate-500">/mo</span></p>
               <p className="text-slate-500 text-xs mb-4">For caregivers</p>
-              <ul className="space-y-2 text-sm text-slate-700">
+              <ul className="space-y-2 text-sm text-slate-700 flex-1">
                 {["Everything in Premium", "Up to 5 members", "Caregiver dashboard", "Real-time alerts", "Emergency escalation"].map((f,i) => (
                   <li key={i} className="flex items-center gap-2"><Check className="w-4 h-4 text-violet-500 flex-shrink-0" />{f}</li>
                 ))}
               </ul>
+              <Button onClick={handleGetStarted} className="w-full mt-4 bg-violet-500 hover:bg-violet-600 text-white rounded-xl">
+                Get Started
+              </Button>
             </div>
           </div>
           
