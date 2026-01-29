@@ -418,12 +418,12 @@ export default function Landing() {
             
             {/* Premium */}
             <div className="border-2 border-[#5b9a8b] rounded-2xl p-5 bg-gradient-to-b from-[#5b9a8b]/10 to-white relative shadow-xl shadow-[#5b9a8b]/10 md:scale-105 flex flex-col">
-              <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-gradient-to-r from-[#5b9a8b] to-[#4a8a7b] text-white text-[10px] font-bold rounded-full shadow-lg">MOST POPULAR</span>
+              <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-gradient-to-r from-[#5b9a8b] to-[#4a8a7b] text-white text-[10px] font-bold rounded-full shadow-lg">BEST FOR COACHES</span>
               <p className="text-xs text-[#5b9a8b] font-bold uppercase tracking-wide mt-1">Premium</p>
               <p className="text-3xl font-black text-slate-800 mt-1">₹499<span className="text-sm font-normal text-slate-500">/mo</span></p>
-              <p className="text-slate-500 text-xs mb-4">Best for active users</p>
+              <p className="text-slate-500 text-xs mb-4">For coaches & active users</p>
               <ul className="space-y-2 text-sm text-slate-700 flex-1">
-                {["Everything in Starter", "Unlimited history", "Daily AI coaching", "Voice reminders", "Doctor sharing", "Lab analysis"].map((f,i) => (
+                {["Everything in Starter", "Unlimited history", "Daily AI coaching", "Voice reminders", "Doctor sharing", "Lab analysis", "Client management"].map((f,i) => (
                   <li key={i} className="flex items-center gap-2"><Check className="w-4 h-4 text-[#5b9a8b] flex-shrink-0" />{f}</li>
                 ))}
               </ul>
