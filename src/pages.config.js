@@ -70,7 +70,6 @@ import Landing from './pages/Landing';
 import MarketingContent from './pages/MarketingContent';
 import PatientDetail from './pages/PatientDetail';
 import PatientFeedback from './pages/PatientFeedback';
-import PatientPortal from './pages/PatientPortal';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import Profile from './pages/Profile';
 import Progress from './pages/Progress';
@@ -105,7 +104,6 @@ export const PAGES = {
     "MarketingContent": MarketingContent,
     "PatientDetail": PatientDetail,
     "PatientFeedback": PatientFeedback,
-    "PatientPortal": PatientPortal,
     "PrivacyPolicy": PrivacyPolicy,
     "Profile": Profile,
     "Progress": Progress,
