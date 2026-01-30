@@ -9,9 +9,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Stethoscope, Plus, Clock, CheckCircle2, AlertTriangle, MapPin } from "lucide-react";
+import { Calendar, Stethoscope, Plus, Clock, CheckCircle2, AlertTriangle, MapPin, Bot, MessageCircle, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
 import { format, parseISO, isPast, isFuture, differenceInDays, addDays } from "date-fns";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 const VISIT_TYPES = {
   routine_checkup: { label: "Routine Checkup", color: "bg-blue-100 text-blue-700" },
@@ -37,6 +38,7 @@ const SPECIALTIES = [
 
 export default function DoctorVisitTracker({ userEmail }) {
   const [showForm, setShowForm] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const [formData, setFormData] = useState({
     doctor_name: "", doctor_specialty: "general_physician", visit_type: "routine_checkup",
     visit_date: "", clinic_name: "", clinic_address: "", notes: "", reminder_days_before: 2
@@ -84,13 +86,17 @@ export default function DoctorVisitTracker({ userEmail }) {
     <Card className="border-slate-100 shadow-sm">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Stethoscope className="w-5 h-5 text-blue-500" />
-            Doctor Visits
-          </CardTitle>
-          <Button size="sm" onClick={() => setShowForm(true)}>
-            <Plus className="w-4 h-4 mr-1" /> Schedule
-          </Button>
+          <div>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Stethoscope className="w-5 h-5 text-blue-500" />
+              Doctor Visits
+              <Badge variant="outline" className="ml-1 text-xs font-normal text-violet-600 border-violet-200">
+                <Bot className="w-3 h-3 mr-1" />
+                Agent-managed
+              </Badge>
+            </CardTitle>
+            <p className="text-xs text-slate-500 mt-1">Tell the agent about your visits</p>
+          </div>
         </div>
       </CardHeader>
       <CardContent>
@@ -184,10 +190,59 @@ export default function DoctorVisitTracker({ userEmail }) {
         )}
 
         {visits.length === 0 && (
-          <div className="text-center py-6 bg-slate-50 rounded-lg">
-            <Stethoscope className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-            <p className="text-sm text-slate-500">No visits scheduled</p>
-            <p className="text-xs text-slate-400">Regular checkups are important!</p>
+          <div className="text-center py-6 bg-gradient-to-br from-violet-50 to-slate-50 rounded-lg border border-violet-100">
+            <Bot className="w-10 h-10 text-violet-400 mx-auto mb-3" />
+            <p className="text-sm font-medium text-slate-700">No visits logged yet</p>
+            <p className="text-xs text-slate-500 mt-1 max-w-[220px] mx-auto">
+              Just tell the agent — it'll track your appointments
+            </p>
+            <div className="mt-3 p-3 bg-white rounded-lg border border-slate-200 text-xs text-left max-w-[240px] mx-auto">
+              <p className="font-medium text-slate-700 mb-2">Try saying:</p>
+              <p className="text-slate-500">"Doctor visit tomorrow at 10am"</p>
+              <p className="text-slate-500">"Appointment with Dr Sharma"</p>
+              <p className="text-slate-500">"Going to Apollo on Friday"</p>
+            </div>
+            
+            {/* Advanced: Manual add */}
+            <Collapsible open={showAdvanced} onOpenChange={setShowAdvanced} className="mt-4">
+              <CollapsibleTrigger asChild>
+                <button className="text-xs text-slate-400 hover:text-slate-600 flex items-center gap-1 mx-auto">
+                  <ChevronDown className={`w-3 h-3 transition-transform ${showAdvanced ? 'rotate-180' : ''}`} />
+                  Advanced: Add manually
+                </button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="mt-2">
+                <Button size="sm" variant="outline" onClick={() => setShowForm(true)} className="text-xs">
+                  <Plus className="w-3 h-3 mr-1" /> Add manually
+                </Button>
+              </CollapsibleContent>
+            </Collapsible>
+          </div>
+        )}
+        
+        {/* Tip when visits exist */}
+        {visits.length > 0 && (
+          <div className="mt-4 space-y-3">
+            <div className="p-3 bg-violet-50 rounded-lg border border-violet-100">
+              <p className="text-xs text-violet-700 flex items-center gap-1">
+                <MessageCircle className="w-3 h-3" />
+                <span className="font-medium">Add more:</span> "Doctor visit next week" on WhatsApp
+              </p>
+            </div>
+            
+            <Collapsible open={showAdvanced} onOpenChange={setShowAdvanced}>
+              <CollapsibleTrigger asChild>
+                <button className="text-xs text-slate-400 hover:text-slate-600 flex items-center gap-1">
+                  <ChevronDown className={`w-3 h-3 transition-transform ${showAdvanced ? 'rotate-180' : ''}`} />
+                  Advanced: Add manually
+                </button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="mt-2">
+                <Button size="sm" variant="outline" onClick={() => setShowForm(true)} className="text-xs">
+                  <Plus className="w-3 h-3 mr-1" /> Add manually
+                </Button>
+              </CollapsibleContent>
+            </Collapsible>
           </div>
         )}
 
@@ -246,11 +301,11 @@ export default function DoctorVisitTracker({ userEmail }) {
                   />
                 </div>
                 <div className="col-span-2">
-                  <Label>Notes / Questions to Ask</Label>
+                  <Label>What should I remind you to ask the doctor?</Label>
                   <Textarea
                     value={formData.notes}
                     onChange={(e) => setFormData(p => ({ ...p, notes: e.target.value }))}
-                    placeholder="Things to discuss with doctor..."
+                    placeholder="Questions or topics to discuss..."
                     className="h-20"
                   />
                 </div>
