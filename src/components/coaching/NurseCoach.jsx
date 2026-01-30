@@ -1,10 +1,8 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
-import { Stethoscope, Sparkles, TrendingUp, TrendingDown, Target, Calendar, Loader2, RefreshCw } from "lucide-react";
+import { Stethoscope, Sparkles, TrendingUp, TrendingDown, Target, Calendar, Loader2, RefreshCw, Utensils, Activity as ActivityIcon, Shield, Pill, AlertTriangle, Eye, Heart, Moon, MessageSquare } from "lucide-react";
 import { format, subDays, differenceInDays } from "date-fns";
-import ReactMarkdown from "react-markdown";
-import { Utensils, Activity as ActivityIcon, Shield, Pill } from "lucide-react";
 
 function calculateStdDev(values) {
   const avg = values.reduce((a, b) => a + b, 0) / values.length;
@@ -127,7 +125,58 @@ export default function NurseCoach({ logs = [], profile, achievements }) {
       const actualMeds = medicationLogs.filter(l => differenceInDays(new Date(), new Date(l.created_date)) <= 7).length;
       const medAdherence = expectedMeds > 0 ? Math.round((actualMeds / (expectedMeds * 7)) * 100) : 100;
 
-      const prompt = `You are GlucoVital Coach, a warm, caring, and highly intelligent diabetes health coach with advanced clinical knowledge. Analyze this patient's data deeply and provide proactive, personalized coaching with early risk detection.
+      // Advanced complication risk indicators
+      const consecutiveHighs = (() => {
+        let maxConsecutive = 0, current = 0;
+        sugarLogs.slice(0, 20).forEach(l => {
+          if (l.numeric_value > 250) { current++; maxConsecutive = Math.max(maxConsecutive, current); }
+          else { current = 0; }
+        });
+        return maxConsecutive;
+      })();
+
+      const consecutiveLows = (() => {
+        let maxConsecutive = 0, current = 0;
+        sugarLogs.slice(0, 20).forEach(l => {
+          if (l.numeric_value < 70) { current++; maxConsecutive = Math.max(maxConsecutive, current); }
+          else { current = 0; }
+        });
+        return maxConsecutive;
+      })();
+
+      // Dawn phenomenon detection (high fasting, normal bedtime)
+      const bedtimeReadings = sugarLogs.filter(l => l.time_of_day === "bedtime");
+      const avgBedtime = bedtimeReadings.length > 0 
+        ? Math.round(bedtimeReadings.reduce((a, b) => a + b.numeric_value, 0) / bedtimeReadings.length) 
+        : null;
+      const dawnPhenomenon = avgFasting && avgBedtime && (avgFasting - avgBedtime > 30);
+
+      // Post-meal spike analysis
+      const mealSpikes = {
+        breakfast: sugarLogs.filter(l => l.time_of_day === "after_breakfast" && l.numeric_value > 180).length,
+        lunch: sugarLogs.filter(l => l.time_of_day === "after_lunch" && l.numeric_value > 180).length,
+        dinner: sugarLogs.filter(l => l.time_of_day === "after_dinner" && l.numeric_value > 180).length
+      };
+      const worstMeal = Object.entries(mealSpikes).sort((a, b) => b[1] - a[1])[0];
+
+      // Neuropathy/complication symptoms
+      const neuropathySymptoms = symptomLogs.filter(l => 
+        /tingling|numbness|burning|pins|needles|foot|feet|hand|nerve/i.test(l.value || l.notes || '')
+      );
+      const visionSymptoms = symptomLogs.filter(l => 
+        /blur|vision|eye|sight|see/i.test(l.value || l.notes || '')
+      );
+      const kidneySymptoms = symptomLogs.filter(l => 
+        /swelling|ankle|urine|urination|frequent|thirst/i.test(l.value || l.notes || '')
+      );
+
+      // Meal content analysis
+      const recentMeals = mealLogs.slice(0, 20).map(m => m.value || m.notes || '').join(' ').toLowerCase();
+      const highCarbMeals = /rice|roti|chapati|bread|pasta|noodle|paratha|puri|biryani|pulao|potato|aloo/i.test(recentMeals);
+      const hasProtein = /dal|lentil|chicken|fish|egg|paneer|tofu|meat|mutton/i.test(recentMeals);
+      const hasVegetables = /sabzi|vegetable|salad|greens|spinach|palak|bhindi|gourd|beans/i.test(recentMeals);
+
+      const prompt = `You are GlucoVital Coach, a warm, caring, and highly intelligent diabetes health coach with advanced clinical knowledge. Analyze this patient's data deeply and provide proactive, personalized coaching with EARLY DETECTION of diabetes complications.
 
 **PATIENT PROFILE:**
 - Name: ${profile?.name || "Patient"}
@@ -155,11 +204,30 @@ export default function NurseCoach({ logs = [], profile, achievements }) {
 **⚠️ CRITICAL RISK INDICATORS:**
 - High readings (>250): ${highSugarReadings.length} total, ${recentHighs.length} in last 7 days
 - Very high (>300): ${veryHighSugarReadings.length} total
+- Consecutive high readings: ${consecutiveHighs} in a row ${consecutiveHighs >= 3 ? "🚨 DKA RISK" : ""}
 - Low readings (<70): ${lowSugarReadings.length} total, ${recentLows.length} in last 7 days
+- Consecutive low readings: ${consecutiveLows} in a row ${consecutiveLows >= 2 ? "🚨 SEVERE HYPO RISK" : ""}
 - Very low (<50): ${veryLowSugarReadings.length} total
-- Blood sugar variability (StdDev): ${stdDev.toFixed(1)} ${highVariability ? "⚠️ HIGH" : ""}
+- Blood sugar variability (StdDev): ${stdDev.toFixed(1)} ${highVariability ? "⚠️ HIGH VARIABILITY" : ""}
 - Worrying symptoms: ${worryingSymptoms.length} in last 7 days
 - Medication adherence: ${medAdherence}%
+
+**🩺 COMPLICATION WARNING SIGNS:**
+- Dawn Phenomenon Detected: ${dawnPhenomenon ? "YES - fasting " + avgFasting + " vs bedtime " + avgBedtime : "No"}
+- Neuropathy symptoms reported: ${neuropathySymptoms.length} (tingling, numbness, burning)
+- Vision symptoms reported: ${visionSymptoms.length} (blurry vision, eye issues)
+- Kidney-related symptoms: ${kidneySymptoms.length} (swelling, frequent urination, excessive thirst)
+
+**🍽️ MEAL SPIKE ANALYSIS:**
+- Worst meal for spikes: ${worstMeal[0]} (${worstMeal[1]} high readings after this meal)
+- Breakfast spikes (>180): ${mealSpikes.breakfast}
+- Lunch spikes (>180): ${mealSpikes.lunch}
+- Dinner spikes (>180): ${mealSpikes.dinner}
+
+**🥘 DIET PATTERN ANALYSIS:**
+- High carb foods detected: ${highCarbMeals ? "Yes" : "No"}
+- Adequate protein: ${hasProtein ? "Yes" : "No - needs improvement"}
+- Vegetables present: ${hasVegetables ? "Yes" : "No - needs more fiber"}
 
 **PATTERN ANALYSIS:**
 - Morning (breakfast): ${morningAvg ? morningAvg.toFixed(0) : "N/A"} mg/dL avg
@@ -184,18 +252,36 @@ export default function NurseCoach({ logs = [], profile, achievements }) {
 - Activity Level: ${avgDailySteps >= 10000 ? "High ✓" : avgDailySteps >= 5000 ? "Moderate" : avgDailySteps > 0 ? "Low - needs improvement" : "No data"}
 
 **COACHING INSTRUCTIONS:**
-1. **Risk Assessment First**: If ANY critical risks detected (DKA signs, frequent hypoglycemia, high variability, dangerous symptoms), flag them URGENTLY
-2. **Personalization**: Adapt tone based on engagement level:
+1. **COMPLICATION ALERTS FIRST**: Check for early signs of:
+   - DKA Risk: consecutive highs >250, ketone symptoms (nausea, vomiting, confusion, fruity breath)
+   - Severe Hypoglycemia: consecutive lows, unawareness symptoms
+   - Neuropathy: tingling, numbness, burning sensations in feet/hands
+   - Retinopathy: blurry vision, floaters, vision changes
+   - Nephropathy: swelling, changes in urination, excessive thirst
+   - Dawn Phenomenon: high fasting despite normal bedtime readings
+   
+2. **Risk Assessment**: If ANY critical risks detected, flag them URGENTLY with specific actions
+
+3. **Personalization**: Adapt tone based on engagement level:
    - High engagement: Detailed, analytical, celebrate progress
    - Medium engagement: Encouraging, supportive, motivate consistency
    - Low engagement: Simple, warm, re-engage gently
-3. **Cultural Sensitivity**: Use appropriate language/examples for ${profile?.cultural_context || "general"} context
-4. **Lifestyle Recommendations**: Provide SPECIFIC diet and exercise advice based on:
-   - Time-of-day patterns (which meal causes spikes?)
-   - Cultural food preferences
-   - Current exercise/activity level from wearable data
-   - Sleep quality and its impact on blood sugar control
-5. **Medication Insights**: If adherence <80%, probe why (forgetfulness? side effects? access?)
+
+4. **CULTURAL DIET RECOMMENDATIONS** for ${profile?.cultural_context || "general"} context:
+   - South Asian: Suggest millet rotis over wheat, reduce rice portions, add more dal protein, use bitter gourd/methi
+   - Chinese: Recommend congee with vegetables, reduce white rice, add tofu/fish protein
+   - Arabic: Suggest grilled meats over fried, reduce date intake, whole grain pita
+   - Latin: Recommend beans over rice, grilled fish, reduce tortilla portions
+   - Western: Suggest whole grains, lean proteins, Mediterranean-style eating
+   - Southeast Asian: Reduce white rice, add more vegetables, fish-based proteins
+   
+5. **EXERCISE TIMING based on data**:
+   - If post-breakfast spikes: suggest 15-min walk after breakfast
+   - If post-dinner spikes: evening walk 30 mins after dinner
+   - If sedentary (low steps): start with 10-min walks, gradually increase
+   - If active: maintain and suggest timing adjustments for optimal control
+
+6. **Medication Insights**: If adherence <80%, probe why (forgetfulness? side effects? access?)
 
 **RECENT READINGS (last 10):**
 ${sugarLogs.slice(0, 10).map(l => `- ${format(new Date(l.created_date), "MMM d HH:mm")}: ${l.numeric_value} mg/dL (${l.time_of_day || "unspecified"})${l.notes ? ` - "${l.notes}"` : ''}`).join("\n")}
@@ -208,31 +294,43 @@ Provide comprehensive coaching response in this JSON format:
   "overall_status": "excellent" | "good" | "moderate" | "needs_attention" | "critical",
   "status_message": "Brief overall assessment",
   "urgent_alerts": [
-    "Any critical health risks requiring immediate doctor consultation"
+    "Any critical health risks requiring immediate doctor consultation - be specific about DKA, severe hypo, or complication signs"
+  ],
+  "complication_warnings": [
+    {"type": "dka" | "hypoglycemia" | "neuropathy" | "retinopathy" | "nephropathy" | "dawn_phenomenon", "severity": "watch" | "concern" | "urgent", "message": "Specific warning with data and recommended action"}
   ],
   "risk_assessment": {
     "dka_risk": "none" | "low" | "moderate" | "high",
     "hypoglycemia_risk": "none" | "low" | "moderate" | "high",
     "variability_concern": "none" | "mild" | "significant",
-    "notes": "Brief explanation of detected risks"
+    "neuropathy_risk": "none" | "watch" | "concern",
+    "retinopathy_risk": "none" | "watch" | "concern",
+    "nephropathy_risk": "none" | "watch" | "concern",
+    "notes": "Brief explanation of detected risks and what signs to watch for"
   },
   "key_insights": [
     {"type": "positive" | "warning" | "critical" | "tip", "message": "Insight with specific data"}
   ],
   "diet_recommendations": [
-    "Specific food/meal advice based on time-of-day patterns and cultural context",
-    "What to eat more/less of with reasoning"
+    "SPECIFIC cultural food swap (e.g., 'Replace white rice with brown rice or millet roti')",
+    "Meal timing advice based on spike patterns (e.g., 'Your dinner spikes suggest eating earlier or reducing evening carbs')",
+    "Protein/fiber additions (e.g., 'Add dal or paneer to balance your meals')"
   ],
   "exercise_recommendations": [
-    "Specific exercise advice based on current level and sugar patterns",
-    "Best timing for exercise based on their data"
+    "SPECIFIC timing based on their spike data (e.g., 'A 15-minute walk after breakfast can help with your morning spikes')",
+    "Activity progression based on current level (e.g., 'You're averaging 3000 steps - try adding a 10-min evening walk to reach 5000')",
+    "Exercise type suggestions for their condition"
   ],
+  "sleep_recommendations": "Advice on sleep timing/quality if sleep data shows issues, or null",
   "medication_coaching": "Advice on medication timing/adherence if needed, or null",
   "weekly_focus": "One specific, measurable goal for this week",
   "action_plan": [
     "Specific actionable step with reasoning",
     "Another specific step",
     "Third specific step"
+  ],
+  "doctor_discussion_points": [
+    "Questions or topics to discuss with doctor at next visit based on the data"
   ],
   "motivation": "Personalized encouragement based on engagement level and progress",
   "engagement_boost": "Specific message to improve logging consistency if engagement is low, or null",
@@ -248,12 +346,26 @@ Provide comprehensive coaching response in this JSON format:
             overall_status: { type: "string", enum: ["excellent", "good", "moderate", "needs_attention", "critical"] },
             status_message: { type: "string" },
             urgent_alerts: { type: "array", items: { type: "string" } },
+            complication_warnings: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  type: { type: "string" },
+                  severity: { type: "string" },
+                  message: { type: "string" }
+                }
+              }
+            },
             risk_assessment: {
               type: "object",
               properties: {
                 dka_risk: { type: "string", enum: ["none", "low", "moderate", "high"] },
                 hypoglycemia_risk: { type: "string", enum: ["none", "low", "moderate", "high"] },
                 variability_concern: { type: "string", enum: ["none", "mild", "significant"] },
+                neuropathy_risk: { type: "string", enum: ["none", "watch", "concern"] },
+                retinopathy_risk: { type: "string", enum: ["none", "watch", "concern"] },
+                nephropathy_risk: { type: "string", enum: ["none", "watch", "concern"] },
                 notes: { type: "string" }
               }
             },
@@ -269,9 +381,11 @@ Provide comprehensive coaching response in this JSON format:
             },
             diet_recommendations: { type: "array", items: { type: "string" } },
             exercise_recommendations: { type: "array", items: { type: "string" } },
+            sleep_recommendations: { type: "string" },
             medication_coaching: { type: "string" },
             weekly_focus: { type: "string" },
             action_plan: { type: "array", items: { type: "string" } },
+            doctor_discussion_points: { type: "array", items: { type: "string" } },
             motivation: { type: "string" },
             engagement_boost: { type: "string" },
             next_check_reminder: { type: "string" }
@@ -382,6 +496,44 @@ Provide comprehensive coaching response in this JSON format:
           </div>
         )}
 
+        {/* Complication Warnings */}
+        {coaching.complication_warnings && coaching.complication_warnings.length > 0 && (
+          <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl p-5 border-2 border-orange-200">
+            <h3 className="font-semibold text-orange-800 mb-3 flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-orange-600" />
+              Complication Watch
+            </h3>
+            <div className="space-y-2">
+              {coaching.complication_warnings.map((warning, idx) => (
+                <div key={idx} className={`flex items-start gap-2 rounded-lg p-3 ${
+                  warning.severity === "urgent" ? "bg-red-100 border border-red-200" :
+                  warning.severity === "concern" ? "bg-orange-100 border border-orange-200" :
+                  "bg-amber-100 border border-amber-200"
+                }`}>
+                  <span className={`text-sm font-bold ${
+                    warning.severity === "urgent" ? "text-red-600" :
+                    warning.severity === "concern" ? "text-orange-600" : "text-amber-600"
+                  }`}>
+                    {warning.type === "neuropathy" ? "🦶" : 
+                     warning.type === "retinopathy" ? "👁️" :
+                     warning.type === "nephropathy" ? "🫘" :
+                     warning.type === "dka" ? "🚨" :
+                     warning.type === "hypoglycemia" ? "⚡" :
+                     warning.type === "dawn_phenomenon" ? "🌅" : "⚠️"}
+                  </span>
+                  <div>
+                    <p className="text-xs font-semibold uppercase text-slate-500">{warning.type.replace("_", " ")}</p>
+                    <p className={`text-sm ${
+                      warning.severity === "urgent" ? "text-red-800" :
+                      warning.severity === "concern" ? "text-orange-800" : "text-amber-800"
+                    }`}>{warning.message}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Risk Assessment */}
         {coaching.risk_assessment && (
           <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-5 border border-amber-100">
@@ -394,6 +546,15 @@ Provide comprehensive coaching response in this JSON format:
               <RiskBadge label="Hypo Risk" level={coaching.risk_assessment.hypoglycemia_risk} />
               <RiskBadge label="Variability" level={coaching.risk_assessment.variability_concern} />
             </div>
+            {(coaching.risk_assessment.neuropathy_risk !== "none" || 
+              coaching.risk_assessment.retinopathy_risk !== "none" || 
+              coaching.risk_assessment.nephropathy_risk !== "none") && (
+              <div className="grid grid-cols-3 gap-3 mb-3">
+                <RiskBadge label="Nerve Health" level={coaching.risk_assessment.neuropathy_risk} />
+                <RiskBadge label="Eye Health" level={coaching.risk_assessment.retinopathy_risk} />
+                <RiskBadge label="Kidney Health" level={coaching.risk_assessment.nephropathy_risk} />
+              </div>
+            )}
             {coaching.risk_assessment.notes && (
               <p className="text-sm text-amber-800 bg-white/50 rounded-lg p-3">{coaching.risk_assessment.notes}</p>
             )}
@@ -463,6 +624,16 @@ Provide comprehensive coaching response in this JSON format:
           </div>
         )}
 
+        {/* Sleep Recommendations */}
+        {coaching.sleep_recommendations && (
+          <div className="bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl p-4 border border-indigo-100">
+            <h4 className="font-medium text-indigo-800 flex items-center gap-2 mb-2">
+              <Moon className="w-4 h-4" /> Sleep Insights
+            </h4>
+            <p className="text-sm text-indigo-700">{coaching.sleep_recommendations}</p>
+          </div>
+        )}
+
         {/* Medication Coaching */}
         {coaching.medication_coaching && (
           <div className="bg-gradient-to-r from-purple-50 to-violet-50 rounded-xl p-4 border border-purple-100">
@@ -489,6 +660,23 @@ Provide comprehensive coaching response in this JSON format:
             ))}
           </div>
         </div>
+
+        {/* Doctor Discussion Points */}
+        {coaching.doctor_discussion_points && coaching.doctor_discussion_points.length > 0 && (
+          <div className="bg-gradient-to-r from-cyan-50 to-teal-50 rounded-xl p-4 border border-cyan-100">
+            <h4 className="font-medium text-cyan-800 flex items-center gap-2 mb-2">
+              <MessageSquare className="w-4 h-4" /> Discuss with Your Doctor
+            </h4>
+            <ul className="text-sm text-cyan-700 space-y-1">
+              {coaching.doctor_discussion_points.map((point, idx) => (
+                <li key={idx} className="flex items-start gap-2">
+                  <span className="text-cyan-500">•</span>
+                  {point}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         {/* Engagement Boost */}
         {coaching.engagement_boost && (
