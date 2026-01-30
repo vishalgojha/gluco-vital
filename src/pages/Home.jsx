@@ -15,7 +15,7 @@ import PointsDisplay from "@/components/gamification/PointsDisplay";
 import WeeklyChallenge from "@/components/gamification/WeeklyChallenge";
 import RecommendedSchedule from "@/components/dashboard/RecommendedSchedule";
 import NurseCoach from "@/components/coaching/NurseCoach";
-import OnboardingFlow from "@/components/onboarding/OnboardingFlow";
+
 import QuickLogModal from "@/components/onboarding/QuickLogModal";
 import QuickMedicationModal from "@/components/onboarding/QuickMedicationModal";
 import { generateDemoData, DEMO_USER_EMAIL } from "@/components/demo/DemoDataGenerator";
