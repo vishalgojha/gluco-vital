@@ -10,9 +10,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Badge } from "@/components/ui/badge";
 import { 
   MapPin, Phone, Mail, Plus, Pencil, Trash2, Star, 
-  Building2, Stethoscope, FlaskConical, Users, Heart
+  Building2, Stethoscope, FlaskConical, Users, Heart, Bot, MessageCircle, ChevronDown
 } from "lucide-react";
 import { toast } from "sonner";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 const TYPE_CONFIG = {
   pharmacy: { icon: Building2, color: "text-green-600", bg: "bg-green-50", label: "Pharmacy" },
@@ -29,6 +30,7 @@ const TYPE_CONFIG = {
 
 export default function SupportPoints({ userEmail }) {
   const [showForm, setShowForm] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const [editingPoint, setEditingPoint] = useState(null);
   const [formData, setFormData] = useState({
     name: "", type: "pharmacy", contact_name: "", phone: "", whatsapp: "",
@@ -41,6 +43,50 @@ export default function SupportPoints({ userEmail }) {
     queryFn: () => base44.entities.SupportPoint.filter({ user_email: userEmail }),
     enabled: !!userEmail
   });
+
+  // Fetch health logs to detect support points from conversations
+  const { data: healthLogs = [] } = useQuery({
+    queryKey: ['health-logs-support', userEmail],
+    queryFn: async () => {
+      const logs = await base44.entities.HealthLog.filter({ user_email: userEmail });
+      return logs.filter(l => l.status !== 'deleted' && l.status !== 'corrected').slice(0, 100);
+    },
+    enabled: !!userEmail
+  });
+
+  // Infer support points from health logs
+  const inferredSupport = React.useMemo(() => {
+    const inferred = [];
+    
+    // Look for pharmacy mentions
+    healthLogs.forEach(log => {
+      const notes = (log.notes || '').toLowerCase();
+      const value = (log.value || '').toLowerCase();
+      
+      if (notes.includes('pharmacy') || notes.includes('apollo') || notes.includes('medplus') || notes.includes('netmeds')) {
+        const existing = inferred.find(i => i.type === 'pharmacy');
+        if (!existing) {
+          inferred.push({ type: 'pharmacy', hint: 'Mentioned in logs', confidence: 'detected' });
+        }
+      }
+      
+      if (notes.includes('lab') || notes.includes('thyrocare') || notes.includes('lal path') || notes.includes('test')) {
+        const existing = inferred.find(i => i.type === 'lab');
+        if (!existing) {
+          inferred.push({ type: 'lab', hint: 'Mentioned in logs', confidence: 'detected' });
+        }
+      }
+      
+      if (notes.includes('doctor') || notes.includes('dr.') || notes.includes('clinic')) {
+        const existing = inferred.find(i => i.type === 'clinic');
+        if (!existing) {
+          inferred.push({ type: 'clinic', hint: 'Mentioned in logs', confidence: 'detected' });
+        }
+      }
+    });
+    
+    return inferred;
+  }, [healthLogs]);
 
   const saveMutation = useMutation({
     mutationFn: async (data) => {
@@ -91,23 +137,72 @@ export default function SupportPoints({ userEmail }) {
     <Card className="border-slate-100 shadow-sm">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg flex items-center gap-2">
-            <MapPin className="w-5 h-5 text-[#5b9a8b]" />
-            My Support Network
-          </CardTitle>
-          <Button size="sm" onClick={() => setShowForm(true)}>
-            <Plus className="w-4 h-4 mr-1" /> Add
-          </Button>
+          <div>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <MapPin className="w-5 h-5 text-[#5b9a8b]" />
+              Your Care Network
+              <Badge variant="outline" className="ml-1 text-xs font-normal text-violet-600 border-violet-200">
+                <Bot className="w-3 h-3 mr-1" />
+                Agent-managed
+              </Badge>
+            </CardTitle>
+            <p className="text-xs text-slate-500 mt-1">Tell the agent who supports you</p>
+          </div>
         </div>
       </CardHeader>
       <CardContent>
-        {supportPoints.length === 0 ? (
-          <div className="text-center py-8 bg-slate-50 rounded-lg">
-            <MapPin className="w-10 h-10 text-slate-300 mx-auto mb-2" />
-            <p className="text-slate-500 text-sm">No support points added</p>
-            <p className="text-xs text-slate-400 mt-1">Add your pharmacy, clinic, caregiver contacts</p>
+        {/* Agent detection hints */}
+        {inferredSupport.length > 0 && supportPoints.length === 0 && (
+          <div className="mb-4 p-3 bg-violet-50 rounded-lg border border-violet-100">
+            <p className="text-xs font-medium text-violet-700 mb-2 flex items-center gap-1">
+              <Bot className="w-3 h-3" /> Agent detected mentions of:
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {inferredSupport.map((item, idx) => {
+                const config = TYPE_CONFIG[item.type] || TYPE_CONFIG.other;
+                return (
+                  <Badge key={idx} variant="outline" className="text-xs text-violet-600 border-violet-300">
+                    {config.label}
+                  </Badge>
+                );
+              })}
+            </div>
+            <p className="text-xs text-violet-600 mt-2">
+              Say more details on WhatsApp to save them automatically
+            </p>
           </div>
-        ) : (
+        )}
+
+        {supportPoints.length === 0 && inferredSupport.length === 0 ? (
+          <div className="text-center py-6 bg-gradient-to-br from-violet-50 to-slate-50 rounded-lg border border-violet-100">
+            <Bot className="w-10 h-10 text-violet-400 mx-auto mb-3" />
+            <p className="text-sm font-medium text-slate-700">No care network yet</p>
+            <p className="text-xs text-slate-500 mt-1 max-w-[220px] mx-auto">
+              Just tell the agent naturally — it'll save contacts for you
+            </p>
+            <div className="mt-3 p-3 bg-white rounded-lg border border-slate-200 text-xs text-left max-w-[240px] mx-auto">
+              <p className="font-medium text-slate-700 mb-2">Try saying:</p>
+              <p className="text-slate-500">"My pharmacy is Apollo near Andheri"</p>
+              <p className="text-slate-500">"Dr Sharma is my diabetologist"</p>
+              <p className="text-slate-500">"My wife manages my meds"</p>
+            </div>
+            
+            {/* Advanced: Manual add (hidden by default) */}
+            <Collapsible open={showAdvanced} onOpenChange={setShowAdvanced} className="mt-4">
+              <CollapsibleTrigger asChild>
+                <button className="text-xs text-slate-400 hover:text-slate-600 flex items-center gap-1 mx-auto">
+                  <ChevronDown className={`w-3 h-3 transition-transform ${showAdvanced ? 'rotate-180' : ''}`} />
+                  Advanced: Add manually
+                </button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="mt-2">
+                <Button size="sm" variant="outline" onClick={() => setShowForm(true)} className="text-xs">
+                  <Plus className="w-3 h-3 mr-1" /> Add manually
+                </Button>
+              </CollapsibleContent>
+            </Collapsible>
+          </div>
+        ) : supportPoints.length > 0 ? (
           <div className="space-y-4">
             {Object.entries(grouped).map(([type, points]) => {
               const config = TYPE_CONFIG[type] || TYPE_CONFIG.other;
@@ -163,8 +258,31 @@ export default function SupportPoints({ userEmail }) {
                 </div>
               );
             })}
+            
+            {/* Tip for adding more */}
+            <div className="mt-4 p-3 bg-violet-50 rounded-lg border border-violet-100">
+              <p className="text-xs text-violet-700 flex items-center gap-1">
+                <MessageCircle className="w-3 h-3" />
+                <span className="font-medium">Add more:</span> Just tell the agent on WhatsApp
+              </p>
+            </div>
+            
+            {/* Advanced manual add */}
+            <Collapsible open={showAdvanced} onOpenChange={setShowAdvanced} className="mt-3">
+              <CollapsibleTrigger asChild>
+                <button className="text-xs text-slate-400 hover:text-slate-600 flex items-center gap-1">
+                  <ChevronDown className={`w-3 h-3 transition-transform ${showAdvanced ? 'rotate-180' : ''}`} />
+                  Advanced: Add manually
+                </button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="mt-2">
+                <Button size="sm" variant="outline" onClick={() => setShowForm(true)} className="text-xs">
+                  <Plus className="w-3 h-3 mr-1" /> Add manually
+                </Button>
+              </CollapsibleContent>
+            </Collapsible>
           </div>
-        )}
+        ) : null}
 
         {/* Form Dialog */}
         <Dialog open={showForm} onOpenChange={resetForm}>
