@@ -32,7 +32,6 @@ export default function Layout({ children, currentPageName }) {
   
   const navItems = [
         { name: "Dashboard", icon: Home, page: "Dashboard" },
-        { name: "Patient Portal", icon: User, page: "PatientPortal" },
         { name: "Care Hub", icon: Heart, page: "CareHub" },
         { name: "Progress", icon: Activity, page: "Progress" },
         { name: "Reports", icon: FileText, page: "Reports" },
