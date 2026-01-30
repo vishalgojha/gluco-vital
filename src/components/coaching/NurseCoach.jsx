@@ -127,7 +127,7 @@ export default function NurseCoach({ logs = [], profile, achievements }) {
       const actualMeds = medicationLogs.filter(l => differenceInDays(new Date(), new Date(l.created_date)) <= 7).length;
       const medAdherence = expectedMeds > 0 ? Math.round((actualMeds / (expectedMeds * 7)) * 100) : 100;
 
-      const prompt = `You are Nurse Priya, a warm, caring, and highly intelligent diabetes health coach with advanced clinical knowledge. Analyze this patient's data deeply and provide proactive, personalized coaching with early risk detection.
+      const prompt = `You are GlucoVital Coach, a warm, caring, and highly intelligent diabetes health coach with advanced clinical knowledge. Analyze this patient's data deeply and provide proactive, personalized coaching with early risk detection.
 
 **PATIENT PROFILE:**
 - Name: ${profile?.name || "Patient"}
@@ -315,7 +315,7 @@ Provide comprehensive coaching response in this JSON format:
           </div>
         </div>
         <p className="text-sm text-slate-600 mb-4">
-          Get AI-powered health analysis with personalized tips, weekly goals, and action plans from Nurse Priya.
+          Get AI-powered health analysis with personalized tips, weekly goals, and action plans.
         </p>
         <Button 
           onClick={analyzeAndCoach} 
@@ -345,7 +345,7 @@ Provide comprehensive coaching response in this JSON format:
               <Stethoscope className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-semibold">Nurse Priya's Coaching</h3>
+              <h3 className="font-semibold">Health Coaching</h3>
               <p className="text-sm text-white/80">{coaching.status_message}</p>
             </div>
           </div>
