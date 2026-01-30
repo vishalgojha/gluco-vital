@@ -15,7 +15,12 @@ import {
   AlertTriangle,
   Droplet,
   Utensils,
-  Bot
+  Bot,
+  Activity,
+  Heart,
+  Footprints,
+  Moon,
+  MessageCircle
 } from "lucide-react";
 import { 
   format, 
@@ -216,51 +221,98 @@ export default function MedicationCalendar({ userEmail, reminders = [] }) {
         <div className="border-t border-slate-100 pt-4">
           <div className="mb-3">
             <h4 className="font-medium text-slate-700 flex items-center gap-2">
-              Daily Health Log — {format(selectedDate, "MMM d")}
+              Daily Logs · {format(selectedDate, "EEE, MMM d")}
             </h4>
-            <p className="text-xs text-slate-500">Captured by GlucoVital Agent</p>
+            <p className="text-xs text-slate-500 flex items-center gap-1">
+              <Bot className="w-3 h-3" /> Logged automatically by your care agent
+            </p>
           </div>
           
           {selectedDayLogs.length > 0 ? (
-            <div className="space-y-2">
-              {selectedDayLogs.map((log, idx) => (
-                <div 
-                  key={idx} 
-                  className={cn(
-                    "flex items-center justify-between p-3 rounded-lg border",
-                    log.log_type === 'sugar' && "bg-blue-50 border-blue-200",
-                    log.log_type === 'meal' && "bg-amber-50 border-amber-200",
-                    log.log_type === 'medication' && "bg-green-50 border-green-200",
-                    !['sugar', 'meal', 'medication'].includes(log.log_type) && "bg-slate-50 border-slate-200"
-                  )}
-                >
-                  <div className="flex items-center gap-3">
-                    {log.log_type === 'sugar' && <Droplet className="w-4 h-4 text-blue-500" />}
-                    {log.log_type === 'meal' && <Utensils className="w-4 h-4 text-amber-500" />}
-                    {log.log_type === 'medication' && <Pill className="w-4 h-4 text-green-500" />}
-                    {!['sugar', 'meal', 'medication'].includes(log.log_type) && <Clock className="w-4 h-4 text-slate-500" />}
-                    <div>
-                      <p className="font-medium text-slate-700 capitalize">{log.log_type.replace('_', ' ')}</p>
-                      <p className="text-xs text-slate-500">
-                        {log.value} {log.time_of_day && `• ${log.time_of_day.replace('_', ' ')}`}
-                      </p>
-                    </div>
-                  </div>
-                  <Badge variant="outline" className={cn(
-                    "text-xs",
-                    log.source === 'whatsapp' && "text-green-600 border-green-300",
-                    log.source === 'agent' && "text-violet-600 border-violet-300"
-                  )}>
-                    {log.source === 'whatsapp' ? '💬 WhatsApp' : log.source === 'agent' ? '🤖 Agent' : log.source || 'Manual'}
-                  </Badge>
-                </div>
-              ))}
+            <div className="space-y-3">
+              {/* Agent Summary */}
+              <div className="p-3 bg-violet-50 rounded-lg border border-violet-100">
+                <p className="text-sm text-violet-700">
+                  {selectedDayLogs.length === 1 && "You logged 1 health update this day."}
+                  {selectedDayLogs.length === 2 && "You logged 2 health updates this day."}
+                  {selectedDayLogs.length >= 3 && selectedDayLogs.length < 5 && `Good consistency — ${selectedDayLogs.length} logs captured 👍`}
+                  {selectedDayLogs.length >= 5 && `Excellent tracking — ${selectedDayLogs.length} logs captured 🎉`}
+                </p>
+              </div>
+
+              {/* Timeline View */}
+              <div className="space-y-1">
+                {selectedDayLogs
+                  .sort((a, b) => new Date(a.created_date) - new Date(b.created_date))
+                  .map((log, idx) => {
+                    const logTime = new Date(log.created_date);
+                    const LogIcon = {
+                      sugar: Droplet,
+                      blood_pressure: Heart,
+                      meal: Utensils,
+                      medication: Pill,
+                      exercise: Footprints,
+                      sleep: Moon,
+                      steps: Footprints,
+                      weight: Activity
+                    }[log.log_type] || Clock;
+                    
+                    const bgColor = {
+                      sugar: "bg-blue-50 border-blue-200",
+                      blood_pressure: "bg-red-50 border-red-200",
+                      meal: "bg-amber-50 border-amber-200",
+                      medication: "bg-green-50 border-green-200",
+                      exercise: "bg-teal-50 border-teal-200",
+                      sleep: "bg-indigo-50 border-indigo-200"
+                    }[log.log_type] || "bg-slate-50 border-slate-200";
+                    
+                    const iconColor = {
+                      sugar: "text-blue-500",
+                      blood_pressure: "text-red-500",
+                      meal: "text-amber-500",
+                      medication: "text-green-500",
+                      exercise: "text-teal-500",
+                      sleep: "text-indigo-500"
+                    }[log.log_type] || "text-slate-500";
+
+                    return (
+                      <div 
+                        key={idx} 
+                        className={cn("flex items-start gap-3 p-3 rounded-lg border", bgColor)}
+                      >
+                        <div className="flex-shrink-0 text-xs text-slate-500 w-14 pt-0.5">
+                          {format(logTime, "h:mm a")}
+                        </div>
+                        <LogIcon className={cn("w-4 h-4 mt-0.5 flex-shrink-0", iconColor)} />
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-slate-700 text-sm capitalize">
+                            {log.log_type === 'sugar' && `Glucose: ${log.value}`}
+                            {log.log_type === 'blood_pressure' && `BP: ${log.value}`}
+                            {log.log_type === 'meal' && `${log.time_of_day?.replace('_', ' ') || 'Meal'}: ${log.value}`}
+                            {log.log_type === 'medication' && `Medication: ${log.value}`}
+                            {!['sugar', 'blood_pressure', 'meal', 'medication'].includes(log.log_type) && 
+                              `${log.log_type.replace('_', ' ')}: ${log.value}`
+                            }
+                          </p>
+                          {log.notes && (
+                            <p className="text-xs text-slate-500 mt-0.5 truncate">{log.notes}</p>
+                          )}
+                        </div>
+                        <Badge variant="outline" className="text-[10px] flex-shrink-0">
+                          {log.source === 'whatsapp' ? 'chat' : log.source === 'agent' ? 'agent' : log.source || 'manual'}
+                        </Badge>
+                      </div>
+                    );
+                  })}
+              </div>
             </div>
           ) : (
-            <div className="text-center py-6 bg-slate-50 rounded-lg">
-              <Bot className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-              <p className="text-sm text-slate-500">No logs captured this day</p>
-              <p className="text-xs text-slate-400 mt-1">Send a message on WhatsApp to start logging</p>
+            <div className="text-center py-6 bg-gradient-to-br from-violet-50 to-slate-50 rounded-lg border border-violet-100">
+              <Bot className="w-10 h-10 text-violet-400 mx-auto mb-3" />
+              <p className="text-sm font-medium text-slate-700">No logs this day</p>
+              <p className="text-xs text-slate-500 mt-1 max-w-[200px] mx-auto">
+                Send a message on WhatsApp anytime to log
+              </p>
             </div>
           )}
         </div>
@@ -268,13 +320,10 @@ export default function MedicationCalendar({ userEmail, reminders = [] }) {
         {/* Legend */}
         <div className="flex items-center justify-center gap-4 mt-4 pt-4 border-t border-slate-100">
           <div className="flex items-center gap-1.5 text-xs text-slate-500">
-            <span className="w-2 h-2 rounded-full bg-green-500" /> 3+ log types
+            <span className="w-2 h-2 rounded-full bg-green-500" /> Good coverage
           </div>
           <div className="flex items-center gap-1.5 text-xs text-slate-500">
-            <span className="w-2 h-2 rounded-full bg-amber-500" /> 1-2 log types
-          </div>
-          <div className="flex items-center gap-1.5 text-xs text-slate-500">
-            <span className="w-2 h-2 rounded-full bg-slate-400" /> Logged
+            <span className="w-2 h-2 rounded-full bg-amber-500" /> Agent activity
           </div>
         </div>
       </CardContent>
