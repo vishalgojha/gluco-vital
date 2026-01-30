@@ -10,8 +10,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Progress } from "@/components/ui/progress";
 import { 
   Droplets, Footprints, Moon, Apple, Salad, Heart, 
-  Plus, Check, Flame, Target, Sparkles
+  Plus, Check, Flame, Target, Sparkles, Bot, MessageCircle
 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { format, isToday, parseISO } from "date-fns";
 
@@ -47,6 +48,93 @@ export default function HabitTracker({ userEmail }) {
     queryFn: () => base44.entities.HabitLog.filter({ user_email: userEmail, log_date: today }),
     enabled: !!userEmail
   });
+
+  // Fetch health logs to detect habits from agent conversations
+  const { data: healthLogs = [] } = useQuery({
+    queryKey: ['health-logs-habits', userEmail, today],
+    queryFn: async () => {
+      const logs = await base44.entities.HealthLog.filter({ user_email: userEmail });
+      // Get last 7 days of logs
+      const weekAgo = new Date();
+      weekAgo.setDate(weekAgo.getDate() - 7);
+      return logs.filter(l => new Date(l.created_date) >= weekAgo && l.status !== 'deleted' && l.status !== 'corrected');
+    },
+    enabled: !!userEmail
+  });
+
+  // Infer habits from health logs
+  const inferredHabits = React.useMemo(() => {
+    const inferred = [];
+    const todayStr = format(new Date(), 'yyyy-MM-dd');
+    const todayHealthLogs = healthLogs.filter(l => format(new Date(l.created_date), 'yyyy-MM-dd') === todayStr);
+    
+    // Water intake from notes/values
+    const waterLogs = healthLogs.filter(l => 
+      l.notes?.toLowerCase().includes('water') || 
+      l.notes?.toLowerCase().includes('drank') ||
+      l.notes?.toLowerCase().includes('glasses')
+    );
+    if (waterLogs.length > 0) {
+      inferred.push({
+        type: 'water_intake',
+        detected: true,
+        todayCount: waterLogs.filter(l => format(new Date(l.created_date), 'yyyy-MM-dd') === todayStr).length,
+        source: 'agent'
+      });
+    }
+
+    // Exercise/walking from logs
+    const exerciseLogs = healthLogs.filter(l => l.log_type === 'exercise' || l.log_type === 'steps');
+    if (exerciseLogs.length > 0) {
+      inferred.push({
+        type: 'exercise',
+        detected: true,
+        todayCount: exerciseLogs.filter(l => format(new Date(l.created_date), 'yyyy-MM-dd') === todayStr).length,
+        source: 'agent'
+      });
+    }
+
+    // Sleep from logs
+    const sleepLogs = healthLogs.filter(l => l.log_type === 'sleep');
+    if (sleepLogs.length > 0) {
+      inferred.push({
+        type: 'sleep',
+        detected: true,
+        todayCount: sleepLogs.filter(l => format(new Date(l.created_date), 'yyyy-MM-dd') === todayStr).length,
+        source: 'agent'
+      });
+    }
+
+    // Meals/vegetables from meal logs
+    const mealLogs = healthLogs.filter(l => l.log_type === 'meal');
+    const vegMeals = mealLogs.filter(l => 
+      l.notes?.toLowerCase().includes('vegetable') || 
+      l.notes?.toLowerCase().includes('sabzi') ||
+      l.notes?.toLowerCase().includes('salad') ||
+      l.value?.toLowerCase().includes('vegetable')
+    );
+    if (vegMeals.length > 0) {
+      inferred.push({
+        type: 'vegetable_intake',
+        detected: true,
+        todayCount: vegMeals.filter(l => format(new Date(l.created_date), 'yyyy-MM-dd') === todayStr).length,
+        source: 'agent'
+      });
+    }
+
+    // Medication adherence
+    const medLogs = healthLogs.filter(l => l.log_type === 'medication');
+    if (medLogs.length > 0) {
+      inferred.push({
+        type: 'medication',
+        detected: true,
+        todayCount: medLogs.filter(l => format(new Date(l.created_date), 'yyyy-MM-dd') === todayStr).length,
+        source: 'agent'
+      });
+    }
+
+    return inferred;
+  }, [healthLogs]);
 
   const createHabitMutation = useMutation({
     mutationFn: (data) => base44.entities.DailyHabit.create({ 
@@ -112,23 +200,67 @@ export default function HabitTracker({ userEmail }) {
     <Card className="border-slate-100 shadow-sm">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Flame className="w-5 h-5 text-orange-500" />
-            Daily Habits
-          </CardTitle>
-          <Button size="sm" onClick={() => setShowForm(true)}>
-            <Plus className="w-4 h-4 mr-1" /> Add
-          </Button>
+          <div>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Flame className="w-5 h-5 text-orange-500" />
+              Daily Habits
+              <Badge variant="outline" className="ml-1 text-xs font-normal text-violet-600 border-violet-200">
+                <Bot className="w-3 h-3 mr-1" />
+                Auto-logged
+              </Badge>
+            </CardTitle>
+            <p className="text-xs text-slate-500 mt-1">Detected from your chats & voice notes</p>
+          </div>
         </div>
       </CardHeader>
       <CardContent>
-        {habits.length === 0 ? (
-          <div className="text-center py-6 bg-slate-50 rounded-lg">
-            <Target className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-            <p className="text-sm text-slate-500">No habits tracked yet</p>
-            <p className="text-xs text-slate-400">Build healthy routines!</p>
+        {/* Agent-Inferred Habits */}
+        {inferredHabits.length > 0 && (
+          <div className="mb-4">
+            <p className="text-xs font-medium text-slate-500 mb-2 flex items-center gap-1">
+              <Bot className="w-3 h-3" /> Detected by Agent
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              {inferredHabits.map((inferred, idx) => {
+                const config = HABIT_CONFIG[inferred.type] || HABIT_CONFIG.other;
+                const Icon = config.icon;
+                return (
+                  <div key={idx} className={`p-3 rounded-lg ${config.bg} border border-slate-100`}>
+                    <div className="flex items-center gap-2 mb-1">
+                      <Icon className={`w-4 h-4 ${config.color}`} />
+                      <span className="text-sm font-medium">{config.label}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-slate-600">
+                        {inferred.todayCount > 0 ? `${inferred.todayCount} today` : 'This week'}
+                      </span>
+                      <Badge variant="outline" className="text-[10px] text-green-600 border-green-300">
+                        ✓ Detected
+                      </Badge>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        ) : (
+        )}
+
+        {/* Empty state when no agent-detected habits */}
+        {inferredHabits.length === 0 && habits.length === 0 ? (
+          <div className="text-center py-6 bg-gradient-to-br from-violet-50 to-slate-50 rounded-lg border border-violet-100">
+            <Bot className="w-10 h-10 text-violet-400 mx-auto mb-3" />
+            <p className="text-sm font-medium text-slate-700">No habits detected yet</p>
+            <p className="text-xs text-slate-500 mt-1 max-w-[200px] mx-auto">
+              Just chat naturally on WhatsApp — I'll learn your routines automatically
+            </p>
+            <div className="mt-3 p-2 bg-white rounded-lg border border-slate-200 text-xs text-slate-600">
+              <p className="font-medium mb-1">Try saying:</p>
+              <p className="text-slate-500">"Drank 3 glasses of water"</p>
+              <p className="text-slate-500">"Walked 20 mins after dinner"</p>
+              <p className="text-slate-500">"No sweets today"</p>
+            </div>
+          </div>
+        ) : habits.length > 0 ? (
           <div className="space-y-3">
             {habits.filter(h => h.is_active).map(habit => {
               const config = HABIT_CONFIG[habit.habit_type] || HABIT_CONFIG.other;
@@ -193,63 +325,17 @@ export default function HabitTracker({ userEmail }) {
               );
             })}
           </div>
-        )}
+        ) : null}
 
-        {/* Add Habit Form */}
-        <Dialog open={showForm} onOpenChange={setShowForm}>
-          <DialogContent className="max-w-sm">
-            <DialogHeader>
-              <DialogTitle>Add Daily Habit</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <Label>Habit Type</Label>
-                <Select value={formData.habit_type} onValueChange={handleTypeChange}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {Object.entries(HABIT_CONFIG).map(([key, config]) => (
-                      <SelectItem key={key} value={key}>
-                        {config.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label>Custom Name (optional)</Label>
-                <Input
-                  value={formData.habit_name}
-                  onChange={(e) => setFormData(p => ({ ...p, habit_name: e.target.value }))}
-                  placeholder="My morning routine"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <Label>Target</Label>
-                  <Input
-                    type="number"
-                    value={formData.target_value}
-                    onChange={(e) => setFormData(p => ({ ...p, target_value: parseInt(e.target.value) || 1 }))}
-                  />
-                </div>
-                <div>
-                  <Label>Unit</Label>
-                  <Input
-                    value={formData.target_unit}
-                    onChange={(e) => setFormData(p => ({ ...p, target_unit: e.target.value }))}
-                  />
-                </div>
-              </div>
-              <Button 
-                onClick={() => createHabitMutation.mutate(formData)} 
-                disabled={createHabitMutation.isPending}
-                className="w-full"
-              >
-                Add Habit
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
+        {/* Tip for agent logging */}
+        {(inferredHabits.length > 0 || habits.length > 0) && (
+          <div className="mt-4 p-3 bg-violet-50 rounded-lg border border-violet-100">
+            <p className="text-xs text-violet-700 flex items-center gap-1">
+              <MessageCircle className="w-3 h-3" />
+              <span className="font-medium">Tip:</span> Just chat naturally — "walked 30 mins", "no sugar today"
+            </p>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
