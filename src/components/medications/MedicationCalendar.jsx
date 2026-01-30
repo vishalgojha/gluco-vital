@@ -12,7 +12,10 @@ import {
   X, 
   Clock, 
   Pill,
-  AlertTriangle
+  AlertTriangle,
+  Droplet,
+  Utensils,
+  Bot
 } from "lucide-react";
 import { 
   format, 
@@ -42,6 +45,23 @@ export default function MedicationCalendar({ userEmail, reminders = [] }) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
 
+  // Fetch health logs (agent-captured data)
+  const { data: healthLogs = [] } = useQuery({
+    queryKey: ['health-logs-calendar', userEmail, format(currentMonth, 'yyyy-MM')],
+    queryFn: async () => {
+      const start = startOfMonth(currentMonth);
+      const end = endOfMonth(currentMonth);
+      const logs = await base44.entities.HealthLog.filter({ 
+        user_email: userEmail 
+      });
+      return logs.filter(log => {
+        const date = new Date(log.created_date);
+        return date >= start && date <= end && log.status !== 'deleted' && log.status !== 'corrected';
+      });
+    },
+    enabled: !!userEmail
+  });
+
   const { data: adherenceRecords = [] } = useQuery({
     queryKey: ['medication-adherence-calendar', userEmail, format(currentMonth, 'yyyy-MM')],
     queryFn: async () => {
@@ -64,46 +84,48 @@ export default function MedicationCalendar({ userEmail, reminders = [] }) {
   const calendarEnd = endOfWeek(monthEnd);
   const days = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
 
-  const getAdherenceForDay = (date) => {
-    return adherenceRecords.filter(r => 
-      isSameDay(new Date(r.scheduled_time), date)
+  const getLogsForDay = (date) => {
+    return healthLogs.filter(log => 
+      isSameDay(new Date(log.created_date), date)
     );
   };
 
   const getDayStatus = (date) => {
-    const dayRecords = getAdherenceForDay(date);
-    if (dayRecords.length === 0) return null;
+    const dayLogs = getLogsForDay(date);
+    if (dayLogs.length === 0) return null;
     
-    const taken = dayRecords.filter(r => r.status === 'taken').length;
-    const total = dayRecords.length;
-    
-    if (taken === total) return 'complete';
-    if (taken > 0) return 'partial';
-    return 'missed';
+    // Check if we have multiple log types (good coverage)
+    const logTypes = [...new Set(dayLogs.map(l => l.log_type))];
+    if (logTypes.length >= 3) return 'complete';
+    if (logTypes.length >= 1) return 'partial';
+    return null;
   };
 
-  const selectedDayRecords = getAdherenceForDay(selectedDate);
-  const selectedDaySchedule = reminders.filter(r => r.is_active);
+  const selectedDayLogs = getLogsForDay(selectedDate);
 
-  // Calculate monthly stats
+  // Calculate monthly stats based on health logs
   const monthlyStats = {
-    total: adherenceRecords.length,
-    taken: adherenceRecords.filter(r => r.status === 'taken').length,
-    missed: adherenceRecords.filter(r => r.status === 'missed').length,
-    skipped: adherenceRecords.filter(r => r.status === 'skipped').length
+    total: healthLogs.length,
+    glucose: healthLogs.filter(l => l.log_type === 'sugar').length,
+    meals: healthLogs.filter(l => l.log_type === 'meal').length,
+    medications: healthLogs.filter(l => l.log_type === 'medication').length
   };
-  const adherenceRate = monthlyStats.total > 0 
-    ? Math.round((monthlyStats.taken / monthlyStats.total) * 100) 
-    : 0;
 
   return (
     <Card className="border-slate-100 shadow-sm">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <CalendarIcon className="w-5 h-5 text-violet-500" />
-            Medication Schedule
-          </CardTitle>
+          <div>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <CalendarIcon className="w-5 h-5 text-violet-500" />
+              Daily Logs
+              <Badge variant="outline" className="ml-2 text-xs font-normal text-violet-600 border-violet-200">
+                <Bot className="w-3 h-3 mr-1" />
+                Agent-powered
+              </Badge>
+            </CardTitle>
+            <p className="text-xs text-slate-500 mt-1">Auto-captured from WhatsApp & voice notes</p>
+          </div>
           <div className="flex items-center gap-2">
             <Button 
               variant="ghost" 
@@ -128,21 +150,21 @@ export default function MedicationCalendar({ userEmail, reminders = [] }) {
       <CardContent>
         {/* Monthly Stats */}
         <div className="grid grid-cols-4 gap-2 mb-4">
-          <div className="p-2 bg-slate-50 rounded-lg text-center">
-            <p className="text-lg font-bold text-slate-800">{adherenceRate}%</p>
-            <p className="text-xs text-slate-500">Adherence</p>
+          <div className="p-2 bg-violet-50 rounded-lg text-center">
+            <p className="text-lg font-bold text-violet-700">{monthlyStats.total}</p>
+            <p className="text-xs text-violet-600">Logs Captured</p>
           </div>
-          <div className="p-2 bg-green-50 rounded-lg text-center">
-            <p className="text-lg font-bold text-green-600">{monthlyStats.taken}</p>
-            <p className="text-xs text-green-600">Taken</p>
-          </div>
-          <div className="p-2 bg-red-50 rounded-lg text-center">
-            <p className="text-lg font-bold text-red-600">{monthlyStats.missed}</p>
-            <p className="text-xs text-red-600">Missed</p>
+          <div className="p-2 bg-blue-50 rounded-lg text-center">
+            <p className="text-lg font-bold text-blue-600">{monthlyStats.glucose}</p>
+            <p className="text-xs text-blue-600">Glucose</p>
           </div>
           <div className="p-2 bg-amber-50 rounded-lg text-center">
-            <p className="text-lg font-bold text-amber-600">{monthlyStats.skipped}</p>
-            <p className="text-xs text-amber-600">Skipped</p>
+            <p className="text-lg font-bold text-amber-600">{monthlyStats.meals}</p>
+            <p className="text-xs text-amber-600">Meals</p>
+          </div>
+          <div className="p-2 bg-green-50 rounded-lg text-center">
+            <p className="text-lg font-bold text-green-600">{monthlyStats.medications}</p>
+            <p className="text-xs text-green-600">Medications</p>
           </div>
         </div>
 
@@ -155,7 +177,7 @@ export default function MedicationCalendar({ userEmail, reminders = [] }) {
           ))}
           {days.map((day, idx) => {
             const status = getDayStatus(day);
-            const dayRecords = getAdherenceForDay(day);
+            const dayLogs = getLogsForDay(day);
             const isSelected = isSameDay(day, selectedDate);
             const isCurrentMonth = isSameMonth(day, currentMonth);
             
@@ -172,7 +194,7 @@ export default function MedicationCalendar({ userEmail, reminders = [] }) {
                 )}
               >
                 <span className="block">{format(day, 'd')}</span>
-                {dayRecords.length > 0 && (
+                {dayLogs.length > 0 && (
                   <div className="absolute bottom-1 left-1/2 -translate-x-1/2 flex gap-0.5">
                     {status === 'complete' && (
                       <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
@@ -180,8 +202,8 @@ export default function MedicationCalendar({ userEmail, reminders = [] }) {
                     {status === 'partial' && (
                       <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
                     )}
-                    {status === 'missed' && (
-                      <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
+                    {!status && dayLogs.length > 0 && (
+                      <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
                     )}
                   </div>
                 )}
@@ -192,86 +214,67 @@ export default function MedicationCalendar({ userEmail, reminders = [] }) {
 
         {/* Selected Day Details */}
         <div className="border-t border-slate-100 pt-4">
-          <h4 className="font-medium text-slate-700 mb-3 flex items-center gap-2">
-            <Clock className="w-4 h-4" />
-            {isToday(selectedDate) ? "Today's Schedule" : format(selectedDate, "EEEE, MMMM d")}
-          </h4>
+          <div className="mb-3">
+            <h4 className="font-medium text-slate-700 flex items-center gap-2">
+              Daily Health Log — {format(selectedDate, "MMM d")}
+            </h4>
+            <p className="text-xs text-slate-500">Captured by GlucoVital Agent</p>
+          </div>
           
-          {selectedDayRecords.length > 0 ? (
+          {selectedDayLogs.length > 0 ? (
             <div className="space-y-2">
-              {selectedDayRecords.map((record, idx) => (
+              {selectedDayLogs.map((log, idx) => (
                 <div 
                   key={idx} 
                   className={cn(
                     "flex items-center justify-between p-3 rounded-lg border",
-                    record.status === 'taken' && "bg-green-50 border-green-200",
-                    record.status === 'missed' && "bg-red-50 border-red-200",
-                    record.status === 'skipped' && "bg-amber-50 border-amber-200",
-                    record.status === 'pending' && "bg-slate-50 border-slate-200"
+                    log.log_type === 'sugar' && "bg-blue-50 border-blue-200",
+                    log.log_type === 'meal' && "bg-amber-50 border-amber-200",
+                    log.log_type === 'medication' && "bg-green-50 border-green-200",
+                    !['sugar', 'meal', 'medication'].includes(log.log_type) && "bg-slate-50 border-slate-200"
                   )}
                 >
                   <div className="flex items-center gap-3">
-                    <Pill className="w-4 h-4 text-slate-500" />
+                    {log.log_type === 'sugar' && <Droplet className="w-4 h-4 text-blue-500" />}
+                    {log.log_type === 'meal' && <Utensils className="w-4 h-4 text-amber-500" />}
+                    {log.log_type === 'medication' && <Pill className="w-4 h-4 text-green-500" />}
+                    {!['sugar', 'meal', 'medication'].includes(log.log_type) && <Clock className="w-4 h-4 text-slate-500" />}
                     <div>
-                      <p className="font-medium text-slate-700">{record.medication_name}</p>
+                      <p className="font-medium text-slate-700 capitalize">{log.log_type.replace('_', ' ')}</p>
                       <p className="text-xs text-slate-500">
-                        {format(new Date(record.scheduled_time), "h:mm a")}
+                        {log.value} {log.time_of_day && `• ${log.time_of_day.replace('_', ' ')}`}
                       </p>
                     </div>
                   </div>
-                  <Badge className={cn(
-                    "capitalize",
-                    record.status === 'taken' && "bg-green-100 text-green-700",
-                    record.status === 'missed' && "bg-red-100 text-red-700",
-                    record.status === 'skipped' && "bg-amber-100 text-amber-700",
-                    record.status === 'pending' && "bg-slate-100 text-slate-700"
+                  <Badge variant="outline" className={cn(
+                    "text-xs",
+                    log.source === 'whatsapp' && "text-green-600 border-green-300",
+                    log.source === 'agent' && "text-violet-600 border-violet-300"
                   )}>
-                    {record.status === 'taken' && <Check className="w-3 h-3 mr-1" />}
-                    {record.status === 'missed' && <X className="w-3 h-3 mr-1" />}
-                    {record.status === 'skipped' && <AlertTriangle className="w-3 h-3 mr-1" />}
-                    {record.status}
-                  </Badge>
-                </div>
-              ))}
-            </div>
-          ) : isToday(selectedDate) && selectedDaySchedule.length > 0 ? (
-            <div className="space-y-2">
-              {selectedDaySchedule.map((reminder, idx) => (
-                <div 
-                  key={idx} 
-                  className="flex items-center justify-between p-3 rounded-lg bg-slate-50 border border-slate-200"
-                >
-                  <div className="flex items-center gap-3">
-                    <Pill className="w-4 h-4 text-violet-500" />
-                    <div>
-                      <p className="font-medium text-slate-700">{reminder.medication_name}</p>
-                      <p className="text-xs text-slate-500">{reminder.dosage}</p>
-                    </div>
-                  </div>
-                  <Badge variant="outline" className="text-slate-500">
-                    <Clock className="w-3 h-3 mr-1" />
-                    Scheduled
+                    {log.source === 'whatsapp' ? '💬 WhatsApp' : log.source === 'agent' ? '🤖 Agent' : log.source || 'Manual'}
                   </Badge>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-sm text-slate-400 text-center py-4">
-              No medication records for this day
-            </p>
+            <div className="text-center py-6 bg-slate-50 rounded-lg">
+              <Bot className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+              <p className="text-sm text-slate-500">No logs captured this day</p>
+              <p className="text-xs text-slate-400 mt-1">Send a message on WhatsApp to start logging</p>
+            </div>
           )}
         </div>
 
         {/* Legend */}
         <div className="flex items-center justify-center gap-4 mt-4 pt-4 border-t border-slate-100">
           <div className="flex items-center gap-1.5 text-xs text-slate-500">
-            <span className="w-2 h-2 rounded-full bg-green-500" /> All taken
+            <span className="w-2 h-2 rounded-full bg-green-500" /> 3+ log types
           </div>
           <div className="flex items-center gap-1.5 text-xs text-slate-500">
-            <span className="w-2 h-2 rounded-full bg-amber-500" /> Partial
+            <span className="w-2 h-2 rounded-full bg-amber-500" /> 1-2 log types
           </div>
           <div className="flex items-center gap-1.5 text-xs text-slate-500">
-            <span className="w-2 h-2 rounded-full bg-red-500" /> Missed
+            <span className="w-2 h-2 rounded-full bg-slate-400" /> Logged
           </div>
         </div>
       </CardContent>
