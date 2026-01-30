@@ -207,14 +207,7 @@ export default function Home() {
         />
       )}
 
-      {/* Onboarding Flow */}
-      {showOnboarding && !isDemo && (
-        <OnboardingFlow 
-          user={user} 
-          onComplete={handleOnboardingComplete}
-          onStepAction={handleOnboardingAction}
-        />
-      )}
+
 
       {/* Quick Log Modal */}
       <QuickLogModal 
